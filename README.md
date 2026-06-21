@@ -43,6 +43,37 @@ pnpm dev
 
 `react` and `react-dom@^18.3.1` are pinned in `devDependencies` for the TinaCMS admin UI build only — the site itself ships zero React. Without the pin, pnpm resolves `react@19` against `react-dom@18` and the admin crashes on init. This is tracked in [tinacms#6985](https://github.com/tinacms/tinacms/issues/6985); remove the pin once that lands.
 
+## Deploy to Vercel
+
+The repo ships with `@astrojs/vercel` already wired — no `vercel.json` is required. Deployment works two ways:
+
+**Option A — Git integration (recommended for the production site).**
+
+1. Push this repo to GitHub.
+2. In the Vercel dashboard, **Add New Project → Import** the repo.
+3. Vercel auto-detects Astro and uses the adapter; leave the defaults.
+4. Add environment variables in *Project → Settings → Environment Variables*:
+   - `SITE_URL` — your production origin, e.g. `https://eens.example.com`
+   - `PUBLIC_TINA_CLIENT_ID`, `TINA_TOKEN` — leave blank for the first deploy (site ships static, no live editor); fill in later to enable the `/admin` editor in production.
+5. Push to `main` and Vercel builds + deploys on every commit.
+
+**Option B — Vercel CLI.**
+
+```sh
+pnpm dlx vercel@latest        # first run scopes the project + opens browser for auth
+pnpm dlx vercel@latest --prod # promote the latest preview to production
+```
+
+The first build uses `pnpm build:local` under the hood, which calls `tinacms build --local --skip-cloud-checks` so it succeeds even without Tina Cloud credentials.
+
+### Adding Tina Cloud editor support
+
+When you’re ready for the live editor in production:
+
+1. Create the project at [app.tina.io](https://app.tina.io/) and connect this GitHub repo.
+2. Copy `PUBLIC_TINA_CLIENT_ID` and `TINA_TOKEN` from the Tina dashboard into Vercel env vars.
+3. Switch the build command in Vercel from `pnpm build:local` to `pnpm build` (no cloud-skip flag), once you’ve completed cloud setup.
+
 ## Want to learn more?
 
 Read the [TinaCMS documentation](https://tina.io/docs) and the [Astro documentation](https://docs.astro.build), or come and say hello in the [TinaCMS Discord server](https://discord.gg/cG2UNREu).
