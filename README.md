@@ -29,7 +29,7 @@ pnpm dev
 
 **Figure: Homepage UI**
 
-## Features 
+## Features
 
 - Visual editing via [`@tinacms/astro`](https://www.npmjs.com/package/@tinacms/astro) — a vanilla-JS bridge, with no React in the page tree
 - Tailwind CSS v4 block builder: Hero, CTA, Features, Stats, Testimonial, Callout, Content, Split, and Video
@@ -45,16 +45,14 @@ pnpm dev
 
 ## Deploy to Vercel
 
-The repo ships with `@astrojs/vercel` already wired — no `vercel.json` is required. Deployment works two ways:
+A `vercel.json` is committed at the repo root, pinning the build command to `pnpm build:local`. Without this pin, Vercel picks Astro’s default `astro build` — the static adapter still runs, but it **skips the Tina content build**, so the `/admin` route wouldn’t deploy. **Update this file once you wire up Tina Cloud** to use `pnpm build` instead; see *Adding Tina Cloud editor support* below.
 
 **Option A — Git integration (recommended for the production site).**
 
 1. Push this repo to GitHub.
 2. In the Vercel dashboard, **Add New Project → Import** the repo.
-3. Vercel auto-detects Astro and uses the adapter; leave the defaults.
-4. Add environment variables in *Project → Settings → Environment Variables*:
-   - `SITE_URL` — your production origin, e.g. `https://eens.example.com`
-   - `PUBLIC_TINA_CLIENT_ID`, `TINA_TOKEN` — leave blank for the first deploy (site ships static, no live editor); fill in later to enable the `/admin` editor in production.
+3. Vercel auto-detects Astro. Leave **Framework Preset** as Astro and **Build Command** untouched — the committed `vercel.json` overrides it.
+4. Add whichever environment variables you have to *Project → Settings → Environment Variables*. The minimum for a static frontend is `SITE_URL` (your production origin). Leave Tina Cloud vars blank until you complete the steps in *Adding Tina Cloud editor support*. `GITHUB_BRANCH` is only needed if you pin a non-`main` content branch.
 5. Push to `main` and Vercel builds + deploys on every commit.
 
 **Option B — Vercel CLI.**
@@ -64,15 +62,15 @@ pnpm dlx vercel@latest        # first run scopes the project + opens browser for
 pnpm dlx vercel@latest --prod # promote the latest preview to production
 ```
 
-The first build uses `pnpm build:local` under the hood, which calls `tinacms build --local --skip-cloud-checks` so it succeeds even without Tina Cloud credentials.
+`pnpm build:local` (pinned in `vercel.json`) calls `tinacms build --local --skip-cloud-checks` then `astro build`, so the deploy succeeds without Tina Cloud credentials.
 
 ### Adding Tina Cloud editor support
 
-When you’re ready for the live editor in production:
+When you’re ready for the live editor in production — do all three steps together, in this order:
 
 1. Create the project at [app.tina.io](https://app.tina.io/) and connect this GitHub repo.
-2. Copy `PUBLIC_TINA_CLIENT_ID` and `TINA_TOKEN` from the Tina dashboard into Vercel env vars.
-3. Switch the build command in Vercel from `pnpm build:local` to `pnpm build` (no cloud-skip flag), once you’ve completed cloud setup.
+2. Copy `PUBLIC_TINA_CLIENT_ID` and `TINA_TOKEN` from the Tina dashboard into Vercel env vars *and* into your local `.env`.
+3. Edit `vercel.json` and change `buildCommand` from `"pnpm build:local"` to `"pnpm build"`. Commit. Next deploy runs the full Tina Cloud build with live editor.
 
 ## Want to learn more?
 
