@@ -30,11 +30,13 @@ export default defineConfig({
   },
   // Search index pushed to Tina Cloud during `pnpm build:search`.
   // TINA_SEARCH_TOKEN is the dedicated search-index token provisioned in
-  // app.tina.io. The top-level `clientId` above already covers auth;
-  // only `indexerToken` is needed inside `search.tina`.
+  // app.tina.io. Keep `clientId` here too: the top-level value is what the
+  // GraphQL client uses, and Tina Cloud's typed search config still wants
+  // it referenced under `search.tina` even when redundant.
   search: {
     tina: {
       indexerToken: process.env.TINA_SEARCH_TOKEN,
+      clientId: process.env.PUBLIC_TINA_CLIENT_ID,
     },
   },
   // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/schema/
