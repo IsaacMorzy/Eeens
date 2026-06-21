@@ -66,3 +66,10 @@ deno.lock
 # builds
 .vercel
 dist
+
+# Egonex-AI Understand-Anything
+.understand-anything/intermediate/
+.understand-anything/diff-overlay.json
+.understand-anything/auto-update.log
+.understand-anything/config.json
+.understand-anything/.understandignore
