@@ -28,15 +28,16 @@ export default defineConfig({
       publicFolder: "public",
     },
   },
-  // Search index pushed to Tina Cloud during `pnpm build:search`.
-  // TINA_SEARCH_TOKEN is the dedicated search-index token provisioned in
-  // app.tina.io. Keep `clientId` here too: the top-level value is what the
-  // GraphQL client uses, and Tina Cloud's typed search config still wants
-  // it referenced under `search.tina` even when redundant.
+  // Search-index token consumed by `tinacms build:search`. Tina's
+  // zod schema for `search.tina` rejects unknown keys, so do NOT
+  // re-add `clientId` here even though it looks redundant with the
+  // top-level `clientId` — a prior attempt to add it produced a
+  // `ZodError: unrecognized_keys` failure on the live Vercel deploy.
+  // The top-level `clientId` covers auth; `indexerToken` is all that's
+  // required under `search.tina`.
   search: {
     tina: {
       indexerToken: process.env.TINA_SEARCH_TOKEN,
-      clientId: process.env.PUBLIC_TINA_CLIENT_ID,
     },
   },
   // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/schema/
