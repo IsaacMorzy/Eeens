@@ -78,7 +78,17 @@ Three env vars must be set in **both** the Vercel project *and* your local `.env
 
 ### Search index sync
 
-`pnpm build:search` (a second step chained in `vercel.json`) reads every collection via the GraphQL client and writes the index back to Tina Cloud. Without it, `/admin` search returns zero results in production even though the schema is wired. The chained command runs on every deploy; if it fails, the deploy still ships but search will be stale until the next deploy.
+`pnpm build:search` reads every collection via the GraphQL client and writes the index back to Tina Cloud. Without it, `/admin` search returns zero results in production even though the schema is wired. The command is chained after `pnpm build` in `vercel.json`, and the chain is **soft-failed**: if the Tina Cloud search write errors out (5xx, network blip, token rotation), the static site still deploys and a warning is logged in the Vercel build output. Run `pnpm build:search` manually later to backfill the index.
+
+### Upgrading TINA_TOKEN from read-only to read-and-write
+
+The token currently wired into this repo (from app.tina.io → *Tokens*) is `Content` / `Read-only`. The live editor loads in production, but **saving** changes from `/admin` returns `403 Forbidden` until you swap it:
+
+1. app.tina.io → *Tokens* → select branch → *Generate token* with scope **Read and write** for the Content token type.
+2. Replace `TINA_TOKEN` in your local `.env` (chmod 600, gitignored) and in Vercel → *Project → Settings → Environment Variables* (Production + Preview).
+3. Push to `main` to redeploy. `/admin` saves now succeed.
+
+Keep `TINA_SEARCH_TOKEN` separate regardless — Tina Cloud's two token types have distinct scopes; merging them is not supported.
 
 ## Want to learn more?
 
