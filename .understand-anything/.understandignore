@@ -1,0 +1,61 @@
+# Egonex-AI / Understand-Anything ignore file (starter)
+#
+# This file tells `/understand` what to skip during code analysis. It uses
+# .gitignore-style globs. By default, every line below is COMMENTED OUT — the
+# plugin generated it as a *starter* based on your project's detected languages
+# (Astro, TypeScript/TSX, MDX, JSON, YAML). Review each section, uncomment the
+# patterns you actually want excluded, and re-run `/understand` for the change
+# to take effect.
+#
+# Note: this is independent from `.gitignore`. If a path is already excluded
+# from your repo (e.g. node_modules, dist, .astro), `/understand` will skip
+# it regardless of what's here. Use THIS file for analysis-specific exclusions.
+#
+# Reference: plugin SKILL.md Phase 0.5
+
+# ----- Astro -----
+# Tests & stories for Astro components
+# **/*.test.astro
+# **/*.spec.astro
+# **/*.stories.astro
+
+# ----- TypeScript / TSX -----
+# Unit tests (Vitest, Jest, etc.)
+# **/*.test.ts
+# **/*.test.tsx
+# **/*.spec.ts
+# **/*.spec.tsx
+# **/__tests__/**
+
+# ----- End-to-end / Playwright -----
+# e2e/**
+# playwright/**
+# playwright-report/**
+# test-results/**
+
+# ----- TinaCMS / Content (auto-generated) -----
+# tina/__generated__/**
+
+# ----- Build outputs -----
+# .astro/**
+# dist/**
+# .vercel/**
+# .next/**
+
+# ----- Tooling / agent output -----
+# .playwright-mcp/**
+# .impeccable/**
+# .prototools/**
+
+# ----- Env & secrets -----
+# .env
+# .env.local
+# .env.*.local
+
+# ----- Dependencies -----
+# node_modules/**
+
+# ----- Lockfiles (optional — include them if you want them analyzed) -----
+# **/pnpm-lock.yaml
+# **/package-lock.json
+# **/yarn.lock
