@@ -28,6 +28,15 @@ export default defineConfig({
       publicFolder: "public",
     },
   },
+  // Search index pushed to Tina Cloud during `pnpm build:search`.
+  // TINA_SEARCH_TOKEN is the dedicated search-index token provisioned in
+  // app.tina.io; the content TINA_TOKEN above is reused for content reads.
+  search: {
+    tina: {
+      indexerToken: process.env.TINA_SEARCH_TOKEN,
+      clientId: process.env.PUBLIC_TINA_CLIENT_ID,
+    },
+  },
   // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/schema/
   schema: {
     collections: [

@@ -45,14 +45,14 @@ pnpm dev
 
 ## Deploy to Vercel
 
-A `vercel.json` is committed at the repo root, pinning the build command to `pnpm build:local`. Without this pin, Vercel picks Astro’s default `astro build` — the static adapter still runs, but it **skips the Tina content build**, so the `/admin` route wouldn’t deploy. **Update this file once you wire up Tina Cloud** to use `pnpm build` instead; see *Adding Tina Cloud editor support* below.
+`vercel.json` is committed at the repo root, pinning the build command to `pnpm build && pnpm build:search`. The first half builds the static site; the second half pushes the Tina Cloud search index so `/admin`'s search works in production. Without this pin, Vercel picks Astro's default `astro build` — the static adapter still runs, but **skips both** the Tina content build and the search-index sync, so the `/admin` route wouldn't deploy or be searchable.
 
 **Option A — Git integration (recommended for the production site).**
 
 1. Push this repo to GitHub.
 2. In the Vercel dashboard, **Add New Project → Import** the repo.
 3. Vercel auto-detects Astro. Leave **Framework Preset** as Astro and **Build Command** untouched — the committed `vercel.json` overrides it.
-4. Add whichever environment variables you have to *Project → Settings → Environment Variables*. The minimum for a static frontend is `SITE_URL` (your production origin). Leave Tina Cloud vars blank until you complete the steps in *Adding Tina Cloud editor support*. `GITHUB_BRANCH` is only needed if you pin a non-`main` content branch.
+4. Add the Tina Cloud environment variables in *Project → Settings → Environment Variables* (Production + Preview). Names and meanings are documented in the next subsection.
 5. Push to `main` and Vercel builds + deploys on every commit.
 
 **Option B — Vercel CLI.**
@@ -62,15 +62,23 @@ pnpm dlx vercel@latest        # first run scopes the project + opens browser for
 pnpm dlx vercel@latest --prod # promote the latest preview to production
 ```
 
-`pnpm build:local` (pinned in `vercel.json`) calls `tinacms build --local --skip-cloud-checks` then `astro build`, so the deploy succeeds without Tina Cloud credentials.
+The first run requires the three Tina Cloud env vars to be present, or `tinacms build` will fail its Cloud health check.
 
-### Adding Tina Cloud editor support
+### Tina Cloud env vars
 
-When you’re ready for the live editor in production — do all three steps together, in this order:
+Three env vars must be set in **both** the Vercel project *and* your local `.env` (already gitignored):
 
-1. Create the project at [app.tina.io](https://app.tina.io/) and connect this GitHub repo.
-2. Copy `PUBLIC_TINA_CLIENT_ID` and `TINA_TOKEN` from the Tina dashboard into Vercel env vars *and* into your local `.env`.
-3. Edit `vercel.json` and change `buildCommand` from `"pnpm build:local"` to `"pnpm build"`. Commit. Next deploy runs the full Tina Cloud build with live editor.
+| Var | Where it lives in the Tina dashboard | Scope |
+|---|---|---|
+| `PUBLIC_TINA_CLIENT_ID` | App → *Setup* | Always-public client identifier |
+| `TINA_TOKEN` | App → *Tokens* → Content | **Read-only** in this repo's current setup. Saves from `/admin` will 403 until swapped for a `Read-and-write` token. |
+| `TINA_SEARCH_TOKEN` | App → *Tokens* → Search | Search-index push, run by `tinacms build:search`. |
+
+`pnpm build:local` (the offline fallback `tinacms build --local --skip-cloud-checks`) skips both creds and is no longer used; `vercel.json` invokes the full cloud path now.
+
+### Search index sync
+
+`pnpm build:search` (a second step chained in `vercel.json`) reads every collection via the GraphQL client and writes the index back to Tina Cloud. Without it, `/admin` search returns zero results in production even though the schema is wired. The chained command runs on every deploy; if it fails, the deploy still ships but search will be stale until the next deploy.
 
 ## Want to learn more?
 
