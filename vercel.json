@@ -1,4 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm build || exit 1; pnpm build:search || echo warning: search index sync failed \\(non-fatal\\) -- see Vercel build log"
+  "buildCommand": "pnpm build:local"
 }
