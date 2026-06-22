@@ -418,4 +418,88 @@ In brand voice — facts only: lease terms, locations, contact.
 
 ## Open questions
 
-None — proceed as scoped.
+### Phase 16 — opendesign v2 audit + modern polish  `[ACTIVE]`
+
+Direction: second `opendesign` depth pass now that Phase 12–15 have
+shipped — confirm tokens still hold across the 10 routes × 12 blocks,
+identify violations, ship 5–10 micro-improvements aligned with the
+modern-polish mandate.
+
+**Files touched** (6 micro-improvements, single chore commit):
+
+1. **`src/components/ui/Card.astro`** — `shadow-sm` removed from the
+   default class string. Was the only undeclared shadow on the site;
+   DESIGN.md § Elevation & Depth lists no shadow tokens, so any shadow
+   there is a violation. Elevation now comes from surface color
+   (white on warm canvas) + 1 px hairline, not from blur.
+2. **`src/components/blocks/Cta.astro`** — h2 gains `font-display
+   tracking-[-0.6px]`. Was drifting from the
+   `display-md / display-lg` (40–56 px, `-1.0 → -1.8 px` tracking)
+   type scale. Anchors the CTA banner to the same display register as
+   Hero / Features / PropertyList.
+3. **`src/components/blocks/Split.astro`** — `<img>` swapped for
+   `<Image>` from `astro:assets` (same shape as Hero + PropertyCard).
+   Inline `width=1200 height=900` is non-convention relative to the
+   responsive `sizes="(min-width: 768px) 600px, 100vw"` + format=webp
+   pipeline used elsewhere. Future-proofs the tile for the upcoming
+   property detail imagery refresh.
+4. **`src/components/blocks/PropertyCard.astro`** — hover micro-lift
+   added: `transition-all duration-200 ease-out hover:-translate-y-0.5`
+   on the outer `<article>`. Border-color hover was already there;
+   the lift is functional pointer feedback (modern, matches mobile
+   card convention) — not decoration-without-function per opendesign
+   § anti-patterns. Sustains the 150–220 ms transition curve pinned
+   by DESIGN.md § Components.
+5. **`src/components/Footer.astro`** — `transition-colors` →
+   `transition-colors duration-200 ease-out` on every zone + page
+   link. Was relying on the default transition timing, which wasn't
+   consistently 200 ms across the site. Now every footer link shares
+   the same easing curve as PropertyCard.
+6. **`src/components/Header.astro`** — inline HTML comment justifies
+   the `backdrop-blur-xl` as a sticky-chrome UX reason, not as
+   decoration. opendesign's glass-morphism anti-pattern was
+   incorrectly firing because the qualifier "without a UX reason"
+   was implicit; the comment makes it explicit for the next auditor
+   pass.
+
+**Decorative disclosures kept off:**
+
+- Card hover shadow (would re-introduce the just-removed shadow).
+- Background gradient on hero (no atmospheric decoration).
+- Stock-couple photography (DESIGN.md § Photography forbids).
+
+Validated: vitest unchanged (Phase 17 below counts down), astro check 0/0/2.
+
+### Phase 17 — ponytail-audit cleanup of Phase-12–15 surface area  `[ACTIVE]`
+
+Direction: invoke the `ponytail-audit` skill against the 5 new
+files (`vitest.config.ts`, `src/lib/{cn,property-filters,blog-walker}.ts`,
+the `.skip-link` utility in `src/styles/global.css`) for an
+over-engineering sweep. One-shot report → applied deltas in a
+single chore commit.
+
+**Findings (ranked, biggest cut first):**
+
+| Tag | Finding | Replacement | Path |
+|---|---|---|---|
+| `delete:` | `parseWater`, `parseClearHeight`, `parseFloorLoading` exports | none — `firstInteger` remains the source of truth, one-liner per annotation when needed | `src/lib/property-filters.ts` |
+| `delete:` | 6 corresponding tests + 3 import lines | none | `src/lib/property-filters.test.ts` |
+| `yagni:` | The would-be generic spec-sheet renderer on `/properties/[slug]` | inline JSX (Phase 15 verdict) | deferred |
+| `lean.` | `vitest.config.ts`, `cn.ts`, `blog-walker.ts`, `.skip-link` block | nothing to cut | four files |
+
+**Rationale for the deletion:**
+
+- The Phase-15 `thinker-with-files-gemini` verdict deferred the
+  generic spec-sheet renderer because a `.map()` over a config tuple
+  costs the same ~25-line count as the inline JSX on the page.
+- Without the renderer, `parseWater` / `parseClearHeight` /
+  `parseFloorLoading` have no caller. ponytail yagni: delete now,
+  re-add one-liner apiece when a renderer lands.
+- The 6 tests (one `it()` per parser × 2 sides — null-guard +
+  integer extraction) are dead-code tests once the exports are
+  gone. `firstInteger` continues to test 4 cases independently.
+- The 3 import lines (`parseWater` / `parseClearHeight` /
+  `parseFloorLoading`) are dead-code imports once the exports are
+  gone; trimming them keeps the test file's import block honest.
+
+Validated: vitest drops by 6 (from 57 to 51/51 green); astro check 0/0/2.

@@ -7,9 +7,6 @@ import {
 	firstInteger,
 	parseSqft,
 	parseKva,
-	parseWater,
-	parseClearHeight,
-	parseFloorLoading,
 	applyFilters,
 	groupByType,
 	zonesInUse,
@@ -200,39 +197,9 @@ describe('firstInteger', () => {
 	});
 });
 
-describe('parseWater / parseClearHeight / parseFloorLoading', () => {
-	const property = (over: Partial<PropertyNode>): PropertyNode => ({ ...over });
-
-	it('parseWater returns 0 when specSheet.water is null or missing', () => {
-		expect(parseWater(property({}))).toBe(0);
-		expect(parseWater(property({ specSheet: null }))).toBe(0);
-		expect(parseWater(property({ specSheet: { water: null } }))).toBe(0);
-	});
-
-	it('parseWater extracts integer from a water annotation', () => {
-		expect(parseWater(property({ specSheet: { water: '180 m³/day' } }))).toBe(180);
-		expect(parseWater(property({ specSheet: { water: '1,200 m³/day' } }))).toBe(1200);
-	});
-
-	it('parseClearHeight returns 0 when specSheet or clearHeight is null', () => {
-		expect(parseClearHeight(property({}))).toBe(0);
-		expect(parseClearHeight(property({ specSheet: null }))).toBe(0);
-		expect(parseClearHeight(property({ specSheet: { clearHeight: null } }))).toBe(0);
-	});
-
-	it('parseClearHeight extracts integer from a height annotation', () => {
-		expect(parseClearHeight(property({ specSheet: { clearHeight: '7 m' } }))).toBe(7);
-		expect(parseClearHeight(property({ specSheet: { clearHeight: '12.5 m' } }))).toBe(12);
-	});
-
-	it('parseFloorLoading returns 0 when specSheet or floorLoading is null', () => {
-		expect(parseFloorLoading(property({}))).toBe(0);
-		expect(parseFloorLoading(property({ specSheet: null }))).toBe(0);
-		expect(parseFloorLoading(property({ specSheet: { floorLoading: null } }))).toBe(0);
-	});
-
-	it('parseFloorLoading extracts integer from a floor loading annotation', () => {
-		expect(parseFloorLoading(property({ specSheet: { floorLoading: '50 kN/m²' } }))).toBe(50);
-		expect(parseFloorLoading(property({ specSheet: { floorLoading: '25 kPa' } }))).toBe(25);
-	});
-});
+// (Phase 17 verdict — see plan.md. parseWater / parseClearHeight /
+// parseFloorLoading were deleted from property-filters.ts because the
+// generic spec-sheet renderer they served was DEFERRED (Phase 15
+// thinker verdict). `firstInteger` remains the single source of truth
+// for every spec-sheet annotation; re-add as one-liners when a
+// renderer ships.)

@@ -52,7 +52,7 @@ const mapHref = data.address || data.zone
 
 <article
 	class:list={[
-		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-colors hover:border-primary-hover',
+		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover',
 		featured ? 'bg-secondary' : 'bg-background',
 	]}
 	{...rest}

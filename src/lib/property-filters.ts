@@ -35,19 +35,6 @@ export const parseSqft = (s: string | null | undefined): number => firstInteger(
 export const parseKva = (p: PropertyNode | null | undefined): number =>
 	firstInteger(p?.specSheet?.power);
 
-// Every spec-sheet annotation is a free-text string + unit suffix.
-// Walking through `firstInteger` keeps all of them commas-tolerant and
-// consistent with parseSqft / parseKva. Future annotation types inherit
-// the same one-liner shape.
-export const parseWater = (p: PropertyNode | null | undefined): number =>
-	firstInteger(p?.specSheet?.water);
-
-export const parseClearHeight = (p: PropertyNode | null | undefined): number =>
-	firstInteger(p?.specSheet?.clearHeight);
-
-export const parseFloorLoading = (p: PropertyNode | null | undefined): number =>
-	firstInteger(p?.specSheet?.floorLoading);
-
 export interface PropertyFilters {
 	minSqft: number | null;
 	minKva: number | null;

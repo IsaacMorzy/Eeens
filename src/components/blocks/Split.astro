@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { tinaField } from '@tinacms/astro/tina-field';
 import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import Section from '../ui/Section.astro';
@@ -36,7 +37,18 @@ const actions = (data.actions ?? []).filter(a => a !== null);
 		</div>
 		{data.image?.src && (
 			<div data-tina-field={tinaField(data, 'image')} class="overflow-hidden rounded-xl border border-hairline-steel">
-				<img src={data.image.src} alt={data.image.alt ?? ''} width="1200" height="900" class="aspect-[4/3] w-full object-cover" />
+				<Image
+					src={data.image.src}
+					alt={data.image.alt ?? ''}
+					width={1280}
+					height={960}
+					sizes="(min-width: 768px) 600px, 100vw"
+					format="webp"
+					quality={80}
+					loading="lazy"
+					decoding="async"
+					class="aspect-[4/3] size-full object-cover"
+				/>
 			</div>
 		)}
 	</div>

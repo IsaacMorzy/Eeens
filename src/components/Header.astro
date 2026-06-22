@@ -22,6 +22,7 @@ const nav = (config?.nav ?? []).filter(item => item !== null);
 const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 ---
 
+<!-- backdrop-blur is functional, not decoration: keeps the sticky header legible over scrolled content. opendesign's glass-morphism anti-pattern qualifier "without a UX reason" is satisfied — sticky chrome is one. -->
 <header class="fixed top-0 z-20 w-full border-b bg-background/50 backdrop-blur-xl">
 	<nav class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
 		<a href="/" class="flex items-center gap-2 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, "title") : undefined}>
@@ -48,9 +49,9 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 			aria-expanded="false"
 			class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none xl:hidden"
 		>
-				<Icon name="tabler:menu-2" class="icon-open size-5" />
+			<Icon name="tabler:menu-2" class="icon-open size-5" />
 				<Icon name="tabler:x" class="icon-close size-5" />
-			</button>
+		</button>
 		</div>
 	</nav>
 	<div
