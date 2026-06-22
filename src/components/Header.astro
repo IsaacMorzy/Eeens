@@ -28,7 +28,7 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 			<img src={seo?.logo ?? EensWordmark} alt="Eens" width="32" height="32" class="size-8" data-tina-field={seo?.logo ? tinaField(seo, "logo") : undefined} />
 			<span>{seo?.title}</span>
 		</a>
-		<div class="hidden items-center gap-8 text-sm lg:flex">
+		<div class="hidden items-center gap-6 text-sm xl:flex">
 			{nav.map((item) => (
 				<a href={item.link} class="text-muted-foreground transition-colors hover:text-foreground" data-tina-field={tinaField(item, "title")}>{item.title}</a>
 			))}
@@ -40,14 +40,14 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 				))}
 				<ThemeToggle />
 			</div>
-			<button
-				id="mobile-menu-toggle"
-				type="button"
-				aria-label="Toggle navigation menu"
-				aria-controls="mobile-menu-panel"
-				aria-expanded="false"
-				class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none lg:hidden"
-			>
+		<button
+			id="mobile-menu-toggle"
+			type="button"
+			aria-label="Toggle navigation menu"
+			aria-controls="mobile-menu-panel"
+			aria-expanded="false"
+			class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none xl:hidden"
+		>
 				<Icon name="tabler:menu-2" class="icon-open size-5" />
 				<Icon name="tabler:x" class="icon-close size-5" />
 			</button>
@@ -56,7 +56,7 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 	<div
 		id="mobile-menu-panel"
 		hidden
-		class="border-t bg-background/95 backdrop-blur-xl lg:hidden"
+		class="border-t bg-background/95 backdrop-blur-xl xl:hidden"
 	>
 		<div class="mx-auto flex max-w-6xl flex-col px-6 py-4">
 			{nav.map((item) => (

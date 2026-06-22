@@ -15,8 +15,24 @@
       "link": "/properties"
     },
     {
+      "title": "Locations",
+      "link": "/locations"
+    },
+    {
+      "title": "Lease terms",
+      "link": "/lease-terms"
+    },
+    {
+      "title": "Blog",
+      "link": "/blog"
+    },
+    {
       "title": "About",
       "link": "/about"
+    },
+    {
+      "title": "Contact",
+      "link": "/contact"
     }
   ],
   "contactLinks": [
