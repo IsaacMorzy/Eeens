@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 28" width="120" height="28" role="img" aria-label="Eens Limited">
+  <style>
+    .wm-text {
+      font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 28px;
+      fill: #0F172A;
+      letter-spacing: -0.6px;
+    }
+  </style>
+  <text x="0" y="22" class="wm-text">Eens</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Eens">
+  <rect width="16" height="16" rx="2" fill="#0F172A"/>
+  <g transform="translate(0 12)">
+    <path d="M3 0 H10 V1.5 H4.5 V3 H8.5 V4.5 H4.5 V6 H10 V7.5 H3 Z" fill="#FFFFFF"/>
+  </g>
+  <rect x="7" y="13" width="2" height="2" fill="#0e7490"/>
+</svg>

@@ -1,12 +1,15 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource/jetbrains-mono/400.css';
 @plugin '@tailwindcss/typography';
 
 /* Drive the dark: variant from the .dark class (toggled by ThemeToggle),
    not the prefers-color-scheme media query. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Metric-matched Arial fallback so the Inter swap doesn't reflow text (CLS). */
+/* Metric-matched Arial fallback so font swap doesn't reflow text (CLS).
+   Two blocks: once for Inter (existing), once for the new Plus Jakarta Sans. */
 @font-face {
 	font-family: 'Inter Fallback';
 	src: local('Arial');
@@ -16,12 +19,28 @@
 	size-adjust: 107.12%;
 }
 
+@font-face {
+	font-family: 'Plus Jakarta Sans Fallback';
+	src: local('Arial');
+	ascent-override: 88.79%;
+	descent-override: 26.94%;
+	line-gap-override: 0%;
+	size-adjust: 110.32%;
+}
+
 @theme inline {
+	/* Fonts */
 	--font-sans: 'Inter Variable', 'Inter Fallback', system-ui, sans-serif;
+	--font-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans Fallback', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	/* Radii — Linear-derived, tightened to 0.5rem base */
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
+
+	/* Color tokens (Tailwind utility surface) — each maps a CSS variable. */
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
@@ -45,54 +64,78 @@
 	--color-chart-3: var(--chart-3);
 	--color-chart-4: var(--chart-4);
 	--color-chart-5: var(--chart-5);
+	--color-canvas-light: var(--canvas-light);
+	--color-canvas-dark: var(--canvas-dark);
+	--color-ink-light: var(--ink-light);
+	--color-ink-dark: var(--ink-dark);
+	--color-hairline-steel: var(--hairline-steel);
+	--color-primary-dark: var(--primary-dark);
 }
 
 :root {
-	--radius: 0.625rem;
-	--background: oklch(0.99 0.004 285);
-	--foreground: oklch(0.20 0.03 285);
-	--card: oklch(1 0.002 285);
-	--card-foreground: oklch(0.20 0.03 285);
-	--popover: oklch(1 0.002 285);
-	--popover-foreground: oklch(0.20 0.03 285);
-	--primary: oklch(0.57 0.198 37);
-	--primary-foreground: oklch(0.99 0.005 285);
-	--secondary: oklch(0.96 0.01 285);
-	--secondary-foreground: oklch(0.30 0.04 285);
-	--muted: oklch(0.96 0.01 285);
-	--muted-foreground: oklch(0.48 0.03 285);
-	--accent: oklch(0.95 0.02 285);
-	--accent-foreground: oklch(0.30 0.05 285);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.90 0.012 285);
-	--input: oklch(0.90 0.012 285);
-	--ring: oklch(0.57 0.198 37);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
+	/* Eens Business Park — light default (warm slate) */
+	--radius: 0.5rem;
+	--background: oklch(0.98 0.005 85);          /* warm slate off-white #FAFAF9 */
+	--foreground: oklch(0.20 0.04 265);          /* navy #0F172A */
+	--card: oklch(1 0 0);                        /* surface-1-light white */
+	--card-foreground: oklch(0.20 0.04 265);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.20 0.04 265);
+	--primary: oklch(0.52 0.09 235);              /* cyan-teal #0e7490 */
+	--primary-foreground: oklch(0.98 0.005 85);   /* warm white on cyan-teal */
+	--secondary: oklch(0.96 0.005 85);            /* surface-2-light #F5F5F4 */
+	--secondary-foreground: oklch(0.20 0.04 265);
+	--muted: oklch(0.92 0.01 85);
+	--muted-foreground: oklch(0.43 0.02 85);
+	--accent: oklch(0.96 0.005 85);
+	--accent-foreground: oklch(0.20 0.04 265);
+	--destructive: oklch(0.60 0.22 25);
+	--border: oklch(0.92 0.01 85);
+	--input: oklch(0.92 0.01 85);
+	--ring: oklch(0.52 0.09 235);                /* cyan-teal — single accent */
+
+	/* Chart ladder — cyan/navy, no orange */
+	--chart-1: oklch(0.52 0.09 235);              /* primary cyan-teal */
+	--chart-2: oklch(0.27 0.04 265);              /* navy surface */
+	--chart-3: oklch(0.62 0.10 220);              /* steel-blue mid */
+	--chart-4: oklch(0.45 0.08 235);              /* primary-hover */
+	--chart-5: oklch(0.55 0.04 220);              /* hairline-steel */
+
+	/* Eens palette aliases */
+	--canvas-light: oklch(0.98 0.005 85);
+	--canvas-dark: oklch(0.20 0.04 265);
+	--ink-light: oklch(0.20 0.04 265);
+	--ink-dark: oklch(0.98 0.005 85);
+	--hairline-steel: oklch(0.55 0.04 220);
+	--primary-dark: oklch(0.86 0.11 235);        /* cyan-300 — dark-mode ladder-up */
 }
 
 .dark {
-	--background: oklch(0.16 0.02 285);
-	--foreground: oklch(0.95 0.012 285);
-	--card: oklch(0.21 0.025 285);
-	--card-foreground: oklch(0.95 0.012 285);
-	--popover: oklch(0.21 0.025 285);
-	--popover-foreground: oklch(0.95 0.012 285);
-	--primary: oklch(0.70 0.18 40);
-	--primary-foreground: oklch(0.16 0.02 285);
-	--secondary: oklch(0.26 0.03 285);
-	--secondary-foreground: oklch(0.95 0.012 285);
-	--muted: oklch(0.26 0.03 285);
-	--muted-foreground: oklch(0.72 0.03 285);
-	--accent: oklch(0.28 0.04 285);
-	--accent-foreground: oklch(0.95 0.012 285);
-	--destructive: oklch(0.70 0.19 22);
-	--border: oklch(0.95 0.01 285 / 12%);
-	--input: oklch(0.95 0.01 285 / 15%);
-	--ring: oklch(0.70 0.18 40);
+	/* Eens Business Park — dark mode: navy canvas + cyan-teal ladder-up */
+	--background: oklch(0.20 0.04 265);          /* navy #0F172A */
+	--foreground: oklch(0.98 0.005 85);          /* warm white ink */
+	--card: oklch(0.27 0.04 265);                /* surface-1-dark */
+	--card-foreground: oklch(0.98 0.005 85);
+	--popover: oklch(0.27 0.04 265);
+	--popover-foreground: oklch(0.98 0.005 85);
+	--primary: oklch(0.86 0.11 235);              /* cyan-300 #67e8f9 — bright on navy */
+	--primary-foreground: oklch(0.20 0.04 265);   /* navy on cyan */
+	--secondary: oklch(0.27 0.04 265);
+	--secondary-foreground: oklch(0.98 0.005 85);
+	--muted: oklch(0.27 0.04 265);
+	--muted-foreground: oklch(0.65 0.03 265);
+	--accent: oklch(0.27 0.04 265);
+	--accent-foreground: oklch(0.98 0.005 85);
+	--destructive: oklch(0.65 0.22 25);
+	--border: oklch(0.55 0.04 220);
+	--input: oklch(0.55 0.04 220);
+	--ring: oklch(0.86 0.11 235);
+
+	--chart-1: oklch(0.86 0.11 235);
+	--chart-2: oklch(0.55 0.04 220);
+	--chart-3: oklch(0.62 0.10 220);
+	--chart-4: oklch(0.45 0.08 235);
+	--chart-5: oklch(0.27 0.04 265);
 }
 
 @layer base {
@@ -104,15 +147,20 @@
 		color: var(--foreground);
 		font-family: var(--font-sans);
 		margin: 0;
-		padding-top: 5rem;
+		padding-top: 5rem;                          /* sticky header compensation */
 	}
 	.bg-default {
 		background-color: var(--background);
 	}
+	/* Astro 4-6 default resets for the new --font-display / --font-mono utilities. */
+	::selection {
+		background-color: var(--primary);
+		color: var(--primary-foreground);
+	}
 }
 
 /* Prose (blog body) follows the theme tokens so it inverts in dark mode and
-   keeps the indigo tint, rather than the plugin's default zero-chroma grays.
+   keeps the cyan-teal tint, rather than the plugin's default zero-chroma grays.
    Unlayered so it overrides the typography plugin's layered variables. */
 .prose {
 	--tw-prose-body: var(--foreground);
