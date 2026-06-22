@@ -6,8 +6,8 @@
     "node": ">=22.22.0"
   },
   "scripts": {
-    "dev": "tinacms dev -c \"astro dev\" --datalayer-port 9100",
-    "build": "tinacms build --content=local --datalayer-port 9100 && astro build",
+    "dev": "tinacms dev --datalayer-port 9106 -c \"astro dev\"",
+    "build": "tinacms build --datalayer-port 9106 --content=local && astro build",
     "build:local": "tinacms build --datalayer-port 9106 --local --skip-cloud-checks -c \"astro build\"",
     "build:search": "tinacms search-index",
     "preview": "astro preview",

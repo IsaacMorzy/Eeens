@@ -15,6 +15,30 @@
   holds a port that the local Tina datalayer needs); defer to ops; the code
   batch still ships.
 
+## Port reservation
+
+Out-of-project services, plus the Tina datalayer port that every script in
+this repo binds to. Do not reclaim any port below without first checking who
+owns it.
+
+| port | owner | owner rationale |
+|---|---|---|
+| `9000` | Frappe process websocket | reserved — do not reclaim. The dev box runs a Frappe instance here; the `tinacms dev` / `tinacms build` defaults are 9000 and will collide silently. |
+| `9106` | Tina datalayer | project-wide persistent port. Every script in `package.json` (`dev`, `build`, `build:local`) passes `--datalayer-port 9106` to `tinacms` so the bind is deterministic across machines. The `--datalayer-port` flag is placed first in the `tinacms build` argv for Commander parsing robustness (positional `-c "astro build"` consumes any flag to its right). |
+
+If a future port ever halts the build, check this table first; killing a
+Frappe websocket because Tina defaulted to 9000 is a five-minute downtime bug.
+
+**Flag-placement convention.** In every `tinacms` script, `--datalayer-port 9106`
+is the FIRST flag after the subcommand verb (`tinacms dev`, `tinacms build`).
+Rationale: Commander tolerates any flag order, but pinning the port first
+future-proofs against any positional-consumption change in the inner
+`-c "..."` command string or future subcommand args.
+
+**`build:search` exemption.** The `build:search` script runs `tinacms search-index`
+without `--datalayer-port 9106` — that subcommand indexes the local build output
+directly and does NOT spawn the live datalayer. Adding the flag there is inert.
+
 ## Phases
 
 ### Phase 1 — Foundations  `[SHIPPED]`  (commit `be56763`)
@@ -42,7 +66,7 @@ a depth pass on the surfaces that weren't fully covered in Phase 6.
 - ✅ `propfix`: refactored `LocationPin.astro` to remove JSX-in-frontmatter fragment (Astro parser bailed otherwise).
 - ✅ `deps`: added `@fontsource-variable/plus-jakarta-sans` + `@fontsource/jetbrains-mono` to dependencies (Phase-1 migration referenced them in `global.css` but never added to `package.json`).
 - ⚠️ `astro build` direct path: pre-render tried to call Tina Cloud → `HTTP 400` (no creds). Confirms we must use the local-content path.
-- ⚠️ `pnpm run build:local` (Tina local): datalayer port 9000 squatted by an orphan Node process the kill patterns miss. Provisional fix: repoint `build:local` to `--datalayer-port 9106`, placed first in the flag chain for Commander robustness.
+- ⚠️ `pnpm run build:local` (Tina local): datalayer port 9000 squatted by an orphan Node process the kill patterns miss. Provisional fix: repoint `build:local` to `--datalayer-port 9106`, placed first in the flag chain for Commander robustness. **Project-wide consolidation** (batch 7.7): all three scripts (`dev`, `build`, `build:local`) now use `--datalayer-port 9106` so the policy is project-persistent — port 9106 is reserved for the Tina datalayer; port 9000 is reserved for the Frappe process websocket — do not reclaim either.
 - ⚠️ `home.mdx` line 4 column 84: unquoted frontmatter value contains a literal `:` ("Every listing: address"). Local-content YAML parser is stricter than Tina Cloud. Fix: wrap tagline in `"…"`; `about.mdx` already clean.
   **RATIONALE** — any block-level `description:` / `tagline:` / `quote:` whose value contains a literal `:` MUST stay quoted. If a future editor un-quotes in Tina CMS, Vercel production still deploys (Tina Cloud is tolerant), but `pnpm run build:local` will fail with `ERR_INDEXING_FAILED` at the same column. No MDX-file comment is added because YAML `#` comments are stripped by some loaders; this plan.md is the safe anchor.
 - ⚠️ `The service is no longer running`: even after the port-repoint + cleanup, the local Tina datalayer still dies mid-build. 6th failure in the chain, environment-side.
