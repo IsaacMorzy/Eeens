@@ -1,0 +1,204 @@
+---
+import Base from '../../layouts/Base.astro';
+import { Image } from 'astro:assets';
+import { tinaField } from '@tinacms/astro/tina-field';
+import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
+import Section from '../../components/ui/Section.astro';
+import AvailabilityBadge from '../../components/ui/AvailabilityBadge.astro';
+import LocationPin from '../../components/ui/LocationPin.astro';
+import Button from '../../components/ui/Button.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { getConfig, getProperty, listProperties, type PropertyNode } from '../../lib/data';
+import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
+
+export async function getStaticPaths() {
+	const properties = (await listProperties()) as PropertyNode[];
+	return properties.map((p) => ({ params: { slug: p._sys?.filename ?? '' } }));
+}
+
+const { slug } = Astro.params;
+if (!slug) return new Response('Not Found', { status: 404 });
+const { data: result } = await getProperty(slug);
+const property = result?.property;
+if (!property) return new Response('Not Found', { status: 404 });
+const config = (await getConfig()).data?.config ?? null;
+
+const related: PropertyNode[] = (await listProperties())
+	.filter((p: PropertyNode): boolean => p._sys?.filename !== slug && p.type === property.type)
+	.slice(0, 3);
+const isIndustrial = property.type !== 'APARTMENT';
+const mapHref = `https://www.google.com/maps/search/${encodeURIComponent(property.address ?? property.zone ?? '')}`;
+
+// Transactional tour-booking mailbox is the operator's primary inbox, NOT
+// the chrome-style contact links array. Per code-reviewer feedback.
+const subject = encodeURIComponent(
+	`Schedule a viewing — ${property.reference ?? property.title ?? 'listing'}`
+);
+const viewingHref = `mailto:hello@eens.co.ke?subject=${subject}`;
+---
+
+<Base
+	title={`${property.title ?? 'Listing'} — Eens Limited`}
+	description={property.address ?? config?.seo?.description ?? ''}
+>
+	<Section class="bg-background pt-12">
+		<div class="mx-auto max-w-6xl px-6">
+			<header class="grid gap-8 lg:grid-cols-[2fr_1fr]">
+				<div>
+					<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{property.type}</span>
+					<h1
+						data-tina-field={tinaField(property, 'title')}
+						class="mt-3 font-display text-balance text-4xl font-semibold tracking-[-0.6px] md:text-5xl"
+					>
+						{property.title}
+					</h1>
+					<div class="mt-5 flex flex-wrap items-center gap-3">
+						<span
+							data-tina-field={tinaField(property, 'sqft')}
+							class="font-mono text-[13px] text-foreground/80"
+						>
+							{property.sqft}
+						</span>
+						{property.zone && (
+							<div data-tina-field={tinaField(property, 'zone')}>
+								<LocationPin zone={property.zone} mapHref={mapHref} />
+							</div>
+						)}
+						{property.availability && (
+							<div data-tina-field={tinaField(property, 'availability')}>
+								<AvailabilityBadge availability={property.availability as Availability} />
+							</div>
+						)}
+						{property.reference && (
+							<span class="font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">
+								{property.reference}
+							</span>
+						)}
+					</div>
+					<p
+						data-tina-field={tinaField(property, 'address')}
+						class="mt-5 max-w-2xl text-pretty text-base text-muted-foreground"
+					>
+						{property.address}
+					</p>
+					{(property.bedrooms || property.bathrooms) && (
+						<div class="mt-5 flex flex-wrap items-center gap-2 font-mono text-[13px] text-foreground/80">
+							{property.bedrooms && <span>{property.bedrooms} bedrooms</span>}
+							{property.bedrooms && property.bathrooms && <span aria-hidden="true">·</span>}
+							{property.bathrooms && <span>{property.bathrooms} bathrooms</span>}
+						</div>
+					)}
+				</div>
+				<aside class="flex flex-col gap-3 self-start rounded-xl border border-hairline-steel bg-background p-5">
+					<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">
+						{property.availability === 'ForSale' ? 'Sale price' : 'Lease'}
+					</div>
+					{property.price?.ksh && (
+						<div class="font-display text-2xl font-semibold leading-tight tracking-[-0.4px]">
+							KSH {property.price.ksh}
+						</div>
+					)}
+					{property.price?.perSqft && (
+						<div class="font-mono text-[13px] text-muted-foreground">
+							KSH {property.price.perSqft} / sq ft
+						</div>
+					)}
+					{property.leaseTerm && (
+						<div class="mt-1 text-sm">{property.leaseTerm}</div>
+					)}
+					<Button href={viewingHref} variant="default" size="lg" class="mt-3 w-full">
+						<Icon name="calendar" class="size-4" />
+						<span>Schedule a viewing</span>
+					</Button>
+				</aside>
+			</header>
+
+			{property.heroImage?.src && (
+				<div
+					data-tina-field={tinaField(property, 'heroImage')}
+					class="mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"
+				>
+					<Image
+						src={property.heroImage.src}
+						alt={property.heroImage.alt ?? property.title ?? ''}
+						width={1920}
+						height={1080}
+						format="webp"
+						quality={85}
+						loading="eager"
+						class="aspect-[16/9] w-full object-cover"
+					/>
+				</div>
+			)}
+		</div>
+	</Section>
+
+	{isIndustrial && property.specSheet && (
+		<Section class="bg-background">
+			<div class="mx-auto max-w-6xl px-6">
+				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Spec sheet</h2>
+				<dl class="mt-6 grid divide-y divide-hairline-steel/40 overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">
+					{property.specSheet.power && (
+						<div class="flex items-baseline justify-between gap-3 p-4">
+							<dt class="text-sm text-muted-foreground">Power</dt>
+							<dd class="font-mono text-sm">{property.specSheet.power} kVA</dd>
+						</div>
+					)}
+					{property.specSheet.water && (
+						<div class="flex items-baseline justify-between gap-3 p-4">
+							<dt class="text-sm text-muted-foreground">Water</dt>
+							<dd class="font-mono text-sm">{property.specSheet.water} m³/day</dd>
+						</div>
+					)}
+					{property.specSheet.parking && (
+						<div class="flex items-baseline justify-between gap-3 p-4">
+							<dt class="text-sm text-muted-foreground">Parking bays</dt>
+							<dd class="font-mono text-sm">{property.specSheet.parking}</dd>
+						</div>
+					)}
+					{property.specSheet.floorLoading && (
+						<div class="flex items-baseline justify-between gap-3 p-4">
+							<dt class="text-sm text-muted-foreground">Floor loading</dt>
+							<dd class="font-mono text-sm">{property.specSheet.floorLoading} kN/m²</dd>
+						</div>
+					)}
+					{property.specSheet.clearHeight && (
+						<div class="flex items-baseline justify-between gap-3 p-4">
+							<dt class="text-sm text-muted-foreground">Clear height</dt>
+							<dd class="font-mono text-sm">{property.specSheet.clearHeight} m</dd>
+						</div>
+					)}
+				</dl>
+			</div>
+		</Section>
+	)}
+
+	<Section class="bg-background">
+		<div class="mx-auto max-w-3xl px-6 prose prose-lg max-w-none">
+			<div data-tina-field={tinaField(property, 'body')}>
+				<TinaMarkdown content={property.body} />
+			</div>
+		</div>
+	</Section>
+
+	{related.length > 0 && (
+		<Section class="bg-secondary">
+			<div class="mx-auto max-w-7xl px-6">
+				<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Related listings</h2>
+				<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					{related.map((r) => (
+						<a
+							href={`/properties/${r._sys?.filename ?? ''}`}
+							class="group flex flex-col rounded-xl border border-hairline-steel bg-background p-5 transition-colors hover:border-primary-hover"
+						>
+							<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{r.type}</span>
+							<h3 class="mt-2 font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px]">{r.title}</h3>
+							<div class="mt-2 font-mono text-[13px] text-foreground/80">{r.sqft}</div>
+							<div class="mt-2 text-sm text-muted-foreground">{r.address}</div>
+						</a>
+					))}
+				</div>
+			</div>
+		</Section>
+	)}
+</Base>
