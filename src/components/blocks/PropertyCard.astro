@@ -1,0 +1,135 @@
+---
+/**
+ * PropertyCard — VISUAL per DESIGN.md § Components > Cards > property-card.
+ * surface-1-light (bg-background) + 1 px hairline border + rounded-xl.
+ * 16:9 hero, 12 px cyan-teal eyebrow (type uppercase), 22 px card-title
+ * (Plus Jakarta Sans, medium), 16 px address, mono sq-ft annotation,
+ * inline price row (KSH + per_sqft if present), availability badge
+ * top-right (optional), location chip + lease term chip row,
+ * cyan-teal-into-hairline "View property" CTA at the bottom rail.
+ *
+ * Data shape is deliberately flat (no `__typename`) so that BOTH the
+ * PageBlocks inline card and the /properties index listing can render
+ * the same component with the same data interface.
+ */
+import { Image } from 'astro:assets';
+import { tinaField } from '@tinacms/astro/tina-field';
+import AvailabilityBadge from '../ui/AvailabilityBadge.astro';
+import LocationPin from '../ui/LocationPin.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import type { Availability } from '../ui/AvailabilityBadge.astro';
+
+export interface PropertyCardData {
+	type?: string | null;
+	title?: string | null;
+	availability?: Availability | null;
+	address?: string | null;
+	sqft?: string | null;
+	price?: { ksh?: string | null; perSqft?: string | null } | null;
+	zone?: string | null;
+	leaseTerm?: string | null;
+	image?: { src?: string | null; alt?: string | null } | null;
+	ref?: string | null;
+	href?: string | null;
+	viewLabel?: string | null;
+}
+
+interface Props {
+	data: PropertyCardData;
+	featured?: boolean;
+	[key: string]: unknown;
+}
+
+const { data, featured = false, ...rest } = Astro.props as Props & Record<string, unknown>;
+
+const viewHref = data.href ?? (data.ref ? `/properties/${data.ref}` : null);
+const viewLabel = data.viewLabel ?? 'View property';
+const mapHref = data.address || data.zone
+	? `https://www.google.com/maps/search/${encodeURIComponent((data.address ?? data.zone) as string)}`
+	: undefined;
+---
+
+<article
+	class:list={[
+		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-colors hover:border-primary-hover',
+		featured ? 'bg-secondary' : 'bg-background',
+	]}
+	{...rest}
+>
+	{data.image?.src && (
+		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
+			<Image
+				src={data.image.src}
+				alt={data.image.alt ?? data.title ?? ''}
+				width={1280}
+				height={720}
+				sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+				format="webp"
+				quality={80}
+				loading="lazy"
+				decoding="async"
+				class="size-full object-cover"
+			/>
+			{data.availability && (
+				<div class="absolute right-3 top-3">
+					<AvailabilityBadge availability={data.availability} />
+				</div>
+			)}
+		</div>
+	)}
+	<div class="flex flex-1 flex-col gap-3 p-4">
+		{data.type && (
+			<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[12px] font-medium uppercase tracking-[0.4px] text-primary">
+				{data.type}
+			</span>
+		)}
+		{data.title && (
+			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
+				{data.title}
+			</h3>
+		)}
+		{data.address && (
+			<p data-tina-field={tinaField(data as { address?: unknown }, 'address')} class="text-sm text-muted-foreground">
+				{data.address}
+			</p>
+		)}
+		{data.sqft && (
+			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono text-[13px] text-foreground/80">
+				{data.sqft}
+			</div>
+		)}
+		{data.price && (data.price.ksh || data.price.perSqft) && (
+			<div data-tina-field={tinaField(data as { price?: unknown }, 'price')} class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+				{data.price.ksh && (
+					<span class="font-display text-base font-semibold tracking-[-0.2px] text-foreground">KSH {data.price.ksh}</span>
+				)}
+				{data.price.perSqft && (
+					<span class="font-mono text-[13px] text-muted-foreground">KSH {data.price.perSqft} / sq ft</span>
+				)}
+			</div>
+		)}
+		{(data.zone || data.leaseTerm) && (
+			<div class="flex flex-wrap items-center gap-2 pt-1">
+				{data.zone && (
+					<div data-tina-field={tinaField(data as { zone?: unknown }, 'zone')}>
+						<LocationPin zone={data.zone} mapHref={mapHref} />
+					</div>
+				)}
+				{data.leaseTerm && (
+					<span data-tina-field={tinaField(data as { leaseTerm?: unknown }, 'leaseTerm')} class="inline-flex h-6 items-center rounded-sm border border-hairline-steel/60 bg-background px-2 text-xs font-medium text-foreground">
+						{data.leaseTerm}
+					</span>
+				)}
+			</div>
+		)}
+		{viewHref && (
+			<div class="mt-2 flex items-center justify-end">
+				<Button href={viewHref} variant="default" size="sm">
+					<span>{viewLabel}</span>
+					<Icon name="arrow-up-right" class="size-3.5" />
+				</Button>
+			</div>
+		)}
+	</div>
+</article>

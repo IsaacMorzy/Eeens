@@ -8,6 +8,7 @@ import { calloutBlockSchema } from '../../src/components/blocks/callout.template
 import { contentBlockSchema } from '../../src/components/blocks/content.template';
 import { videoBlockSchema } from '../../src/components/blocks/video.template';
 import { splitBlockSchema } from '../../src/components/blocks/split.template';
+import { propertyCardBlockSchema, propertyListBlockSchema, ctaBannerBlockSchema } from '../../src/components/blocks/property.template';
 
 export const PageCollection: Collection = {
 	name: 'page',
@@ -41,10 +42,13 @@ export const PageCollection: Collection = {
 				featuresBlockSchema,
 				statsBlockSchema,
 				ctaBlockSchema,
+				ctaBannerBlockSchema,
 				contentBlockSchema,
 				testimonialBlockSchema,
 				videoBlockSchema,
 				splitBlockSchema,
+				propertyCardBlockSchema,
+				propertyListBlockSchema,
 			],
 		},
 	],

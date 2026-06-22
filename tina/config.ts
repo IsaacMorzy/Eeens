@@ -2,6 +2,7 @@ import { defineConfig } from "tinacms";
 import { BlogCollection } from "./collections/blog";
 import { GlobalConfigCollection } from "./collections/global-config";
 import { PageCollection } from "./collections/page";
+import { PropertyCollection } from "./collections/property";
 
 // Your hosting provider likely exposes this as an environment variable
 const branch =
@@ -40,11 +41,14 @@ export default defineConfig({
       indexerToken: process.env.TINA_SEARCH_TOKEN,
     },
   },
-  // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/schema/
+  // Schema registry: properties are loaded alongside pages, blog, and
+  // global-config so the editor toolbar surfaces every collection at the
+  // same priority.
   schema: {
     collections: [
       BlogCollection,
       PageCollection,
+      PropertyCollection,
       GlobalConfigCollection,
     ],
   },

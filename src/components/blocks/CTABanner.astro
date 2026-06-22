@@ -1,0 +1,62 @@
+---
+/**
+ * CTABanner — page block per DESIGN.md § Components > Cards > cta-banner:
+ * navy (#0F172A) background, warm-white ink, eyebrow tag, 28 px
+ * headline (Plus Jakarta Sans), cyan-teal inverse "Schedule a viewing"
+ * button on the right rail.
+ *
+ * Uses `bg-canvas-dark` (the same navy used by the site footer) so
+ * visiting this block reads as a closing "engineering-drawing"
+ * surface — same color, same hairlines, no chromatic gradient.
+ */
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { tinaField } from '@tinacms/astro/tina-field';
+import type { CtaBannerBlock } from '../../lib/data';
+
+// CtaBannerBlock (discriminated-union member derived from PageBlocks)
+// is the canonical type for the data prop. tinaField() requires an
+// object with string-property keys; the union entry's optional fields
+// satisfy that constraint, so no double-cast is needed.
+type CtaBannerData = CtaBannerBlock & Partial<{
+	eyebrow: string | null;
+	title: string | null;
+	description: string | null;
+	ctaLabel: string | null;
+	ctaLink: string | null;
+}>;
+
+interface Props { data: CtaBannerData }
+const { data } = Astro.props;
+---
+
+<Section class="bg-canvas-dark text-ink-dark">
+	<div class="mx-auto grid max-w-5xl gap-8 px-6 py-16 md:grid-cols-[2fr_1fr] md:items-end md:py-20">
+		<div class="space-y-4">
+			{data.eyebrow && (
+				<span data-tina-field={tinaField(data, 'eyebrow')} class="inline-block text-[13px] font-medium uppercase tracking-[0.4px] text-primary-dark">
+					{data.eyebrow}
+				</span>
+			)}
+			{data.title && (
+				<h2 data-tina-field={tinaField(data, 'title')} class="font-display text-balance text-[28px] font-semibold tracking-[-0.6px] md:text-4xl">
+					{data.title}
+				</h2>
+			)}
+			{data.description && (
+				<p data-tina-field={tinaField(data, 'description')} class="max-w-xl text-pretty text-base text-ink-dark/75">
+					{data.description}
+				</p>
+			)}
+		</div>
+		{data.ctaLink && data.ctaLabel && (
+			<div class="md:justify-self-end">
+				<Button href={data.ctaLink} variant="inverse" size="lg">
+					<Icon name="calendar" class="size-4" />
+					<span>{data.ctaLabel}</span>
+				</Button>
+			</div>
+		)}
+	</div>
+</Section>

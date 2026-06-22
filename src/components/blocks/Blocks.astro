@@ -3,8 +3,11 @@ import { tinaField } from '@tinacms/astro/tina-field';
 import Callout from './Callout.astro';
 import Content from './Content.astro';
 import Cta from './Cta.astro';
+import CtaBanner from './CTABanner.astro';
 import Features from './Features.astro';
 import Hero from './Hero.astro';
+import PropertyCard from './PropertyCard.astro';
+import PropertyList from './PropertyList.astro';
 import Split from './Split.astro';
 import Stats from './Stats.astro';
 import Testimonial from './Testimonial.astro';
@@ -18,14 +21,18 @@ interface Props {
 const { data } = Astro.props;
 const blocks = (data?.blocks ?? []).filter(b => b !== null);
 ---
+
 {blocks.map((block, i) => {
 	const rendered = (() => {
 		switch (block.__typename) {
 			case 'PageBlocksCallout': return <Callout data={block} />;
 			case 'PageBlocksContent': return <Content data={block} />;
 			case 'PageBlocksCta': return <Cta data={block} />;
+			case 'PageBlocksCtaBanner': return <CtaBanner data={block} />;
 			case 'PageBlocksFeatures': return <Features data={block} />;
 			case 'PageBlocksHero': return <Hero data={block} />;
+			case 'PageBlocksPropertyCard': return <PropertyCard data={block} />;
+			case 'PageBlocksPropertyList': return <PropertyList data={block} />;
 			case 'PageBlocksSplit': return <Split data={block} />;
 			case 'PageBlocksStats': return <Stats data={block} />;
 			case 'PageBlocksTestimonial': return <Testimonial data={block} />;

@@ -1,0 +1,94 @@
+---
+/**
+ * PropertyList — page block dispatcher that pulls listings from
+ * the dedicated `property` Tina collection. The block's own fields
+ * are configuration only (limit, filterType, filterZone, layout,
+ * display); the actual data comes from listProperties().
+ *
+ * Per DESIGN.md § Layout > Property card grid: 3-up desktop →
+ * 2-up tablet → 1-up mobile.
+ */
+import PropertyCardFeatured from './PropertyCardFeatured.astro';
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { listProperties, type PropertyNode, type Action } from '../../lib/data';
+import { tinaField } from '@tinacms/astro/tina-field';
+import type { Availability } from '../ui/AvailabilityBadge.astro';
+
+interface PropertyListBlockData {
+	title?: string | null;
+	description?: string | null;
+	limit?: number | null;
+	filterType?: string | null;
+	filterZone?: string | null;
+	layout?: 'grid' | 'strip' | null;
+	display?: 'featured' | 'standard' | null;
+	actions?: Action[] | null;
+}
+
+interface Props { data: PropertyListBlockData }
+
+const { data } = Astro.props;
+const blockActions: Action[] = (data.actions ?? []).filter(
+	(a: Action | null | undefined): a is Action => a !== null && a !== undefined,
+);
+
+const all: PropertyNode[] = await listProperties();
+const limit = Math.max(1, Math.min(data.limit ?? 6, 24));
+const filtered: PropertyNode[] = all
+	.filter((p: PropertyNode): boolean => {
+		if (data.filterType && data.filterType !== 'ALL' && p.type !== data.filterType) return false;
+		if (data.filterZone && p.zone !== data.filterZone) return false;
+		return true;
+	})
+	.slice(0, limit);
+---
+
+<Section class="bg-background">
+	<div class="mx-auto max-w-7xl px-6">
+		{(data.title || data.description) && (
+			<header class="mx-auto mb-10 max-w-3xl text-center md:text-left">
+				{data.title && (
+					<h2 data-tina-field={tinaField(data, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.4px] md:text-4xl">
+						{data.title}
+					</h2>
+				)}
+				{data.description && (
+					<p data-tina-field={tinaField(data, 'description')} class="mt-4 max-w-2xl text-pretty text-base text-muted-foreground">
+						{data.description}
+					</p>
+				)}
+			</header>
+		)}
+		<div class:list={[data.layout === 'strip' ? 'flex flex-col gap-6' : 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3']}>
+			{filtered.map((p: PropertyNode) => (
+				<PropertyCardFeatured
+					data={{
+						type: p.type ?? null,
+						title: p.title ?? null,
+						availability: (p.availability as Availability | null) ?? null,
+						address: p.address ?? null,
+						sqft: p.sqft ?? null,
+						price: p.price ?? null,
+						zone: p.zone ?? null,
+						leaseTerm: p.leaseTerm ?? null,
+						image: p.heroImage ?? null,
+						ref: p._sys?.filename ?? null,
+						viewLabel: 'View listing',
+					}}
+				/>
+			))}
+		</div>
+		{blockActions.length > 0 && (
+			<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+				{blockActions.map((action: Action) => (
+					<Button href={action.link} variant={action.type === 'link' ? 'ghost' : 'default'} size="lg">
+						{action.icon && <Icon name={action.icon} class="size-4" />}
+						<span>{action.label}</span>
+					</Button>
+				))}
+			</div>
+		)}
+	</div>
+</Section>
