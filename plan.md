@@ -98,27 +98,38 @@ inherit the guard rail automatically. Rule:
 }
 ```
 
-**7.4 — Smoke test for `/`, `/properties`, `/properties/[slug]`  `[DEFERRED]`**
-
-`pnpm dev` shares the same port-9000 squatter as `pnpm build`; would fail
-the same way. Defer until the box is clean (kill PID 558858 or reboot).
+**7.4 — Smoke test for `/`, `/properties`, `/properties/[slug]`  `[ACTIVE]`** — re-test now that the port-9100 hypothesis (Phase 7.1b) and the port-9106 reservation policy (Phase 7.7) are in place. If the dev box still binds 9000 (Frappe websocket), the dev/build script should now silently pick 9106 and smoke-test the three routes via `pnpm exec astro check` + `pnpm run build:local` + a quick tmux-cli pass.
 
 **7.5 — Tina block schema completeness review  `[SHIPPED]`**
 
 Verified above under 7.2 — no orphan templates; no dispatcher entries with
 no template backing.
 
-**7.6 — Final Phase 7 commit + plan status sweep  `[ACTIVE]`**
+**7.6 — Final Phase 7 commit + plan status sweep  `[SHIPPED]`
 
 One commit per logical batch — this plan.md is the canonical status now that
-the duplication got cleaned up. Once committed, Phase 7 closes with the
-reduced-motion rule + plan.md refresh + LocationPin class-list hoist as the
-final code batch.
+the duplication got cleaned up. Phase 7 closes with the reduced-motion rule +
+plan.md refresh + LocationPin class-list hoist as the final code batch.
 
-### Phase 8 — Competitive research + business-park site improvements  `[ACTIVE]`
+**7.6a — Status followups (post-Phase-7.7 / post-Phase-8):**
+- Phase 7.6 (the plan.md status sweep) is now `[SHIPPED]` because every commit
+  it would sweep on has landed: `2378086` (Phase 7.6 polish), `987fe4a`
+  (Phase 7.7 port reservation), `770e02b` (Phase 8 plan-for-next-cycle),
+  and `f74f166` (Phase 8.4 implementation).
+- Phase 7.4 smoke test transitioned from `[DEFERRED]` to `[ACTIVE]` — the
+  port-9106 reservation policy in `package.json` may resolve the env
+  blocker that originally produced the `[DEFERRED]` tag. Worth a re-attempt
+  on a clean dev box.
+- Phase 7.1 `pnpm run build:local` remains `[ENV-BLOCKED]` on the project
+  workflow but the *code batch* (7.1a fixes — LocationPin JSX-in-frontmatter,
+  font deps, port consolidation, home.mdx tagline quoting) all ship. Re-run
+  with the Phase 7.7 port policy to confirm the env-block is unblocked on
+  a clean box.
+
+### Phase 8 — Competitive research + business-park site improvements  `[SHIPPED]`  (commit `f74f166`)
 
 **Direction:** the site shipped; product voice is locked; tokens are wired.
-Now study how high-quality industrial / commercial / business-park sites
+Then study how high-quality industrial / commercial / business-park sites
 present listings + lease terms + spec sheets, and apply the patterns that
 translate into the Eens voice without breaking tokens or voice.
 
