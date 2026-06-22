@@ -1,0 +1,50 @@
+---
+/**
+ * LocationPin — repurposed `customer-logo-tile` for real-estate zones.
+ * 24 px tall chip (h-6), 4 px radius (`rounded-sm`), `xs` typography.
+ * Bg escapes to `card` in dark mode (raw `background` retrogrades to navy,
+ * which collapses the chip on navy surfaces).
+ * Text escapes to `ink-dark` in dark mode.
+ *
+ * Optional `mapHref` wraps the chip in an anchor to Google Maps.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+	zone: string;
+	mapHref?: string;
+	class?: string;
+}
+
+const { zone, mapHref, class: className = '' } = Astro.props;
+
+const inner = (
+	<>
+		<Icon name="map-pin" class="size-3.5 shrink-0" />
+		<span class="leading-none">{zone}</span>
+	</>
+);
+---
+
+{mapHref ? (
+	<a
+		href={mapHref}
+		class:list={[
+			'inline-flex h-6 items-center gap-1.5 rounded-sm border border-hairline-steel/60 bg-background px-2 text-xs font-medium text-foreground transition-colors hover:border-primary-hover hover:text-primary-hover dark:bg-card dark:text-ink-dark',
+			className,
+		]}
+		target={mapHref.startsWith('http') ? '_blank' : undefined}
+		rel={mapHref.startsWith('http') ? 'noopener noreferrer' : undefined}
+	>
+		{inner}
+	</a>
+) : (
+	<span
+		class:list={[
+			'inline-flex h-6 items-center gap-1.5 rounded-sm border border-hairline-steel/60 bg-background px-2 text-xs font-medium text-foreground dark:bg-card dark:text-ink-dark',
+			className,
+		]}
+	>
+		{inner}
+	</span>
+)}

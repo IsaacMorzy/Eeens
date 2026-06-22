@@ -1,0 +1,46 @@
+---
+/**
+ * AvailabilityBadge — pill (radius-full), 12 px caption, 2 px / 8 px padding.
+ * Three variants per DESIGN.md § Components > Status & Availability:
+ *   ForRent   = cyan-teal fg + border (token swaps to cyan-300 in dark mode)
+ *   ForSale   = navy fg + border on light surfaces; ink-dark on dark surfaces
+ *               (the raw `--ink-light` token is not redeclared in `.dark`,
+ *               so the pill must explicitly escape to maintain contrast)
+ *   Upcoming  = muted ink + hairline border (canvas-aware via `--muted-foreground`)
+ *
+ * Renders as inline-flex so the badge slots into a property card's top-right
+ * rail without disturbing the 16:9 image below.
+ */
+
+export type Availability = 'ForRent' | 'ForSale' | 'Upcoming';
+
+interface Props {
+	availability: Availability;
+	class?: string;
+}
+
+const { availability, class: className = '' } = Astro.props;
+
+const variantClass: Record<Availability, string> = {
+	ForRent: 'border-primary text-primary',
+	ForSale: 'border-ink-light text-ink-light dark:border-ink-dark dark:text-ink-dark',
+	Upcoming: 'border-hairline-steel text-muted-foreground',
+};
+
+const label: Record<Availability, string> = {
+	ForRent: 'For Rent',
+	ForSale: 'For Sale',
+	Upcoming: 'Upcoming',
+};
+---
+
+<span
+	class:list={[
+		'inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-[12px] font-medium leading-[1.4]',
+		variantClass[availability],
+		className,
+	]}
+	aria-label={`Availability: ${label[availability]}`}
+>
+	{label[availability]}
+</span>
