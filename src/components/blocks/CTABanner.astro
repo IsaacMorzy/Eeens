@@ -15,19 +15,7 @@ import Icon from '../ui/Icon.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
 import type { CtaBannerBlock } from '../../lib/data';
 
-// CtaBannerBlock (discriminated-union member derived from PageBlocks)
-// is the canonical type for the data prop. tinaField() requires an
-// object with string-property keys; the union entry's optional fields
-// satisfy that constraint, so no double-cast is needed.
-type CtaBannerData = CtaBannerBlock & Partial<{
-	eyebrow: string | null;
-	title: string | null;
-	description: string | null;
-	ctaLabel: string | null;
-	ctaLink: string | null;
-}>;
-
-interface Props { data: CtaBannerData }
+interface Props { data: CtaBannerBlock }
 const { data } = Astro.props;
 ---
 
