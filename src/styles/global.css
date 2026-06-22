@@ -179,6 +179,48 @@
 	}
 }
 
+/* Print stylesheet — supports the "Print / Save as PDF" button on
+   /properties/[slug]. Phase 8.4.3 borrows from JLL Industrial's
+   spec-sheet PDF export, simplified to native `window.print()` + the
+   visitor saving the result as PDF from the browser dialog.
+   Design rationale keeps the printed page on-brand: white canvas,
+   navy ink, mono numerals — no carousel chrome, no nav, no footer. */
+@media print {
+	[data-no-print],
+	header,
+	footer,
+	nav,
+	[role="banner"],
+	[role="navigation"],
+	[role="contentinfo"] {
+		display: none !important;
+	}
+	body {
+		background: #ffffff !important;
+		color: #0F172A !important;
+		padding-top: 0 !important;
+	}
+	a {
+		color: #0F172A !important;
+		text-decoration: none !important;
+	}
+	img {
+		max-height: 40vh;
+		page-break-inside: avoid;
+	}
+	dl {
+		page-break-inside: avoid;
+	}
+	/* Spec sheet rows: never split a label from its value across pages.
+	   Each row is a <div class="flex ..."> cell inside the <dl>, so
+	   `dl > *` matches the row containers. */
+	dl > * {
+		break-inside: avoid;
+	}
+	/* The spec sheet <dl> stays in a 3-up grid on print — no folding
+	   into a 1-up list. Keeps it scannable for the visitor's records. */
+}
+
 /* Prose (blog body) follows the theme tokens so it inverts in dark mode and
    keeps the cyan-teal tint, rather than the plugin's default zero-chroma grays.
    Unlayered so it overrides the typography plugin's layered variables. */

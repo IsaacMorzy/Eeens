@@ -169,6 +169,48 @@ translate into the Eens voice without breaking tokens or voice.
 - `humanizer` — detect AI-isms in competitor copy + draft new Eens copy
   that reads as written by a person, not generated.
 
+**Phase 8.1–8.3 results — competitor selection + pattern distillation + brand-voice scoring  `[SHIPPED — code batch]`**
+
+Five reference sites analyzed: Prologis, JLL Industrial, CBRE Industrial,
+Knight Frank Kenya, Hass Consult Kenya. Pattern catalog rendered with a
+per-row verdict (BORROW / BORROW-WITH-CAVEAT / REJECT):
+
+| Pattern | Sites that do it | Eens has it? | Verdict | Why |
+|---|---|---|---|---|
+| Search-first hero | Prologis, JLL, CBRE | No | **REJECT** | DESIGN.md § Don'ts prohibits a marketing page that feels like a SaaS dashboard. |
+| Map-integrated search | Prologis, CBRE | No | **REJECT (embed)** / **BORROW-WITH-CAVEAT (link)** | A heavy interactive map needs an API key and asks the visitor to read a UI instead of a listing. A literal link to OpenStreetMap search fits the engineering register (literal address → literal map). |
+| Technical filter UI (kW / clear height / sqft) | Prologis, JLL, CBRE | Partial — groups by TYPE only | **BORROW-WITH-CAVEAT** | Add lightweight filter chips for **minimum sq-ft** + **minimum kVA** on `/properties`, URL-encoded so links are shareable and SSR-friendly. Chip styling stays `bg-background + 1px hairline` (no pills, no cyan-teal fills). |
+| PDF spec-sheet download | JLL, Prologis | Partial — render of spec-sheet on `/properties/[slug]` | **BORROW-WITH-CAVEAT** | Add a print button on `/properties/[slug]` that triggers `window.print()`. Browsers all save as PDF. Add a print stylesheet that hides nav / hero / footer / related-listings and re-flows the spec-sheet as page-one content. No PDF library, no client-side render. |
+| Direct WhatsApp CTA | Hass Consult | No | **REJECT** | Conversational commerce reads as conversational commerce. Eens voice is engineering register; mailbox is the right primary channel. |
+| Quarterly market reports | Knight Frank | No | **REJECT** | Eens portfolio is small (17 listings). A market reports section would inflate authority beyond the actual footprint. |
+| B2B vs B2C split nav | Knight Frank | No | **REJECT** | Single nav with /properties anchor (`#/APARTMENT`) already fragments correctly. Splitting it would force navigation context switches. |
+| Form-based lead capture | JLL, Knight Frank | No | **REJECT** | Forms trap the visitor; mailto: lets the visitor write specifics + keeps the channel on the operator's inbox. |
+
+**Phase 8.4 — High-leverage improvements  `[ACTIVE]`**
+
+The three BORROW-WITH-CAVEAT rows above were selected. Each ships with a
+design rationale that points back to its source pattern + DESIGN.md.
+
+- **8.4.1 — OpenStreetMap search link on `/properties/[slug]`** beside the
+  address. Button-tertiary: `View area map →`. Cheap, free, no API key.
+  Implementation: a single `<a href="https://www.openstreetmap.org/search?query={address}">`
+  next to the literal address. Adds zero dependencies. Token-respecting —
+  no decoration, just a structural link that takes the visitor to the
+  literal place.
+- **8.4.2 — Filter chips on `/properties/index`** reading URL query params
+  (`?minSqft=X&minKva=Y&zone=Z`). Chips link to permutations; active chip
+  gets hairline-strong border + navy text.  No client-side state — matches
+  `/properties#APARTMENT` anchor pattern that's already used by the Hero
+  CTA. After applying filters, if a TYPE group becomes empty, that section
+  suppresses (no "empty state" copy if all filters empty).
+- **8.4.3 — Print button on `/properties/[slug]`** next to the
+  "Schedule a viewing" button. Triggers `window.print()` via inline
+  `onclick` handler. Print stylesheet in `global.css` hides site chrome
+  and re-flows the spec sheet `<dl>` to a print-friendly grid. Result: a
+  PDF the visitor saves directly from the print dialog.
+
+**Phase 8.5 — Validate + commit  `[TODO]`**
+
 ## Validation gates (rolling)
 
 - `astro check` reports **0 errors / 0 warnings** (currently 0 / 0 / 1 hint).
