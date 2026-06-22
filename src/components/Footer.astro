@@ -1,55 +1,172 @@
 ---
-import { tinaField } from "@tinacms/astro/tina-field";
+import { Icon } from 'astro-icon/components';
+import { tinaField } from '@tinacms/astro/tina-field';
 import type { CmsConfig, CmsConfigContactLink } from '../lib/data';
-import IconLink from "./IconLink.astro";
+import Button from './ui/Button.astro';
+import IconLink from './IconLink.astro';
+
+// Footer glyph: navy square + white E + cyan-teal accent dot. `currentColor`
+// driven by the surrounding `text-ink-dark` so it inverts naturally against
+// the bg-canvas-dark surface. Per DESIGN.md § Logo Specifications.
+const EensGlyph = `data:image/svg+xml;utf8,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="14" height="14" role="img" aria-label="Eens"><rect x="2" y="2" width="28" height="28" rx="6" fill="currentColor"/><text x="16" y="22" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="700" font-size="18" fill="#0F172A">E</text><rect x="14.5" y="25" width="3" height="3" fill="#67e8f9"/></svg>'
+)}`;
+
+// 1 px hairline architectural grid at 64 px pitch in hairline-steel.
+// Mounted as the closing "dark blueprint" page. Per DESIGN.md
+// § Decorative replacements (replaces the deleted starfield).
+const ArchitecturalGrid = `data:image/svg+xml;utf8,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M 64 0 L 0 0 0 64" fill="none" stroke="#5d7290" stroke-width="1" stroke-opacity="0.18"/></svg>'
+)}`;
 
 interface Props {
 	config?: CmsConfig | null;
 }
-
-// So that the Powered-by badge stays legible on `bg-canvas-dark` (the
-// footer canvas) without a separate light/dark asset. The tile uses
-// `currentColor` driven by `text-primary-dark` so it inverts naturally
-// across themes. Per DESIGN.md § Logo Specifications.
-const EensGlyph = `data:image/svg+xml;utf8,${encodeURIComponent(
-	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="14" height="14" role="img" aria-label="Eens"><rect x="2" y="2" width="28" height="28" rx="6" fill="currentColor"/><text x="16" y="22" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="700" font-size="18" fill="#0F172A">E</text><rect x="14.5" y="25" width="3" height="3" fill="#67e8f9"/></svg>'
-)}`;
 
 const { config } = Astro.props;
 const seo = config?.seo ?? null;
 const contactLinks = (config?.contactLinks ?? []).filter(
 	(item): item is CmsConfigContactLink => item !== null,
 );
+const viewingSubject = encodeURIComponent('Schedule a viewing');
+const viewingHref = `mailto:hello@eens.co.ke?subject=${viewingSubject}`;
 const today = new Date();
+const sinceYear = 2018;
+
+// Hard-coded factual link grid. The four zones + the page-level links that
+// an operator or apartment buyer needs from the foot. Editor-managed nav
+// stays in `src/content/config/config.json` for the top nav; the footer is
+// tightly scoped and stable, so we keep it inline.
+const zoneLinks = [
+	{ title: 'Mlolongo', href: '/properties?zone=Mlolongo' },
+	{ title: 'Syokimau', href: '/properties?zone=Syokimau' },
+	{ title: 'Baba Dogo', href: '/properties?zone=Baba%20Dogo' },
+	{ title: 'Thika', href: '/properties?zone=Thika' },
+];
+const pageLinks = [
+	{ title: 'Home', href: '/' },
+	{ title: 'Properties', href: '/properties' },
+	{ title: 'Locations', href: '/locations' },
+	{ title: 'Lease terms', href: '/lease-terms' },
+	{ title: 'Blog', href: '/blog' },
+	{ title: 'About', href: '/about' },
+	{ title: 'Contact', href: '/contact' },
+];
 ---
-<footer class="border-t bg-canvas-dark py-12 text-center text-sm text-ink-dark border-canvas-dark">
-	<div class="flex flex-col items-center gap-6">
-		{contactLinks.length > 0 && (
-			<div class="flex justify-center gap-4">
-				{contactLinks.map((link) => (
-					<IconLink
-						title={link.title}
-						link={link.link}
-						icon={link.icon}
-						data-tina-field={tinaField(link, "title")}
-					/>
-				))}
+
+<footer
+	class="relative overflow-hidden border-t border-canvas-dark bg-canvas-dark text-ink-dark"
+	style={`background-image: url("${ArchitecturalGrid}"); background-position: top left; background-size: 64px 64px; background-repeat: repeat;`}
+>
+	<div class="relative mx-auto max-w-6xl px-6 pt-section pb-12">
+		<div class="grid gap-12 lg:grid-cols-[1.4fr_1fr]">
+			<!-- Identity block: glyph + wordmark + tagline + CTA -->
+			<div>
+				<div class="flex items-center gap-3">
+					<img src={EensGlyph} alt="" aria-hidden="true" class="size-7" />
+					<span class="font-display text-2xl font-semibold tracking-[-0.6px] text-ink-dark">
+						Eens Limited
+					</span>
+				</div>
+				<p class="mt-5 max-w-md text-pretty font-mono text-[13px] leading-relaxed text-ink-dark/80">
+					Industrial leasing + premium apartments. Mlolongo, Syokimau, Baba Dogo,
+					Thika. Operating since 2018.
+				</p>
+				<p class="mt-3 max-w-md text-pretty text-sm text-ink-dark/60">
+					Every listing carries its literal address, total square footage
+					(mono), KSH price, and lease terms. We don't publish a unit before
+					it is ready to be walked.
+				</p>
+				<div class="mt-6">
+					<Button href={viewingHref} variant="default" size="lg">
+						<Icon name="calendar" class="size-4" />
+						<span>Schedule a viewing</span>
+					</Button>
+				</div>
 			</div>
-		)}
-		<p>
-			&copy; {today.getFullYear()}
-			<span data-tina-field={seo ? tinaField(seo, "siteOwner") : undefined}>{seo?.siteOwner}</span>. All rights reserved.
-		</p>
-		<a
-			href="https://tina.io"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="group inline-flex items-center gap-2.5 rounded-md border bg-card/60 py-1.5 pl-1.5 pr-4 text-xs font-medium text-muted-foreground transition-colors duration-200 hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-ring/50"
-		>
-			<span class="flex size-6 items-center justify-center rounded-full bg-primary text-primary-dark">
-					<img src={EensGlyph} alt="" aria-hidden="true" class="size-3.5" />
-			</span>
-			<span>Powered by <span class="font-semibold text-foreground">TinaCMS</span></span>
-		</a>
+
+			<!-- Link grid: 3 columns at lg, stacked at sm -->
+			<div class="grid gap-10 sm:grid-cols-3">
+				<section aria-label="Zones">
+					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
+						Zones
+					</h3>
+					<ul class="mt-4 space-y-2 text-sm">
+						{zoneLinks.map((l) => (
+							<li>
+								<a
+									href={l.href}
+									class="text-ink-dark/80 transition-colors hover:text-ink-dark"
+								>
+									{l.title}
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+
+				<section aria-label="Pages">
+					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
+						Pages
+					</h3>
+					<ul class="mt-4 space-y-2 text-sm">
+						{pageLinks.map((l) => (
+							<li>
+								<a
+									href={l.href}
+									class="text-ink-dark/80 transition-colors hover:text-ink-dark"
+								>
+									{l.title}
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+
+				<section aria-label="Contact">
+					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
+						Contact
+					</h3>
+					<ul class="mt-4 space-y-2 text-sm">
+						{contactLinks.map((link) => (
+							<li>
+								<IconLink
+									title={link.title}
+									link={link.link}
+									icon={link.icon}
+									data-tina-field={tinaField(link, 'title')}
+								/>
+							</li>
+						))}
+						<li class="font-mono text-[13px] text-ink-dark/60">
+							Replies within 1 business day.
+						</li>
+					</ul>
+				</section>
+			</div>
+		</div>
+
+		<!-- Hairline divider closing the link grid -->
+		<div class="mt-16 h-px w-full bg-hairline-steel/30" aria-hidden="true"></div>
+
+		<!-- Bottom strip: copyright + TinaCMS attribution + minimal glyph -->
+		<div class="mt-6 flex flex-col items-center justify-between gap-4 text-xs text-ink-dark/60 sm:flex-row">
+			<p class="font-mono">
+				© {today.getFullYear()}
+				<span data-tina-field={seo ? tinaField(seo, 'siteOwner') : undefined}>{seo?.siteOwner}</span>
+				. Operating since {sinceYear}.
+			</p>
+			<a
+				href="https://tina.io"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="group inline-flex items-center gap-2 rounded-md border border-hairline-steel/30 bg-surface-1-dark/40 py-1 pl-1.5 pr-3 text-xs font-medium text-ink-dark/70 transition-colors duration-200 hover:border-primary-dark/40 hover:text-ink-dark"
+			>
+				<span class="flex size-5 items-center justify-center rounded-full bg-primary-dark text-canvas-dark">
+					<img src={EensGlyph} alt="" aria-hidden="true" class="size-3" />
+				</span>
+				<span>Powered by TinaCMS</span>
+			</a>
+		</div>
 	</div>
 </footer>

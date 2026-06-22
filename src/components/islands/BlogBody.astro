@@ -11,33 +11,105 @@ interface Props {
 
 const { data } = Astro.props;
 
-// Custom MDX components available inside the rich-text body. The key
-// must match the template `name` in tina/collections/blog.ts (`YouTubeEmbed`),
-// which is also the tag editors write in the saved MDX.
+// Recursive walker over the Tina rich-text tree. Sums the lengths of
+// every `text` field, descending into `children`. Replaces the prior
+// JSON.stringify path which double-counted structural keys ('type',
+// 'children', 'level', etc.) and inflated the per-post word count by
+// 20-40 %. 200 wpm is the engineering convention for prose; round up,
+// minimum 1.
+function countWords(node: unknown): number {
+	if (node == null) return 0;
+	if (typeof node === 'string') {
+		const trimmed = node.trim();
+		return trimmed ? trimmed.split(/\s+/).length : 0;
+	}
+	if (Array.isArray(node)) return node.reduce((s, n) => s + countWords(n), 0);
+	if (typeof node === 'object') {
+		const o = node as { text?: unknown; children?: unknown };
+		return countWords(o.text) + countWords(o.children);
+	}
+	return 0;
+}
+
+const computedBodyWordCount = countWords(data?.body);
+const readingMinutes = computedBodyWordCount
+	? Math.max(1, Math.ceil(computedBodyWordCount / 200))
+	: null;
+
+// Custom MDX components available inside the rich-text body. Key matches
+// the template `name` in tina/collections/blog.ts (`YouTubeEmbed`).
 const components = { YouTubeEmbed };
+
+const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
 ---
-{data?.heroImage && (
-	<div data-tina-field={tinaField(data, 'heroImage')} class="mx-auto max-w-4xl px-6">
-		<img width={1020} height={510} src={data.heroImage} alt="" class="w-full rounded-2xl border shadow-lg" />
-	</div>
-)}
-{data && (
-	<div class="mx-auto max-w-3xl px-6 py-12">
-		<div class="mb-8 text-center">
-			{data.pubDate && (
-				<div data-tina-field={tinaField(data, 'pubDate')} class="text-sm text-muted-foreground">
-					<FormattedDate date={new Date(data.pubDate)} />
-					{data.updatedDate && (
-						<span data-tina-field={tinaField(data, 'updatedDate')} class="italic"> · Last updated <FormattedDate date={new Date(data.updatedDate)} /></span>
+
+{
+	data?.heroImage && (
+		<div
+			data-tina-field={tinaField(data, 'heroImage')}
+			class="mx-auto max-w-4xl px-6"
+		>
+			<img
+				width={1020}
+				height={510}
+				src={data.heroImage}
+				alt=""
+				class="aspect-[16/9] w-full rounded-2xl border border-hairline-steel object-cover"
+			/>
+		</div>
+	)
+}
+
+<div class="mx-auto max-w-3xl px-6 py-12">
+	{data && (
+		<header class="mb-8">
+			{(data.pubDate || readingMinutes) && (
+				<div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-muted-foreground">
+					{data.pubDate && (
+						<span data-tina-field={tinaField(data, 'pubDate')}>
+							<FormattedDate date={new Date(data.pubDate)} />
+							{data.updatedDate && (
+								<span
+									data-tina-field={tinaField(data, 'updatedDate')}
+									class="italic"
+								>
+									{' '}
+									· Updated <FormattedDate date={new Date(data.updatedDate)} />
+								</span>
+							)}
+						</span>
+					)}
+					{(data.pubDate && readingMinutes) && (
+						<span aria-hidden="true" class="text-hairline-steel/60">·</span>
+					)}
+					{readingMinutes && (
+						<span class="font-mono">{readingMinutes} min read</span>
 					)}
 				</div>
 			)}
-			{data.title && <h1 data-tina-field={tinaField(data, 'title')} class="mt-2 text-4xl font-semibold tracking-tight lg:text-5xl">{data.title}</h1>}
-		</div>
-		{data.body && (
-			<div data-tina-field={tinaField(data, 'body')} class="prose prose-lg max-w-none">
+			<h1
+				id={headlineId}
+				data-tina-field={tinaField(data, 'title')}
+				class="font-display text-balance text-4xl font-semibold tracking-[-0.6px] lg:text-5xl"
+			>
+				{data.title}
+			</h1>
+			{data.description && (
+				<p class="mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
+					{data.description}
+				</p>
+			)}
+		</header>
+	)}
+
+	{
+		data && (
+			<div
+				data-tina-field={tinaField(data, 'body')}
+				class="prose prose-lg max-w-none prose-headings:font-display prose-headings:tracking-[-0.4px] prose-a:text-primary prose-a:no-underline hover:prose-a:text-primary-hover"
+			>
 				<TinaMarkdown content={data.body} components={components} />
 			</div>
-		)}
-	</div>
-)}
+		)
+	}
+</div>
