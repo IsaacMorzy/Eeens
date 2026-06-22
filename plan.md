@@ -115,6 +115,60 @@ the duplication got cleaned up. Once committed, Phase 7 closes with the
 reduced-motion rule + plan.md refresh + LocationPin class-list hoist as the
 final code batch.
 
+### Phase 8 — Competitive research + business-park site improvements  `[ACTIVE]`
+
+**Direction:** the site shipped; product voice is locked; tokens are wired.
+Now study how high-quality industrial / commercial / business-park sites
+present listings + lease terms + spec sheets, and apply the patterns that
+translate into the Eens voice without breaking tokens or voice.
+
+**Workplan** (each step commits its own batch):
+
+1. **8.1 — Competitor selection  `[ACTIVE]`** — pick 4–6 reference sites that
+   the Eens target customer (logistics managers, light-manufacturing
+   operators, Thika apartment buyers) would naturally encounter. Mix Kenya
+   industrial-leasing operators with global industrial / commercial real
+   estate platforms. Document each as: site, segment, what's worth borrowing,
+   what's NOT worth borrowing (brand-voice mismatches).
+
+2. **8.2 — Pattern distillation  `[ACTIVE]`** — for every pattern observed
+   (layout, component copy, photography, map/availability, spec sheets,
+   pricing presentation, FAQ, brochure download, contact mechanisms), note:
+   (a) what Eens currently does, (b) what the competitors do, (c) the delta,
+   (d) whether the pattern fits Eens tokens + voice + engineering-drawing
+   register, (e) the cheapest implementation shape.
+
+3. **8.3 — Brand-voice scoring  `[TODO]`** — runs `thinker-with-files-gemini`
+   over the patterns table. Each row gets a verdict: **BORROW** (apply as-is),
+   **BORROW-WITH-CAVEAT** (apply with explicit Eens-voice adjustment,
+   surfaces in code review), or **REJECT** (would violate voice/tokens,
+   document the reason). Anchor: DESIGN.md § Do's and Don'ts + § Brand Voice.
+
+4. **8.4 — High-leverage improvements  `[TODO]`** — pick the 2–4 patterns
+   where BORROW + BORROW-WITH-CAVEAT clearly overlaps with something Eens
+   is missing on `/`, `/about`, `/properties`, or `/properties/[slug]`.
+   Each ships with a one-sentence design rationale that points back to the
+   source pattern + DESIGN.md.
+
+5. **8.5 — Validate + commit  `[TODO]`** — `astro check` clean,
+   `code-reviewer-minimax-m3` approves, single batch commit.
+
+**Constraints carried forward from Phase 6 opendesign audit:**
+- Cyan-teal stays reserved (brand mark, primary CTA, focus ring, link
+  emphasis, eyebrow, ONE secondary CTA per card). No section backgrounds.
+- Copy stays factual, monospace where numerical, no SaaS marketing fluff.
+- Typography: Plus Jakarta Sans display + Inter body + JetBrains Mono for
+  numerical tokens. No new families.
+- Photography: keep 16:9 / 4:3 — no decorative stock.
+- Layout: warm off-white canvas; surface-1-light + hairline cards; dark
+  mode reserved for filters and dashboards.
+
+**Skills invoked during Phase 8:**
+- `opendesign` — DESIGN.md source of truth (loaded via `skill opendesign`).
+- `competitive-analyst` — site-by-site framework for §8.1.
+- `humanizer` — detect AI-isms in competitor copy + draft new Eens copy
+  that reads as written by a person, not generated.
+
 ## Validation gates (rolling)
 
 - `astro check` reports **0 errors / 0 warnings** (currently 0 / 0 / 1 hint).
