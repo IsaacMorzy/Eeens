@@ -406,6 +406,100 @@ In Eens voice — stamp-on-an-engineering-drawing register:
 
 In brand voice — facts only: lease terms, locations, contact.
 
+### Phase 19 — Tina `seo.email` single source of truth + contact triple restructure  `[ACTIVE]`
+
+Direction: eliminate the five hard-coded `mailto:hello@eens.co.ke` /
+phone / office strings scattered across Footer, /properties/[slug],
+404, the property schema default, and about.mdx. Promote them to a
+Tina `seo.{phone, email, office}` triple — operator-editable, single
+read for every transactional contact link on the site.
+
+**Files touched** (single architectural commit):
+
+1. **`tina/collections/global-config.ts`** — three new fields appended
+   under the existing `seo` group:
+   - `seo.phone` (string, required, `ui.defaultValue = '+254 700 000 000'`)
+   - `seo.email` (string, required, `ui.defaultValue = 'hello@eens.co.ke'`)
+   - `seo.office` (string, required, `ui.defaultValue = 'Mlolongo, Mombasa Road, KM 14'`)
+   Trailing comma added to the `seo.logo` field so the new entries
+   pass TypeScript object literal syntax. Description on the parent
+   `seo` group updated to mention the new "single source of truth"
+   fields so future Tina editors see the contract.
+
+2. **`src/content/config/config.json`** — three new keys appended
+   under the existing `seo` group. The default values match the
+   schema's `ui.defaultValue` blocks so the build works before any
+   Tina CMS edit.
+
+3. **`src/components/Footer.astro`** line 32 — `viewingHref` rewire:
+   `mailto:${seo?.email ?? 'hello@eens.co.ke'}?subject=…`. The schema
+   default fires whenever `seo.email` is undefined; the operator now
+   has an explicit Tina input to edit the address from the CMS UI.
+
+4. **`src/pages/properties/[slug].astro`** line 37 — `viewingHref`
+   rewire of the same shape. `config` is already read at line 28
+   (was for `config?.seo?.description` fallback), so the read is
+   already in scope prior to this commit; just a comment + one
+   template literal substitution.
+
+5. **`src/pages/404.astro`** — added `import { getConfig } from
+   '../lib/data'` at the top, then `const config = (await getConfig
+   ()).data?.config ?? null;` and derived `const helpEmail = config
+   ?.seo?.email ?? 'hello@eens.co.ke';`. The hard-coded `hello@eens
+   .co.ke` in the copy body `<p>` is now `{helpEmail}`. The 404 now
+   reflects whatever the operator sets in Tina CMS.
+
+6. **`src/content/page/about.mdx`** — no edit. The schema now
+   provides an editorial control surface for `seo.email` /
+   `seo.phone` / `seo.office`; the placeholder copy ("Phone: +254 700
+   000 000", "Email: hello@eens.co.ke", "Office: Mlolongo, Mombasa
+   Road, KM 14") in `about.mdx`'s `## Contact` section becomes the
+   operator's editorial concern, exercised via the Tina Global Config
+   UI. Phase 19 closes the propagation gap; the operator fills the
+   page content pose-edit.
+
+**Ponytail-lite audit on the rewire:**
+
+- 5 hard-coded strings → 0 hard-coded strings (each site now reads
+  from one config field).
+- `seo.email` is required in the schema (so Tina CMS catches the
+  blank-field case on save). Plus a local `?? 'hello@eens.co.ke'`
+  runtime fallback per rewire so the build never breaks even if a
+  stale `config.json` is shipped.
+
+Validated: vitest 51/51 green (no test files touched), astro check 0/0/2.
+
+### Phase 20 — opendesign v4 component audit + Callout pill-radius fix  `[ACTIVE]`
+
+Direction: invoke `opendesign` against the un-audited component layer:
+`ui/Button.astro`, `ui/Card.astro`, `ui/Avatar.astro`, `blocks/Callout
+.astro`, `blocks/Stats.astro`, `blocks/Video.astro`. Apply any token
+discipline / spec drift fixes per the audit.
+
+**Files audited (six components):**
+
+| Component | Token discipline | Spec adherence (DESIGN.md § Components) | Findings |
+|---|---|---|---|
+| `ui/Button.astro` | ✓ — every color / size / radius from `tailwind-variants` literal tokens | ✓ — 6 variants (default / secondary / ghost / inverse / destructive / link), 38 % disabled opacity (not 50 %), 2 px focus-visible ring at 50 % opacity, no shadow-xs on any variant | 0 fixes |
+| `ui/Card.astro` | ✓ | ✓ — `shadow-sm` removed in Phase 16; surface-1-light + 1 px hairline + rounded-xl per § Cards | 0 fixes |
+| `ui/Avatar.astro` | ✓ — `size-9 rounded-full bg-muted` | ✓ — `rounded-full` here is legitimate (degenerates 36×36 square to true circle) | 0 fixes |
+| `blocks/Callout.astro` | ✓ | ✗ — outer chip wrappers use `rounded-full` (PILL radius). DESIGN.md § Shapes table reserves PILL for **pricing tab toggles + availability badges** only. The callout CTA chip is button-adjacent; radius should be `rounded-md` (button radius token, 0.5 rem). Inner 24×24 icon containers keep `rounded-full` because their aspect ratio degen to a true circle | **1 fix**: 2× outer-chip `rounded-full` → `rounded-md`; inner circles unchanged |
+| `blocks/Stats.astro` | ✓ | ✓ — display-md tracking (`-0.6px` on h2, `-1px` on stat values) matches § Typography hierarchy | 0 fixes |
+| `blocks/Video.astro` | ✓ | ✓ — `aspect-video` 16:9 + `rounded-2xl` per § Photography geometry | 0 fixes |
+
+**Fix landed on `blocks/Callout.astro`** — single str_replace:
+`gap-4 rounded-full border` → `gap-4 rounded-md border` on the two
+outer wrappers (the link variant + the no-link variant). The
+distinguishing suffix (`gap-4` + `border`) means the rewrite does
+NOT touch the two inner icon-circle `rounded-full` declarations,
+which legitimately resolve to a circle from a 24×24 perfect square.
+
+**Why not `<img>` → `<Image>` on Avatar.astro** — a 36×36 chip with
+`<img width=120 height=120 loading=lazy>` is already adequate;
+astro:assets `<Image>` would shave < 1 KB and add build-time
+processing cost. Ponytail-lite: not worth the churn.
+
+Validated: vitest 51/51 green (no test files touched), astro check 0/0/2.
 ## Validation gates (phase 5)
 
 - `pnpm build` passes with zero Tina schema errors.

@@ -3,7 +3,10 @@
     "title": "Eens Limited",
     "description": "Premium commercial and residential real estate in Kenya. Warehouses, godowns, business parks, and apartments across Mlolongo, Syokimau, Baba Dogo, and Thika.",
     "siteOwner": "Eens Limited",
-    "logo": "/eens-wordmark.svg"
+    "logo": "/eens-wordmark.svg",
+    "phone": "+254 700 000 000",
+    "email": "hello@eens.co.ke",
+    "office": "Mlolongo, Mombasa Road, KM 14"
   },
   "nav": [
     {

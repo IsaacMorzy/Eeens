@@ -13,7 +13,7 @@ export const GlobalConfigCollection: Collection = {
       name: "seo",
       label: "Site Identity & SEO",
       description:
-        "Site-wide identity. These values appear on every page — the Site Name is shown in the header navigation and used as the default browser title; the Description is the default for search results and social shares.",
+        "Site-wide identity. These values appear on every page — the Site Name is shown in the header navigation and used as the default browser title; the Description is the default for search results and social shares. The Phone, Email, and Office fields are the single source of truth for transactional mailto / tel links rendered in Footer.astro, /properties/[slug].astro, and 404.astro.",
       type: "object",
       fields: [
         {
@@ -47,6 +47,36 @@ export const GlobalConfigCollection: Collection = {
           label: 'Logo',
           type: 'image',
           description: 'Shown next to the Site Name in the header navigation.',
+        },
+        {
+          name: 'phone',
+          label: 'Phone (single source of truth)',
+          type: 'string',
+          required: true,
+          description: "Used by Footer, /properties/[slug], and 404 to construct `tel:` links and as the canonical contact phone.",
+          ui: {
+            defaultValue: '+254 700 000 000'
+          }
+        },
+        {
+          name: 'email',
+          label: 'Email (single source of truth)',
+          type: 'string',
+          required: true,
+          description: "Primary inbox. Used by Footer Schedule-a-viewing CTA, /properties/[slug] Schedule-a-viewing, and 404 fallback copy.",
+          ui: {
+            defaultValue: 'hello@eens.co.ke'
+          }
+        },
+        {
+          name: 'office',
+          label: 'Office address (single source of truth)',
+          type: 'string',
+          required: true,
+          description: "Operator office location. Referenced in the footer + about page contact section.",
+          ui: {
+            defaultValue: 'Mlolongo, Mombasa Road, KM 14'
+          }
         }
         //Add more site settings here...
       ],

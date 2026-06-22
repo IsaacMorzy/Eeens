@@ -1,6 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
+import { getConfig, contactEmail } from '../lib/data';
+
+// Single source of truth: contactEmail() (see src/lib/data.ts) reads
+// config.seo.email and falls back to CONTACT_DEFAULTS.email so the build
+// is safe even before Tina regen picks up the Phase 19 schema additions.
+const config = (await getConfig()).data?.config ?? null;
+const helpEmail = contactEmail(config);
 ---
 
 <Base
@@ -26,7 +33,7 @@ import Button from '../components/ui/Button.astro';
 			</div>
 			<p class="mt-8 max-w-md font-mono text-[13px] text-muted-foreground">
 				If this page was linked from an email or printed document, send the URL to
-				hello@eens.co.ke and we will fix the link.
+				{helpEmail} and we will fix the link.
 			</p>
 		</section>
 	</main>

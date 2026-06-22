@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import { tinaField } from '@tinacms/astro/tina-field';
 import type { CmsConfig, CmsConfigContactLink } from '../lib/data';
+import { contactEmail } from '../lib/data';
 import Button from './ui/Button.astro';
 import IconLink from './IconLink.astro';
 
@@ -29,7 +30,10 @@ const contactLinks = (config?.contactLinks ?? []).filter(
 	(item): item is CmsConfigContactLink => item !== null,
 );
 const viewingSubject = encodeURIComponent('Schedule a viewing');
-const viewingHref = `mailto:hello@eens.co.ke?subject=${viewingSubject}`;
+// Single source of truth: contactEmail() (see src/lib/data.ts) reads
+// config.seo.email and falls back to CONTACT_DEFAULTS.email so the build
+// is safe even before Tina regen picks up the Phase 19 schema additions.
+const viewingHref = `mailto:${contactEmail(config)}?subject=${viewingSubject}`;
 const today = new Date();
 const sinceYear = 2018;
 

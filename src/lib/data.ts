@@ -124,6 +124,44 @@ export type CmsConfigNav = NonNullable<NonNullable<CmsConfig['nav']>[number]>;
 export type CmsConfigContactLink = NonNullable<NonNullable<CmsConfig['contactLinks']>[number]>;
 export type CmsConfigSeo = NonNullable<CmsConfig['seo']>;
 
+/**
+ * Runtime fallbacks for the `seo.{phone,email,office}` triple. The
+ * values MUST stay byte-identical to the `ui.defaultValue` blocks on
+ * each field in `tina/collections/global-config.ts` so the runtime
+ * fallback and the CMS-layer default agree. When Tina regen picks up
+ * the schema on a clean dev box, the generated `CmsConfigSeo` will
+ * carry the same three field shapes natively and the helpers below
+ * drop to a no-op branch.
+ */
+export const CONTACT_DEFAULTS = {
+	phone: '+254 700 000 000',
+	email: 'hello@eens.co.ke',
+	office: 'Mlolongo, Mombasa Road, KM 14',
+};
+
+/**
+ * Runtime overlay on Tina's generated `CmsConfigSeo` for the
+ * Phase-19 contact triple. Lifts the cast out of the three call sites
+ * — every widening happens once, here. Delete this block (and the
+ * cast inside `contactEmail`) once `pnpm run build:local` regenerates
+ * the client and the new fields appear in the generated `CmsConfigSeo`.
+ */
+type CmsConfigSeoExtended = CmsConfigSeo & {
+	phone?: string | null;
+	email?: string | null;
+	office?: string | null;
+};
+
+/**
+ * Single source of truth. Every transactional mailto link on the site
+ * (Footer, /properties/[slug], 404) MUST resolve through this helper.
+ * Falls back to CONTACT_DEFAULTS.email on stale Tina generated types.
+ */
+export const contactEmail = (config: CmsConfig | null | undefined): string => {
+	const seo = config?.seo as CmsConfigSeoExtended | undefined;
+	return seo?.email ?? CONTACT_DEFAULTS.email;
+};
+
 export type Action = NonNullable<NonNullable<HeroBlock['actions']>[number]>;
 export type ImageField = NonNullable<HeroBlock['image']>;
 export type FeatureItem = NonNullable<NonNullable<FeaturesBlock['items']>[number]>;
