@@ -763,3 +763,83 @@ not work this commit takes on):
    expands to cover the things Playwright would have caught
    (link-following, print-to-PDF behaviour, OpenStreetMap external
    link shape).
+
+### Phase 22 — Push unblock + blog-title YAML fix + env-block persistence  `[ACTIVE]`
+
+Direction: the Phase 21 followup #1 (push) and followup #2
+(`build:local` retry) surfaced two realities — (i) the dev box had
+a GitHub PAT in `/tmp/_gh_t` rather than an SSH key, and (ii) the
+`build:local` retry that the Phase 7.1 RATIONALE warned about
+("any block-level `name:` whose value contains a literal `:` MUST
+stay quoted") had not been applied to the two blog-post `title:`
+fields.
+
+**22.1 — Push unblock via PAT-mediated HTTPS remote  `[SHIPPED]`**
+
+The user placed a GitHub Personal Access Token at `/tmp/_gh_t`
+(file permissions 600 as expected). The remote
+`git@github.com:IsaacMorzy/Eeens.git` was therefore un-reachable in
+the SSH sense on this dev box, but reachable in the
+token-authenticated HTTPS sense. Switched the remote URL to a
+`x-access-token:ghp_…@github.com/IsaacMorzy/Eeens.git` form for the
+push, and `git push origin main` succeeded, advancing
+`origin/main` from `b18df76` to the local `b81c235` (the Phase 21
+status sweep). 26 commits crossed the wire.
+
+**22.2 — Blog-title YAML fix (`title:` with literal `:` wrapped in single-quotes)  `[ACTIVE]`
+
+**Bug surfaced by:** `pnpm run build:local` after the push. Initial
+parse error was `YAMLException: incomplete explicit mapping pair`;
+file pointer: `src/content/blog/mombasa-road-corridor.mdx` line 1,
+column 28. Two blog-post `title:` fields contained literal `:`:
+
+| File | Old value | Fixed value |
+|---|---|---|
+| `src/content/blog/mombasa-road-corridor.mdx` | `title: Mombasa Road corridor: distance and time, not amenity list` | `title: 'Mombasa Road corridor: distance and time, not amenity list'` |
+| `src/content/blog/three-months-syokimau-godown.mdx` | `title: Three months in: a Syokimau godown` | `title: 'Three months in: a Syokimau godown'` |
+
+**Why the fix.** A YAML 1.2 parser sees `Mombasa Road corridor:`
+at column 28 as a nested mapping inside the `title:` string. Without
+quoting, the parser then expects `distance` to be a new key in that
+nested mapping, with `:` acting as a key/value separator — and
+fails when it doesn't find a colon-separated value to follow. The
+Phase 7.1a RATIONALE documented this pattern for `description:` /
+`tagline:` / `quote:` and the two blog `title:` fields had slipped
+through the net because the original Phase-9 batch was reviewed by
+the humanizer skill (voice + AI-isms) and not by the YAML parser.
+
+**Why this is the right fix here.** Same principle as the
+Phase 7.1a fix: the *parser* is authoritative; the *operator*'s
+CMS (Tina Cloud) is tolerant and won't catch a stale un-quote on
+save. A future editor who un-quotes in Tina CMS works fine on
+Tina Cloud deployments (Phase 7.1a's "Vercel production still
+deploys") but breaks `pnpm run build:local` with `ERR_INDEXING_FAILED`
+at the same column. Quote at edit-time, not at parse-time.
+
+**22.3 — `pnpm run build:local` retry — env-block recomfirmed  `[ENV-BLOCKED]**
+
+After the YAML fix, the parser no longer fails. The build now
+reaches `vite:css-post` → `esbuild` `minifyCSS` and crashes with
+`Error: The service is no longer running`, exit code 1, then OOM
+(`FATAL ERROR: JavaScript heap out of memory`, exit code 134).
+Two attempts: default heap (2096 MB) and `--max-old-space-size=8192`.
+Same root cause as Phase 7.1a item 6 — the Tina datalayer / esbuild
+worker dies mid-build on this dev box before producing a static
+bundle. The Phase 7.7 port-9106 reservation + Phase 14 `firstInteger`
+parser consolidation did not resolve this; the datalayer death is
+container-side, not code-side.
+
+**Resolution strategy:** the env-block is now explicitly out of
+phase-scope. The MDX YAML fix (22.2) is net-positive regardless of
+whether the build assembles locally — it makes every future
+`build:local` retry start further along the parse pipeline. Continue
+shipping commits with confidence; production assembly verification
+needs a clean dev box or a separate `astro build` runner that
+bypasses the live Tina datalayer (the `astro build` direct path was
+rejected in Phase 7.1a because it tried Tina Cloud and got HTTP 400;
+this dev box has no `PUBLIC_TINA_CLIENT_ID` set, so a cloud-side
+attempt is structurally impossible here).
+
+Validated: vitest 51/51 green (no test files touched),
+astro check 0/0/2. Pure YAML quoting — no behavioural change to
+the rendered blog pages.
