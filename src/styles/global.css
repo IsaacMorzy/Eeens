@@ -164,6 +164,21 @@
 	}
 }
 
+/* Respect user motion preferences. Today the codebase carries no explicit
+   @keyframes (Phase-6 polish stripped the only `transform` decoration), so
+   this rule is a null-op; future motion handlers inherit this guard rail
+   automatically. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
 /* Prose (blog body) follows the theme tokens so it inverts in dark mode and
    keeps the cyan-teal tint, rather than the plugin's default zero-chroma grays.
    Unlayered so it overrides the typography plugin's layered variables. */
