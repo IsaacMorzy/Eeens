@@ -1,81 +1,72 @@
 ---
-seoTitle: TinaCMS + Astro
+seoTitle: Eens Limited — Industrial leasing and premium apartments in Kenya
 blocks:
-  - headline: The fastest way to build content-driven Astro sites
-    tagline: 'Astro ships your pages with zero JavaScript by default. TinaCMS lets you edit them visually, backed by Git. Build it fast, edit it in context, own your content.'
+  - headline: Industrial leasing and premium apartments on the Mombasa Road corridor.
+    tagline: Listings across Mlolongo, Syokimau, Baba Dogo, and Thika. Every listing: address, square footage, KSH price.
     actions:
-      - label: Get Started
+      - label: View properties
         type: button
-        icon: rocket
-        link: 'https://tina.io/docs/frameworks/astro'
-      - label: View source
+        link: /properties
+      - label: Schedule a viewing
         type: link
-        icon: brand-github
-        link: 'https://github.com/tinacms/tina-astro-starter'
-    image:
-      src: /tinanaut.png
-    starfield: true
+        link: 'mailto:hello@eens.co.ke?subject=Schedule%20a%20viewing'
     _template: hero
-  - text: 'Now with React-free visual editing, powered by @tinacms/astro'
-    url: 'https://tina.io/blog/astro-is-becoming-the-default-tinacms-starter'
-    _template: callout
-  - title: 'Built for content, built for speed'
-    description: Astro's server-first performance meets TinaCMS's visual editing.
-    items:
-      - icon: bolt
-        title: Server-first performance
-        text: |
-          Render on the server and send lightweight HTML to the browser, with zero unnecessary JavaScript overhead.
-      - icon: edit
-        title: Visual editing for developers
-        text: |
-          An open-source, headless CMS with built-in Git version control. Edit content visually while keeping full developer control.
-      - icon: brand-git
-        title: Git-native content
-        text: |
-          Your content lives in your repository as Markdown. Version it, review it, own it.
-    _template: features
-  - title: Performance you can measure
-    description: 'Astro leads the web on Core Web Vitals, and TinaCMS is trusted by thousands of developers.'
-    stats:
-      - stat: '#1'
-        type: framework for Core Web Vitals pass rate
-      - stat: 0 KB
-        type: JavaScript by default
-      - stat: 13K+
-        type: Stars on TinaCMS' GitHub
-    _template: stats
-  - body: |
-      ## Markdown is the answer
+  - title: Two product lines. One operator.
+    description: 'Eens Limited runs both sides of Kenya''s commercial property market: industrial leasing along the Mombasa Road corridor, and 3-bedroom apartments in Thika''s gated estates.'
+    body: |
+      Industrial leasing means warehouses, godowns, and business parks — steel-roofed, rail-friendly, with 1 kVA+ power and truck-court access. Preferred tenants: logistics operators, distributors, and light manufacturers. Lease terms are 3-year minimum, KSH invoiced monthly.
 
-      LLMs think in it. Your CMS should too. TinaCMS stores everything as Markdown in Git, so your content stays open, portable, and ready for whatever comes next.
-    _template: content
-  - title: Loved by developers and editors
-    description: The teams who ship on Astro and TinaCMS keep coming back for the same reason. A fast site their whole team can actually edit.
-    testimonials:
-      - quote: 'I made a whole website and I don''t even have computer hacking skills. You just click the words right on the page and type new ones. Gosh, it''s flippin'' sweet.'
-        author: Napoleon Dynamite
-        role: 'Student, Preston High'
-      - quote: 'I love technology, and this is the sweetest setup I''ve found online. The content lives in Git, so nothing ever gets lost, not even my chat logs with LaFawnduh.'
-        author: Kip Dynamite
-        role: Online entrepreneur
-      - quote: 'I built my whole campaign site in one night. If you want all your wildest dreams to come true, ship it on Astro and TinaCMS.'
-        author: Pedro Sánchez
-        role: Class president
-    _template: testimonial
-  - url: 'https://www.youtube.com/watch?v=j8egYW7Jpgk'
-    _template: video
-  - title: Start building today
-    description: 'Spin up this starter with one command, then make it your own in the visual editor.'
+      Residential sale is restricted to Flame Tree Park Estate in Thika — three-bedroom apartments in a strata-managed block, sold with title transfer and a six-month developer warranty.
+    reverse: false
+    image:
+      src: /eens-wordmark.svg
+      alt: Eens wordmark
     actions:
-      - label: Set up the starter
+      - label: Industrial leasing
         type: button
-        icon: rocket
-        link: 'https://tina.io/docs/frameworks/astro'
-      - label: Star TinaCMS
+        link: /properties
+      - label: Apartments
         type: link
-        icon: brand-github
-        link: 'https://github.com/tinacms/tinacms'
-    _template: cta
+        link: '/properties#APARTMENT'
+    _template: split
+  - title: Featured listings
+    description: 'Most recent activity across the portfolio.'
+    limit: 3
+    filterType: ALL
+    layout: grid
+    display: featured
+    actions:
+      - label: View all listings
+        type: button
+        link: /properties
+    _template: PropertyList
+  - title: The Eens footprint
+    description: 'Family-owned. Operating since 2018.'
+    stats:
+      - stat: '4'
+        type: Zones on Mombasa Road + Thika
+      - stat: '2018'
+        type: Year established
+      - stat: '3-yr'
+        type: Standard industrial lease term
+    _template: stats
+  - title: Operators who came back
+    description: ''
+    testimonials:
+      - quote: 'We moved into the Mlolongo warehouse in 2020 and renewed for a third term. Address, sq ft, and lease terms were on the listing — no surprises at sign-off.'
+        author: James Mwangi
+        role: 'Director, Mombasa Logistics'
+      - quote: 'Three-bedroom in Flame Tree. The paperwork was on the table before we visited. That matters when you''re relocating from another county.'
+        author: Anne Wanjiru
+        role: 'Buyer, Thika'
+      - quote: 'We needed warehouse space in 14 days for a Q4 launch. Eens had the spec sheet ready and a clear spec on truck-court access.'
+        author: Peter Otieno
+        role: 'COO, East Africa Distributor'
+    _template: testimonial
+  - eyebrow: SCHEDULE A VIEWING
+    title: 'Visit the property.'
+    description: 'Pick a listing, send us a viewing request. Reply within one business day.'
+    ctaLabel: 'Schedule a viewing'
+    ctaLink: 'mailto:hello@eens.co.ke?subject=Schedule%20a%20viewing'
+    _template: CtaBanner
 ---
-

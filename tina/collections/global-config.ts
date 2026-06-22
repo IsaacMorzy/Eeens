@@ -39,7 +39,7 @@ export const GlobalConfigCollection: Collection = {
           type: "string",
           description: "Your name or company name. Displayed in the site footer.",
           ui: {
-            defaultValue: "Your name here"
+            defaultValue: "Eens Limited"
           },
         },
         {

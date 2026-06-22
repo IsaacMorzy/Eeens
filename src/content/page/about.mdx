@@ -1,66 +1,53 @@
 ---
-seoTitle: About
+seoTitle: About Eens Limited
 blocks:
-  - _template: split
-    title: Editing that happens in context
+  - title: 'Family-owned. Operating since 2018.'
     body: |
-      TinaCMS renders your real site, then lets you click any heading, paragraph, or image and change it in place. What you edit is exactly what visitors see - no separate preview, no guesswork.
+      Eens Limited operates warehouses, godowns, business parks, and a single
+      gated residential estate across the Mombasa Road corridor and Thika.
 
-      Behind the scenes every change is a commit, so your content has the same history, branches, and review as the rest of your codebase.
+      We lease to logistics operators, distributors, and light manufacturers.
+      We sell 3-bedroom apartments to owner-occupiers in Flame Tree Park Estate,
+      Thika.
+
+      Every listing is quoted with its literal address, total square footage
+      (rendered in monospace), KSH price, and lease terms. We don't publish
+      floor plans without a surveyor's report, and we don't advertise before
+      the unit is ready to be walked.
+    reverse: false
     image:
-      src: /blog-placeholder-about.jpg
-      alt: The TinaCMS visual editor
+      src: /eens-wordmark.svg
+      alt: Eens wordmark
     actions:
-      - label: See it in action
+      - label: View properties
         type: button
-        icon: player-play
-        link: 'https://tina.io/docs/getting-started/overview/'
-  - _template: content
-    body: |
-      ## Content management, the way it should be
+        link: /properties
+    _template: split
+  - body: |
+      ## Lease terms
 
-      TinaCMS exists to settle an old argument. Developers want control, editors want simplicity, and for years a CMS made you choose one or the other. We never accepted that trade-off.
+      - Standard industrial lease: 3-year minimum, KSH invoiced monthly, 2-month deposit, 1-month broker fee.
+      - Residential sale: title transfer at sign-off, 6-month developer warranty on structure + mechanical systems.
+      - Spec sheets (kVA, water, floor loading, clear height, parking bays) published on every industrial listing.
+      - Viewing fee: zero.
 
-      So we built a CMS on top of the tools developers already trust - Git and Markdown - and gave content creators a live, visual way to work inside them. No proprietary database. No content held hostage. Just your words, in your repository, editable by anyone on the team.
-  - _template: callout
-    text: Open source and Apache 2.0 licensed - shaped in the open with our community
-    url: 'https://github.com/tinacms/tinacms'
-  - _template: features
-    title: What we stand for
-    description: A few convictions that shape every decision we make.
-    items:
-      - icon: code
-        title: Developer-first
-        text: |
-          Define your schema in TypeScript and wire up the editor exactly how you want it. TinaCMS bends to your stack, not the other way around.
-      - icon: wand
-        title: Editor-friendly
-        text: |
-          In-context visual editing means content creators see changes as they make them - no config files, no guesswork.
-      - icon: lock-open
-        title: No lock-in, ever
-        text: |
-          Your content lives in your repo as plain Markdown. Walk away whenever you like and take all of it with you.
-  - _template: stats
-    title: Built on principles, not lock-in
-    description: The numbers that actually matter to us.
-    stats:
-      - stat: 100%
-        type: Open source, Apache 2.0 licensed
-      - stat: '0'
-        type: Databases to manage or migrate
-      - stat: Git
-        type: Your single source of truth
-  - _template: cta
-    title: Help shape what comes next
-    description: 'TinaCMS is open source and built in the open. Read the docs, join the conversation, and help define the future of Git-based content.'
-    actions:
-      - label: Read the Docs
-        type: button
-        icon: book
-        link: 'https://tina.io/docs/'
-      - label: Join the Community
-        type: link
-        icon: brand-discord
-        link: 'https://tina.io/discord'
+      ## Locations
+
+      - **Mlolongo** — Mombasa Road, KM 12–14 — warehouses, godowns, logistics.
+      - **Syokimau** — Mombasa Road, KM 11 — light industrial, godowns.
+      - **Baba Dogo** — Outering Road — business parks, commercial blocks.
+      - **Thika** — Flame Tree Park Estate — 3-bedroom residential apartments.
+
+      ## Contact
+
+      - Phone: +254 700 000 000
+      - Email: hello@eens.co.ke
+      - Office: Mlolongo, Mombasa Road, KM 14
+    _template: content
+  - eyebrow: SCHEDULE A VIEWING
+    title: 'Visit the property.'
+    description: 'Pick a listing, send us a viewing request. Reply within one business day.'
+    ctaLabel: 'Schedule a viewing'
+    ctaLink: 'mailto:hello@eens.co.ke?subject=Schedule%20a%20viewing'
+    _template: CtaBanner
 ---
