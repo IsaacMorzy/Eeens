@@ -222,7 +222,81 @@ design rationale that points back to its source pattern + DESIGN.md.
 
 **Phase 8.5 — Validate + commit  `[TODO]`**
 
-## Validation gates (rolling)
+### Phase 9 — Blog infrastructure restored + 5 blog posts + 3 tandem pages  `[SHIPPED]`  (commit `3db6477`)
+
+Restored `/blog` index + `/blog/[slug]` detail route (deleted in Phase 6).
+Seeded five human-voiced blog posts (verified against the `humanizer`
+skill pattern catalog): `locations-we-dont-operate-in` (transparency),
+`reading-warehouse-spec-sheets` (process), `why-we-publish-per-sqft`
+(methodology), `three-months-syokimau-godown` (first-person field report),
+`mombasa-road-corridor` (factual km/time). Added three tandem pages via
+the existing `[...slug]` catch-all + Tina block templates: `/contact`,
+`/lease-terms`, `/locations`. Header breakpoint shifted `lg→xl` to
+accommodate the 7-item nav without overflow.
+
+### Phase 10 — Footer modernization + BlogPost polish + BlogBody walker  `[SHIPPED]`  (commit `befefba`)
+
+Multi-column Footer (Identity / Zones / Pages / Contact) on canvas-dark
+with an architectural-grid SVG background, hairline divider, mono
+copyright + TinaCMS attribution. `BlogPost` layout gained an "Other
+posts" related-listings rail + a copy-permalink button. `BlogBody`
+swapped the prior JSON.stringify-based word counter for a proper
+recursive Tina rich-text walker. Reviewer flagged three follow-up
+nits; commit `befefba` (consolidated): dropped dead `eyebrow` +
+`bodyWordCount` props from BlogBody + BlogPost; tuned Footer column
+headings from `text-primary-dark` to `text-ink-dark/70` to satisfy
+DESIGN.md § Do's and Don'ts 4-slot accent rule.
+
+### Phase 11 — 404 voice + 16:9 hero + drop wrappers + boilerplate fallback  `[SHIPPED]`  (commit `9a8eadc`)
+
+Six files touched in a single chore commit:
+
+- **`404.astro`** rewritten in engineering register. Dropped deleted
+  space motif ("Lost in space" / "drift out of orbit" / "back to
+  mission control"). New copy uses mono HTTP-404 eyebrow, factual
+  paragraph explaining three failure causes, 2-CTA grid (Return home /
+  Browse properties), actionable mono caption directing visitors to
+  `hello@eens.co.ke` for broken-link fixes.
+- **`Hero.astro`** replaced decorative `size-56 rounded-full` circular
+  crop (forbidden by § Photography geometry) with `aspect-video
+  w-full max-w-3xl rounded-xl` 16:9 framing.
+- **`Cta.astro`** dropped the `bg-foreground/10 rounded-2xl border
+  p-0.5` wrapper around every CTA (decoration without function) +
+  the `rounded-xl px-5 text-base` Button override (which rode over
+  the `rounded-md` system token).
+- **`Callout.astro`** removed `shadow-md` from both link + static
+  variants.
+- **`index.astro` + `[...slug].astro`** swapped Taurina boilerplate
+  fallbacks (`"TinaCMS + Astro"` title / `"Welcome to my website!"`
+  description) to brand-aligned defaults.
+
+### Phase 12 — vitest + 47 tests across cn / property-filters / blog-walker  `[SHIPPED]`  (commit `1b0c473`)
+
+vitest 4.1.9 installed as devDep + `pnpm test` / `pnpm test:watch`
+scripts. Pure helpers extracted from `/properties/index.astro`
+frontmatter into `src/lib/property-filters.ts` (parseSqft, parseKva,
+TYPE_ORDER/TYPE_LABEL/SQFT_TIERS/KVA_TIERS, applyFilters, groupByType,
+zonesInUse, linkWith). `countWords` + `readingMinutes` extracted from
+`BlogBody.astro` into `src/lib/blog-walker.ts`. 47 tests pass in
+~470 ms. Tests caught a real bug in `parseKva` — it didn't strip
+commas before matching, so `"1,200 kVA"` returned `1` instead of
+`1200`. One-line fix mirrored the `parseSqft` tolerance.
+
+### Phase 13 — A11y + Features polish + test-coverage expansion  `[ACTIVE]`
+
+Direction: ship the leftover CUTs from the Phase 11 opendesign
+audit; modernize a11y infrastructure; left-align the Features block
+to match Eens voice; consolidate the spec-sheet parser duplication
+uncovered by the new test surface.
+
+- **13.1 — Skip-to-content link in Base.astro + `<main id="main">` wrapper** `[SHIPPED]` — keyboard-only anchor at top of `<body>` (Tailwind `sr-only focus:not-sr-only` pattern, no JS, no client-water). Slot now sits inside `<main id="main">` so the skip link can jump past Header / Footer chrome. Per DESIGN.md § Accessibility.
+- **13.2 — BlogBody import alias clarity** `[SHIPPED]` — renamed `readingMinutes as buildReadingMinutes` → `readingMinutes as minutesForWordCount` so the local `const readingMinutes` no longer shadows an aliased name. Footgun for future renames eased.
+- **13.3 — Extract `firstInteger` from `parseSqft` + `parseKva`** `[SHIPPED]` — the duplicated `.replace(/,/g, '').match(/\d+/)` two-liner now lives in one place. Both parsers collapse to one-liners. Future spec-sheet parsers (`parseWater`, `parseClearHeight`, `parseFloorLoading`) inherit it without copy-paste. New tests cover the helper directly.
+- **13.4 — Features.astro left-align refactor** `[SHIPPED]` — dropped `*:text-center` from the parent Card class + `items-center` from the per-item flex. Eyebrow chip + paragraph + icon now stack left-aligned, matching the engineering register used elsewhere on the site.
+
+Validated: `pnpm test` 47 + 4 = 51/51 green, `astro check` 0/0/2.
+
+
 
 - `astro check` reports **0 errors / 0 warnings** (currently 0 / 0 / 1 hint).
 - `pnpm build` produces a clean static bundle; all routes reachable.

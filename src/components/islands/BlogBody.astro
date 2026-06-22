@@ -4,7 +4,7 @@ import { tinaField } from '@tinacms/astro/tina-field';
 import type { CmsBlog } from '../../lib/data';
 import FormattedDate from '../FormattedDate.astro';
 import YouTubeEmbed from '../mdx/YouTubeEmbed.astro';
-import { countWords, readingMinutes as buildReadingMinutes } from '../../lib/blog-walker';
+import { countWords, readingMinutes as minutesForWordCount } from '../../lib/blog-walker';
 
 interface Props {
 	data?: CmsBlog | null;
@@ -15,7 +15,7 @@ const { data } = Astro.props;
 // Reading-time annotation — computation lives in src/lib/blog-walker.ts so
 // it's unit-tested independently of the Astro frontmatter.
 const computedBodyWordCount = countWords(data?.body);
-const readingMinutes = buildReadingMinutes(computedBodyWordCount);
+const readingMinutes = minutesForWordCount(computedBodyWordCount);
 
 // Custom MDX components available inside the rich-text body. Key matches
 // the template `name` in tina/collections/blog.ts (`YouTubeEmbed`).

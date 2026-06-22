@@ -17,23 +17,23 @@ export const SQFT_TIERS = [4000, 9000, 18000] as const;
 export const KVA_TIERS = [50, 200] as const;
 
 /**
- * Parse the human-readable sqft / kVA strings back to numbers.
- * "9,000 sq ft" -> 9000.  "1,200" -> 1200.  "" / null / undefined -> 0
- * (treated as "unknown" — never matches a minSqft filter).
+ * Extract the first integer from a free-text numeric annotation.
+ * Strips thousands separators so both "1,200" and "1200" resolve to 1200.
+ * Returns 0 for null / undefined / empty / no-digits inputs. The single
+ * source of truth for every spec-sheet parser — `parseWater`,
+ * `parseClearHeight`, etc. inherit this without copy-pasting the
+ * `.replace(/,/g, '').match(/\d+/)` two-liner.
  */
-export const parseSqft = (s: string | null | undefined): number => {
+export const firstInteger = (s: string | null | undefined): number => {
 	if (!s) return 0;
 	const m = String(s).replace(/,/g, '').match(/\d+/);
 	return m ? Number(m[0]) : 0;
 };
 
-export const parseKva = (p: PropertyNode | null | undefined): number => {
-	const raw = p?.specSheet?.power;
-	if (!raw) return 0;
-	// Strip thousands separators so "1,200 kVA" → 1200, consistent with parseSqft.
-	const m = String(raw).replace(/,/g, '').match(/\d+/);
-	return m ? Number(m[0]) : 0;
-};
+export const parseSqft = (s: string | null | undefined): number => firstInteger(s);
+
+export const parseKva = (p: PropertyNode | null | undefined): number =>
+	firstInteger(p?.specSheet?.power);
 
 export interface PropertyFilters {
 	minSqft: number | null;

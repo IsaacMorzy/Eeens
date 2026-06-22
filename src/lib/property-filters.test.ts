@@ -4,6 +4,7 @@ import {
 	TYPE_LABEL,
 	SQFT_TIERS,
 	KVA_TIERS,
+	firstInteger,
 	parseSqft,
 	parseKva,
 	applyFilters,
@@ -170,5 +171,28 @@ describe('linkWith (chip URL composer)', () => {
 		expect(linkWith(base, { minKva: '200' })).toBe(
 			'/properties?minSqft=9000&zone=Mlolongo&minKva=200',
 		);
+	});
+});
+
+describe('firstInteger', () => {
+	it('returns 0 for null / undefined / empty / no-digit inputs', () => {
+		expect(firstInteger(null)).toBe(0);
+		expect(firstInteger(undefined)).toBe(0);
+		expect(firstInteger('')).toBe(0);
+		expect(firstInteger('—')).toBe(0);
+	});
+
+	it('parses a bare integer string', () => {
+		expect(firstInteger('1200')).toBe(1200);
+	});
+
+	it('strips thousands separators (single and chain)', () => {
+		expect(firstInteger('1,200')).toBe(1200);
+		expect(firstInteger('9,000,000')).toBe(9000000);
+	});
+
+	it('returns the first integer run when mixed with units', () => {
+		expect(firstInteger('450 kVA')).toBe(450);
+		expect(firstInteger('1234.56 sqm')).toBe(1234);
 	});
 });
