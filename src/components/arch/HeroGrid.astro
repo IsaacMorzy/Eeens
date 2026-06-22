@@ -1,0 +1,29 @@
+---
+/**
+ * HeroGrid — 1 px hairline architectural grid at 64 px pitch. Drawn in
+ * `--hairline-steel` at ~36 % opacity so it reads as background plate,
+ * never foreground chrome. Mounted absolute-inset-0 behind the Eens hero
+ * only; never carries interactivity, never an `id`-collision target.
+ *
+ * Replaces the orange starfield / aurora / planet / orbit-rings decorations
+ * purged from the Tina starter (DESIGN.md § Decorative replacements).
+ */
+---
+<svg
+	aria-hidden="true"
+	class="pointer-events-none absolute inset-0 h-full w-full text-hairline-steel/40 dark:text-primary-dark/30 mix-blend-multiply dark:mix-blend-screen"
+	xmlns="http://www.w3.org/2000/svg"
+	preserveAspectRatio="xMidYMid slice"
+>
+	<defs>
+		<pattern
+			id="eens-arch-grid"
+			width="64"
+			height="64"
+			patternUnits="userSpaceOnUse"
+		>
+			<path d="M64 0H0V64" fill="none" stroke="currentColor" stroke-width="1" />
+		</pattern>
+	</defs>
+	<rect width="100%" height="100%" fill="url(#eens-arch-grid)" />
+</svg>

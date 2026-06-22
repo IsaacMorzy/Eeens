@@ -3,22 +3,43 @@ import type { HTMLAttributes } from 'astro/types';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '../../lib/cn';
 
+/**
+ * Eens button — 6 variants keyed to DESIGN.md § Components > Buttons:
+ *   default     → button-primary   (cyan-teal #0e7490 bg, warm-white text)
+ *   secondary   → button-secondary (off-white bg, 1 px hairline border, navy ink)
+ *   ghost       → button-tertiary  (no bg, navy ink)
+ *   inverse     → button-inverse   (navy bg, cyan-300 text — for use inside dark sections)
+ *   destructive → error states only (#EF4444 bg, white text)
+ *   link        → inline text link (no chrome)
+ *
+ * Disabled opacity is 38 % (NOT 50 %) per DESIGN.md § Accessibility.
+ * Focus ring is 2 px solid primary at 50 % opacity (not 3 px).
+ * Sizes: default = 40 px desktop tap target (h-10), lg = 44 px touch (h-11).
+ * No `rounded-pill` on CTAs — `rounded-md` resolves to 0.5 rem (8 px) via the
+ * pinned `--radius-md` token in global.css.
+ * § Buttons does not list box-shadows on any variant — `shadow-xs` removed from
+ * default / secondary / inverse / destructive to match the spec exactly.
+ */
 const button = tv({
-	base: "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] shrink-0",
+	base: 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color] disabled:pointer-events-none disabled:opacity-[0.38] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[2px] shrink-0',
 	variants: {
 		variant: {
-			default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-			destructive: 'bg-destructive text-white shadow-xs hover:bg-destructive/90',
-			outline: 'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
-			secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-			ghost: 'hover:bg-accent hover:text-accent-foreground',
+			default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
+			// Off-white card surface, hairline-steel 1 px border, navy ink.
+			// Hover swaps the border to primary-hover so the CTA reads as a click affordance.
+			secondary: 'border border-hairline-steel bg-background text-foreground hover:border-primary-hover hover:text-primary-hover',
+			// Tertiary — no chrome. On `dark` surfaces the .dark cascade swaps text-primary to text-primary-dark via @layer base.
+			ghost: 'text-foreground hover:bg-accent hover:text-accent-foreground',
+			// Inverse — for use inside the navy footer or hero overlays.
+			inverse: 'bg-canvas-dark text-primary-dark hover:bg-canvas-dark/95',
+			destructive: 'bg-destructive text-white hover:bg-destructive/90',
 			link: 'text-primary underline-offset-4 hover:underline',
 		},
 		size: {
-			default: 'h-9 px-4 py-2',
-			sm: 'h-8 rounded-md gap-1.5 px-3',
-			lg: 'h-10 rounded-md px-6',
-			icon: 'size-9',
+			default: 'h-10 px-4',                                                  /* 40 px — desktop tap target */
+			sm: 'h-9 rounded-md gap-1.5 px-3',
+			lg: 'h-11 rounded-md px-6',                                            /* 44 px — touch tap target */
+			icon: 'size-10',                                                       /* 40 px square */
 		},
 	},
 	defaultVariants: { variant: 'default', size: 'default' },

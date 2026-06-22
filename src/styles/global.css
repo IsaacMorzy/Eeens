@@ -34,11 +34,14 @@
 	--font-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans Fallback', system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	/* Radii — Linear-derived, tightened to 0.5rem base */
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
+	/* Radii — DESIGN.md § Shapes > Radius scale pins these directly. We override
+	   the calc() ladder so `rounded-md` resolves to 8 px (button / input radius)
+	   instead of the @theme-default 6 px derived from --radius - 2px. */
+	--radius-sm: 0.25rem;       /* 4 px  — chips, status badges */
+	--radius-md: 0.5rem;        /* 8 px  — buttons, form inputs */
+	--radius-lg: 0.75rem;       /* 12 px — pricing / feature / testimonial cards */
+	--radius-xl: 1rem;          /* 16 px — property imagery tiles */
+	--radius-2xl: 1.5rem;       /* 24 px — oversized CTA banners */
 
 	/* Color tokens (Tailwind utility surface) — each maps a CSS variable. */
 	--color-background: var(--background);
@@ -49,6 +52,8 @@
 	--color-popover-foreground: var(--popover-foreground);
 	--color-primary: var(--primary);
 	--color-primary-foreground: var(--primary-foreground);
+	--color-primary-hover: var(--primary-hover);
+	--color-primary-dark: var(--primary-dark);
 	--color-secondary: var(--secondary);
 	--color-secondary-foreground: var(--secondary-foreground);
 	--color-muted: var(--muted);
@@ -69,11 +74,10 @@
 	--color-ink-light: var(--ink-light);
 	--color-ink-dark: var(--ink-dark);
 	--color-hairline-steel: var(--hairline-steel);
-	--color-primary-dark: var(--primary-dark);
 }
 
 :root {
-	/* Eens Business Park — light default (warm slate) */
+	/* Eens Business Park — light default (warm slate). */
 	--radius: 0.5rem;
 	--background: oklch(0.98 0.005 85);          /* warm slate off-white #FAFAF9 */
 	--foreground: oklch(0.20 0.04 265);          /* navy #0F172A */
@@ -83,6 +87,7 @@
 	--popover-foreground: oklch(0.20 0.04 265);
 	--primary: oklch(0.52 0.09 235);              /* cyan-teal #0e7490 */
 	--primary-foreground: oklch(0.98 0.005 85);   /* warm white on cyan-teal */
+	--primary-hover: oklch(0.45 0.08 235);        /* #155e75 — cyan-800 darker */
 	--secondary: oklch(0.96 0.005 85);            /* surface-2-light #F5F5F4 */
 	--secondary-foreground: oklch(0.20 0.04 265);
 	--muted: oklch(0.92 0.01 85);
@@ -94,14 +99,14 @@
 	--input: oklch(0.92 0.01 85);
 	--ring: oklch(0.52 0.09 235);                /* cyan-teal — single accent */
 
-	/* Chart ladder — cyan/navy, no orange */
+	/* Chart ladder — cyan/navy, no orange. */
 	--chart-1: oklch(0.52 0.09 235);              /* primary cyan-teal */
 	--chart-2: oklch(0.27 0.04 265);              /* navy surface */
 	--chart-3: oklch(0.62 0.10 220);              /* steel-blue mid */
 	--chart-4: oklch(0.45 0.08 235);              /* primary-hover */
 	--chart-5: oklch(0.55 0.04 220);              /* hairline-steel */
 
-	/* Eens palette aliases */
+	/* Eens palette aliases. */
 	--canvas-light: oklch(0.98 0.005 85);
 	--canvas-dark: oklch(0.20 0.04 265);
 	--ink-light: oklch(0.20 0.04 265);
@@ -111,7 +116,7 @@
 }
 
 .dark {
-	/* Eens Business Park — dark mode: navy canvas + cyan-teal ladder-up */
+	/* Eens Business Park — dark mode: navy canvas + cyan-teal ladder-up. */
 	--background: oklch(0.20 0.04 265);          /* navy #0F172A */
 	--foreground: oklch(0.98 0.005 85);          /* warm white ink */
 	--card: oklch(0.27 0.04 265);                /* surface-1-dark */
@@ -120,6 +125,7 @@
 	--popover-foreground: oklch(0.98 0.005 85);
 	--primary: oklch(0.86 0.11 235);              /* cyan-300 #67e8f9 — bright on navy */
 	--primary-foreground: oklch(0.20 0.04 265);   /* navy on cyan */
+	--primary-hover: oklch(0.80 0.10 235);        /* slightly darker cyan-300 */
 	--secondary: oklch(0.27 0.04 265);
 	--secondary-foreground: oklch(0.98 0.005 85);
 	--muted: oklch(0.27 0.04 265);
@@ -152,7 +158,6 @@
 	.bg-default {
 		background-color: var(--background);
 	}
-	/* Astro 4-6 default resets for the new --font-display / --font-mono utilities. */
 	::selection {
 		background-color: var(--primary);
 		color: var(--primary-foreground);
@@ -180,12 +185,4 @@
 	--tw-prose-pre-bg: var(--muted);
 	--tw-prose-th-borders: var(--border);
 	--tw-prose-td-borders: var(--border);
-}
-
-@keyframes twinkle {
-	0%, 100% { opacity: 0.25; }
-	50% { opacity: 0.9; }
-}
-@media (prefers-reduced-motion: no-preference) {
-	.star-twinkle { animation: twinkle var(--twinkle-dur, 4s) ease-in-out infinite; animation-delay: var(--d, 0s); }
 }
