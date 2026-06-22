@@ -6,14 +6,34 @@
     "logo": "/eens-wordmark.svg"
   },
   "nav": [
-    { "title": "Home", "link": "/" },
-    { "title": "Properties", "link": "/properties" },
-    { "title": "Blog", "link": "/blog" },
-    { "title": "About", "link": "/about" }
+    {
+      "title": "Home",
+      "link": "/"
+    },
+    {
+      "title": "Properties",
+      "link": "/properties"
+    },
+    {
+      "title": "About",
+      "link": "/about"
+    }
   ],
   "contactLinks": [
-    { "title": "Phone", "link": "tel:+254700000000", "icon": "tabler:phone" },
-    { "title": "Email", "link": "mailto:hello@eens.co.ke", "icon": "tabler:mail" },
-    { "title": "Location", "link": "https://maps.google.com/?q=Mombasa+Road+Mlolongo", "icon": "tabler:map-pin" }
+    {
+      "title": "Phone",
+      "link": "tel:+254700000000",
+      "icon": "tabler:phone"
+    },
+    {
+      "title": "Email",
+      "link": "mailto:hello@eens.co.ke",
+      "icon": "tabler:mail"
+    },
+    {
+      "title": "Location",
+      "link": "https://maps.google.com/?q=Mombasa+Road+Mlolongo",
+      "icon": "tabler:map-pin"
+    }
   ]
 }

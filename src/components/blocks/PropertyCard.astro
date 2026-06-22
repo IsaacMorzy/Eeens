@@ -80,7 +80,7 @@ const mapHref = data.address || data.zone
 	)}
 	<div class="flex flex-1 flex-col gap-3 p-4">
 		{data.type && (
-			<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[12px] font-medium uppercase tracking-[0.4px] text-primary">
+			<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">
 				{data.type}
 			</span>
 		)}
@@ -125,7 +125,7 @@ const mapHref = data.address || data.zone
 		)}
 		{viewHref && (
 			<div class="mt-2 flex items-center justify-end">
-				<Button href={viewHref} variant="default" size="sm">
+				<Button href={viewHref} variant="secondary" size="sm">
 					<span>{viewLabel}</span>
 					<Icon name="arrow-up-right" class="size-3.5" />
 				</Button>

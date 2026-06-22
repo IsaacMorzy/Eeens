@@ -1,15 +1,83 @@
-# Eens Business Park — Migration Plan
+# Eens Business Park — Migration + Polish Plan
 
-> Companion to `DESIGN.md`. Lists the file-level changes required to walk
-> the 13-step migration checklist top-to-bottom. Source of truth for design
-> decisions (colors, type, voice, components) lives in `DESIGN.md`.
+> Companion to `DESIGN.md`. Single source of truth for design decisions
+> (colors, type, voice, components) lives in `DESIGN.md`. This file tracks the
+> migration walk **and** the post-ship polish phase.
 
-## Direction (per user)
+## Status legend
 
-- Walk the migration checklist top-to-bottom (not piecemeal).
-- Model listings as a **dedicated `property` Tina collection** with its own
-  `/properties` and `/properties/[slug]` routes — not as inline page blocks.
-- Delete all five Tina starter blog posts at the end of the run.
+- `[SHIPPED]` — committed in a phase-aligned batch.
+- `[ACTIVE ]` — currently being worked.
+- `[TODO  ]` — scoped but not started.
+
+## Phases
+
+### Phase 1 — Foundations  `[SHIPPED]`  (commit `be56763`)
+### Phase 2 — UI primitives  `[SHIPPED]`  (commit `a3b5e91`)
+### Phase 3 — Property model + blocks  `[SHIPPED]`  (commit `eb29fc5`)
+### Phase 4 — /properties + /properties/[slug] + seed listings  `[SHIPPED]`  (commit `012df54`)
+### Phase 5 — Voice + content + cleanup  `[SHIPPED]`  (commits `ce05ecb`, `6731edb`)
+
+### Phase 6 — opendesign install + site audit + post-ship polish  `[ACTIVE]`
+
+**Direction (per user, this round):**
+- Install a new agent skill — `opendesign` — locally so both Pi agent and
+  Codebuff can invoke it.
+- Invoke it on this site, derive an audit, apply minimal improvements.
+- Then close the four post-ship followups flagged at end of Phase 5.
+
+**6.1 — opendesign skill  `[ACTIVE]`**
+- Confirm no pre-existing copy on disk / npm / GitHub.
+- Author `SKILL.md` (token-locked, voice-locked, component-disciplined
+  design audit). Progressive disclosure. Front-matter + triggers + workflow
+  + checklist. ~250 lines.
+- Install to `~/.agents/skills/opendesign/SKILL.md` (Codebuff reads from
+  here) and a hard-link or mirror copy under `~/.claude/skills/opendesign/`
+  (Pi agent reads from here). Identity-checked via `diff`.
+- Sanity-load via the `skill` tool to ensure it appears in the registered
+  skill list.
+
+**6.2 — Invoke opendesign on eensbpark  `[TODO]`**
+- Run the skill's audit checklist against the project.
+- Output a numbered list of violations + the minimal edits each fix needs.
+  Group by file.
+
+**6.3 — Apply audit fixes  `[TODO]`**
+- One str_replace / write_file per violation (no scope creep).
+- Spot-checks against `DESIGN.md` § Colors, § Type, § Voice, § Components.
+
+**6.4 — Post-ship followups  `[TODO]`**
+- (a) `src/pages/blog/{index,[...slug]}.astro` still exist after Phase 5
+  cleanup → delete both routes; or stub a "no posts yet" wrapper if a blog
+  is genuinely roadmap.
+- (b) `Header` wordmark uses navy-fill SVG → invisibly against the dark
+  translucent header. Inline the SVG with `fill="currentColor"` + drop the
+  unused `eens-wordmark-light.svg` if not needed.
+- (c) Real-equivalent `property.heroImage` — replace
+  `blog-placeholder-*.jpg` references with curated Unsplash placeholders
+  (industrial warehouse, low-cost apartment block, godown exterior) for
+  the five seed listings. Update the `property.ts` schema comment to make
+  this expectation explicit.
+- (d) Tina Cloud credentials — add `.env.example` documenting
+  `TINA_TOKEN` + `NEXT_PUBLIC_TINA_CLIENT_ID`; add a README section in
+  `eensbpark/README.md` describing how to provision them for production
+  reads/writes.
+
+**6.5 — Validate + commit  `[TODO]`**
+- `pnpm exec astro check` → zero diagnostics.
+- Brand-voice scan (no `spacious` / `endless` / `dream` / `luxury` /
+  `perfect`).
+- Commit the four fixes as **one** commit
+  `chore(polish): opendesign skill + 4 post-ship followups`.
+- Spawn `code-reviewer-minimax-m3` for a final sign-off.
+
+## Validation gates (rolling)
+
+- `astro check` reports **0 errors / 0 warnings**.
+- Every component file has a one-liner that maps to a `DESIGN.md` rule.
+- Token discipline: cyan-teal appears only in the rules defined in § Do's.
+- Voice: no SaaS marketing vocabulary in any user-facing string.
+- `opendesign` skill is loadable via `skill opendesign` from any session.
 
 ## Build order
 

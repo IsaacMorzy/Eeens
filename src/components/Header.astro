@@ -9,6 +9,13 @@ interface Props {
 	config?: CmsConfig | null;
 }
 
+// Inlined wordmark glyph: stroke-only "E" + 2 px cyan-teal accent dot,
+// `fill="currentColor"` so it inherits ink in both light/dark mode + over
+// the dark hero overlay. Per DESIGN.md § Logo Specifications.
+const EensWordmark = `data:image/svg+xml;utf8,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 32" width="32" height="32" role="img" aria-label="Eens"><rect x="2" y="2" width="28" height="28" rx="6" fill="currentColor"/><text x="16" y="22" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="700" font-size="18" fill="#FAFAF9">E</text><rect x="14.5" y="25" width="3" height="3" fill="#0e7490"/><text x="44" y="22" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="600" font-size="16" fill="currentColor" letter-spacing="-0.3">Eens</text></svg>'
+)}`;
+
 const { config } = Astro.props;
 const seo = config?.seo ?? null;
 const nav = (config?.nav ?? []).filter(item => item !== null);
@@ -17,9 +24,9 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 
 <header class="fixed top-0 z-20 w-full border-b bg-background/50 backdrop-blur-xl">
 	<nav class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-		<a href="/" class="flex items-center gap-2 font-semibold">
-			{seo?.logo && <img src={seo.logo} alt="Logo" width="32" height="32" data-tina-field={tinaField(seo, "logo")} />}
-			<span data-tina-field={seo ? tinaField(seo, "title") : undefined}>{seo?.title}</span>
+		<a href="/" class="flex items-center gap-2 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, "title") : undefined}>
+			<img src={seo?.logo ?? EensWordmark} alt="Eens" width="32" height="32" class="size-8" data-tina-field={seo?.logo ? tinaField(seo, "logo") : undefined} />
+			<span>{seo?.title}</span>
 		</a>
 		<div class="hidden items-center gap-8 text-sm lg:flex">
 			{nav.map((item) => (
@@ -39,7 +46,7 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 				aria-label="Toggle navigation menu"
 				aria-controls="mobile-menu-panel"
 				aria-expanded="false"
-				class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none lg:hidden"
+				class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none lg:hidden"
 			>
 				<Icon name="tabler:menu-2" class="icon-open size-5" />
 				<Icon name="tabler:x" class="icon-close size-5" />

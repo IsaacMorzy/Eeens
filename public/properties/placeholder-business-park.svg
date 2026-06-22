@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="BUSINESS PARK — ELEVATION placeholder">
+  <rect width="1280" height="720" fill="#F5F5F4"/>
+  <g fill="none" stroke="#5d7290" stroke-width="1.5">
+    <rect x="120" y="280" width="1040" height="320"/>
+    <polyline points="120,280 640,140 1160,280"/>
+    <line x1="360" y1="280" x2="360" y2="600"/>
+    <line x1="600" y1="280" x2="600" y2="600"/>
+    <line x1="840" y1="280" x2="840" y2="600"/>
+    <line x1="1080" y1="280" x2="1080" y2="600"/>
+    <rect x="200" y="460" width="120" height="140"/>
+    <rect x="960" y="460" width="120" height="140"/>
+  </g>
+  <g font-family="JetBrains Mono, ui-monospace, monospace" fill="#0e7490">
+    <text x="120" y="120" font-size="32" font-weight="600" letter-spacing="0.4">BUSINESS PARK — ELEVATION</text>
+    <text x="120" y="680" font-size="14" fill="#5d7290">Office + warehouse · 240 kVA · 12 bays · placeholder</text>
+  </g>
+</svg>
