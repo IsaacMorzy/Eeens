@@ -10,6 +10,8 @@
     "build": "tinacms build --datalayer-port 9106 --content=local && astro build",
     "build:local": "tinacms build --datalayer-port 9106 --local --skip-cloud-checks -c \"astro build\"",
     "build:search": "tinacms search-index",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -41,6 +43,7 @@
     "react-dom": "^19.2.7",
     "tinacms": "^3.9.1",
     "typescript": "^6.0.3",
-    "vite": "^7.3.2"
+    "vite": "^7.3.2",
+    "vitest": "^4.1.9"
   }
 }

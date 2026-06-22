@@ -4,6 +4,16 @@ import Section from '../../components/ui/Section.astro';
 import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
 import { getConfig, listProperties, type PropertyNode } from '../../lib/data';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
+import {
+	TYPE_LABEL,
+	SQFT_TIERS,
+	KVA_TIERS,
+	applyFilters,
+	groupByType,
+	zonesInUse as computeZonesInUse,
+	linkWith,
+	type PropertyFilters,
+} from '../../lib/property-filters';
 
 const config = (await getConfig()).data?.config ?? null;
 const properties: PropertyNode[] = await listProperties();
@@ -25,65 +35,17 @@ const zoneParam = Astro.url.searchParams.get('zone');
 const filterMinSqft = minSqftParam ? Number(minSqftParam) : null;
 const filterMinKva = minKvaParam ? Number(minKvaParam) : null;
 const filterZone = zoneParam ?? null;
+const filters: PropertyFilters = {
+	minSqft: filterMinSqft,
+	minKva: filterMinKva,
+	zone: filterZone,
+};
 const filtersActive =
 	filterMinSqft !== null || filterMinKva !== null || filterZone !== null;
 
-// Helpers — parse the human-readable sqft / kVA strings back to numbers.
-// "9,000 sq ft" -> 9000.  "1,200" -> 1200.  "" -> 0 (treated as "unknown").
-const parseSqft = (s: string | null | undefined): number => {
-	if (!s) return 0;
-	const m = String(s).replace(/,/g, '').match(/\d+/);
-	return m ? Number(m[0]) : 0;
-};
-const parseKva = (p: PropertyNode): number => {
-	const raw = p?.specSheet?.power;
-	if (!raw) return 0;
-	const m = String(raw).match(/\d+/);
-	return m ? Number(m[0]) : 0;
-};
-
-const filtered = properties.filter((p) => {
-	if (filterMinSqft !== null && parseSqft(p.sqft) < filterMinSqft) return false;
-	if (filterMinKva !== null && parseKva(p) < filterMinKva) return false;
-	if (filterZone && p.zone !== filterZone) return false;
-	return true;
-});
-
-// Discover the zone set that actually has listings, so the chip rail
-// doesn't surface empty zones.
-const zonesInUse = Array.from(
-	new Set(filtered.map((p) => p.zone).filter((z): z is string => Boolean(z)))
-).sort();
-
-// Group by type. Stable type order (industrial first, then residential).
-const TYPE_ORDER = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'];
-const TYPE_LABEL: Record<string, string> = {
-	WAREHOUSE: 'Warehouses',
-	GODOWN: 'Godowns',
-	BUSINESS_PARK: 'Business parks',
-	APARTMENT: 'Apartments',
-};
-const grouped = TYPE_ORDER
-	.map((t) => ({ type: t, items: filtered.filter((p) => p.type === t) }))
-	.filter((g) => g.items.length > 0);
-
-// Build a query-string helper that preserves sibling params when a new
-// chip is clicked. Keeps the filter rail composable.
-const linkWith = (overrides: Record<string, string | null>): string => {
-	const next = new URLSearchParams();
-	if (filterMinSqft !== null) next.set('minSqft', String(filterMinSqft));
-	if (filterMinKva !== null) next.set('minKva', String(filterMinKva));
-	if (filterZone) next.set('zone', filterZone);
-	for (const [k, v] of Object.entries(overrides)) {
-		if (v === null) next.delete(k);
-		else next.set(k, v);
-	}
-	const qs = next.toString();
-	return qs ? `/properties?${qs}` : '/properties';
-};
-
-const SQFT_TIERS = [4000, 9000, 18000];
-const KVA_TIERS = [50, 200];
+const filtered = applyFilters(properties, filters);
+const zonesInUse = computeZonesInUse(filtered);
+const grouped = groupByType(filtered);
 
 // Chip styling helpers — kept inline to mirror LocationPin's class pattern.
 const chipBase =
@@ -123,7 +85,7 @@ const chipInactive = `${chipBase} border-hairline-steel/60 text-muted-foreground
 					filterMinSqft === v
 						? <span class={chipActive} aria-current="page">{`≥ ${v.toLocaleString()} sq ft`}</span>
 						: <a
-								href={linkWith({ minSqft: String(v) })}
+								href={linkWith(filters, { minSqft: String(v) })}
 								class={chipInactive}
 							>{`≥ ${v.toLocaleString()} sq ft`}</a>
 				))}
@@ -132,7 +94,7 @@ const chipInactive = `${chipBase} border-hairline-steel/60 text-muted-foreground
 					filterMinKva === v
 						? <span class={chipActive} aria-current="page">{`≥ ${v} kVA`}</span>
 						: <a
-								href={linkWith({ minKva: String(v) })}
+								href={linkWith(filters, { minKva: String(v) })}
 								class={chipInactive}
 							>{`≥ ${v} kVA`}</a>
 				))}
@@ -140,7 +102,7 @@ const chipInactive = `${chipBase} border-hairline-steel/60 text-muted-foreground
 				{zonesInUse.map((z) => (
 					filterZone === z
 						? <span class={chipActive} aria-current="page">{z}</span>
-						: <a href={linkWith({ zone: z })} class={chipInactive}>{z}</a>
+						: <a href={linkWith(filters, { zone: z })} class={chipInactive}>{z}</a>
 				))}
 			</div>
 			<p class="mt-3 text-center font-mono text-[13px] text-muted-foreground">

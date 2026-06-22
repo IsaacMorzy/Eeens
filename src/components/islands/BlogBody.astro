@@ -4,6 +4,7 @@ import { tinaField } from '@tinacms/astro/tina-field';
 import type { CmsBlog } from '../../lib/data';
 import FormattedDate from '../FormattedDate.astro';
 import YouTubeEmbed from '../mdx/YouTubeEmbed.astro';
+import { countWords, readingMinutes as buildReadingMinutes } from '../../lib/blog-walker';
 
 interface Props {
 	data?: CmsBlog | null;
@@ -11,30 +12,10 @@ interface Props {
 
 const { data } = Astro.props;
 
-// Recursive walker over the Tina rich-text tree. Sums the lengths of
-// every `text` field, descending into `children`. Replaces the prior
-// JSON.stringify path which double-counted structural keys ('type',
-// 'children', 'level', etc.) and inflated the per-post word count by
-// 20-40 %. 200 wpm is the engineering convention for prose; round up,
-// minimum 1.
-function countWords(node: unknown): number {
-	if (node == null) return 0;
-	if (typeof node === 'string') {
-		const trimmed = node.trim();
-		return trimmed ? trimmed.split(/\s+/).length : 0;
-	}
-	if (Array.isArray(node)) return node.reduce((s, n) => s + countWords(n), 0);
-	if (typeof node === 'object') {
-		const o = node as { text?: unknown; children?: unknown };
-		return countWords(o.text) + countWords(o.children);
-	}
-	return 0;
-}
-
+// Reading-time annotation — computation lives in src/lib/blog-walker.ts so
+// it's unit-tested independently of the Astro frontmatter.
 const computedBodyWordCount = countWords(data?.body);
-const readingMinutes = computedBodyWordCount
-	? Math.max(1, Math.ceil(computedBodyWordCount / 200))
-	: null;
+const readingMinutes = buildReadingMinutes(computedBodyWordCount);
 
 // Custom MDX components available inside the rich-text body. Key matches
 // the template `name` in tina/collections/blog.ts (`YouTubeEmbed`).
