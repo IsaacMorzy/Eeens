@@ -296,6 +296,18 @@ uncovered by the new test surface.
 
 Validated: `pnpm test` 47 + 4 = 51/51 green, `astro check` 0/0/2.
 
+### Phase 14 — utils expansion + skip-link utility  `[ACTIVE]`
+
+Direction: capitalise on the `firstInteger` consolidation by extending
+spec-sheet parsing to the remaining three annotation types without
+copy-paste; amortise the 90-token skip-link class string into a single
+`@layer utilities` rule.
+
+- **14.1 — `parseWater` / `parseClearHeight` / `parseFloorLoading`** `[ACTIVE]` — three new one-liner exports in `src/lib/property-filters.ts`, each delegating to `firstInteger`. Inline comment captures the consolidation thesis for future spec-sheet additions.
+- **14.2 — `.skip-link` utility in `src/styles/global.css`** `[ACTIVE]` — `@layer utilities .skip-link { @apply ... }` absorbs the long class string previously inlined in `Base.astro`. Markup collapses to `<a href="#main" class="skip-link">`.
+- **14.3 — Playwright smoke tests** `[DEFERRED]` — Playwright install + first test would require Chromium download + a running `pnpm dev` (port 9106). Per plan.md § 7.1 the dev box has a long history of port/Tina-datalayer conflicts; smoke tests belong on a clean box. Continuing the existing `vitest`-only strategy covers what runs deterministically on this host.
+
+Validated: vitest 51 + 6 = 57/57 green, astro check 0/0/2.
 
 
 - `astro check` reports **0 errors / 0 warnings** (currently 0 / 0 / 1 hint).

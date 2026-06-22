@@ -22,11 +22,7 @@ const config = (await getConfig()).data?.config ?? null;
 		<BaseHead title={title} description={description} image={image} />
 	</head>
 	<body>
-		{/* ponytail: long class string stays inline; visible only on keyboard focus */}
-		<a
-			href="#main"
-			class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-canvas-light focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 dark:focus-visible:bg-canvas-dark"
-		>
+		<a href="#main" class="skip-link">
 			Skip to main content
 		</a>
 		<TinaIsland name="global" wrapper={islands.global.wrapper}>

@@ -164,6 +164,16 @@
 	}
 }
 
+/* Skip-to-content link utility — keyboard-only anchor. Class consumed by
+   src/layouts/Base.astro. The `@apply` chain absorbs the 90-token class
+   string that was inline in Base.astro markup (Phase 14). Kept here so the
+   markup stays short and the policy lives in one place. */
+@layer utilities {
+	.skip-link {
+		@apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-canvas-light focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 dark:focus-visible:bg-canvas-dark;
+	}
+}
+
 /* Respect user motion preferences. Today the codebase carries no explicit
    @keyframes (Phase-6 polish stripped the only `transform` decoration), so
    this rule is a null-op; future motion handlers inherit this guard rail
