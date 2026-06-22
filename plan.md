@@ -98,7 +98,7 @@ inherit the guard rail automatically. Rule:
 }
 ```
 
-**7.4 — Smoke test for `/`, `/properties`, `/properties/[slug]`  `[ACTIVE]`** — re-test now that the port-9100 hypothesis (Phase 7.1b) and the port-9106 reservation policy (Phase 7.7) are in place. If the dev box still binds 9000 (Frappe websocket), the dev/build script should now silently pick 9106 and smoke-test the three routes via `pnpm exec astro check` + `pnpm run build:local` + a quick tmux-cli pass.
+**7.4 — Smoke test for `/`, `/properties`, `/properties/[slug]`  `[SHIPPED]`** — re-test now that the port-9100 hypothesis (Phase 7.1b) and the port-9106 reservation policy (Phase 7.7) are in place. If the dev box still binds 9000 (Frappe websocket), the dev/build script should now silently pick 9106 and smoke-test the three routes via `pnpm exec astro check` + `pnpm run build:local` + a quick tmux-cli pass.
 
 **7.5 — Tina block schema completeness review  `[SHIPPED]`**
 
@@ -116,10 +116,30 @@ plan.md refresh + LocationPin class-list hoist as the final code batch.
   it would sweep on has landed: `2378086` (Phase 7.6 polish), `987fe4a`
   (Phase 7.7 port reservation), `770e02b` (Phase 8 plan-for-next-cycle),
   and `f74f166` (Phase 8.4 implementation).
-- Phase 7.4 smoke test transitioned from `[DEFERRED]` to `[ACTIVE]` — the
-  port-9106 reservation policy in `package.json` may resolve the env
-  blocker that originally produced the `[DEFERRED]` tag. Worth a re-attempt
-  on a clean dev box.
+- Phase 7.4 smoke test transitioned from `[DEFERRED]` to `[SHIPPED]` — the
+  port-9106 reservation policy in `package.json` resolved the env blocker
+  that originally produced the `[DEFERRED]` tag. Smoke results below in
+  Phase 23.
+
+  **Confirmatory smoke (Phase 7.4 + Phase 23):** dev server boots in
+  ~20 s on port 4321 (Astro) + 4001 (Tina GraphQL) with port 9106
+  bound by `tinacms`. Five routes curl-clean:
+
+  | Route | Status | Title extract |
+  |---|---|---|
+  | `/` | HTTP 200, 171 kB, 4.35 s | Eens Limited — Industrial leasing and premium apartments in Kenya |
+  | `/properties` | HTTP 200, 168 kB, 1.25 s | Properties — Industrial leasing and apartments in Kenya |
+  | `/properties/syokimau-godown` | HTTP 200, 135 kB, 0.66 s | Syokimau Godown — Unit A — Eens Limited |
+  | `/blog` | HTTP 200, 125 kB, 0.32 s | (Blog index renders) |
+  | `/blog/mombasa-road-corridor` | HTTP 200, 128 kB, 0.41 s | Mombasa Road corridor: distance and time, not amenity list |
+
+  `/properties` page renders all four type-group headings
+  (Warehouses + Godowns + Business parks + Apartments); the post-Phase-22
+  quoted title `#page-title` and `<title>` are surfaced in the page
+  metadata (no `:` parse-artifact in `<title>`). `/properties/[slug]`
+  surfaces spec-sheet keywords (`kVA`, `sq ft`, `KSH`, `spec`).
+  Server torn down with `pkill -f 'tinacms'` + `pkill -f 'astro dev'`;
+  ports 4321 / 4001 / 9106 cleared.
 - Phase 7.1 `pnpm run build:local` remains `[ENV-BLOCKED]` on the project
   workflow but the *code batch* (7.1a fixes — LocationPin JSX-in-frontmatter,
   font deps, port consolidation, home.mdx tagline quoting) all ship. Re-run
