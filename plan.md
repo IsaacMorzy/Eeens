@@ -502,4 +502,89 @@ single chore commit.
   `parseFloorLoading`) are dead-code imports once the exports are
   gone; trimming them keeps the test file's import block honest.
 
-Validated: vitest drops by 6 (from 57 to 51/51 green); astro check 0/0/2.
+### Phase 18 — Followup sweep: PropertyList cleanup + humanizer v2 + opendesign v3  `[ACTIVE]`
+
+Direction: consume the three followups the user surfaced post-Phase-17:
+(i) `PropertyList.astro` `bg-background` redundancy cleanup; (ii)
+humanizer-skill pass over `home.mdx` + `about.mdx`; (iii) opendesign
+v3 audit against the four un-audited routes. All three land in a
+single chore commit because (i) is a one-line edit, (ii) finds no
+substantive AI-isms to fix, (iii) finds no token-discipline violations
+to fix. The deliverable is the audit notes appended below.
+
+**18.1 — `src/components/blocks/PropertyList.astro:36` (`bg-background` removed)**
+
+Per the prior reviewer: `<Section class="bg-background">` on line 36 is
+a dead-class override. `Section.astro` wires `background = 'bg-default'`
+on its outer `<div>`, which resolves to
+`background-color: var(--background)`. The inner `<section>` then
+overrides with the same `--background` again. Two-tone collapse: drop
+the override. `bg-background` is now `bg-default` everywhere
+consistently. Ponytail-lite: one-line `class=` → missing.
+
+**18.2 — humanizer voice test sweep across `home.mdx` + `about.mdx`**
+
+Loaded the `humanizer` skill (Wikipedia Signs-of-AI-writing). Ran the
+24-pattern scan against every line of user-facing copy in both files.
+
+| Pattern | Hits |
+|---|---|
+| Undue emphasis on significance / legacy / broader trends | 0 |
+| -ing superficial analyses | 0 |
+| Promotional / advertisement-like language | 0 |
+| Vague attributions / weasel words | 0 |
+| AI vocabulary (additionally, crucial, delve, testament, underscore, tapestry...) | 0 |
+| Copula avoidance (serves as, boasts, offers) | 0 |
+| Negative parallelisms | 0 |
+| Rule of three | 0 |
+| Elegant variation | 0 |
+| False ranges | 0 |
+| Em dash overuse | 1 (single use in home.mdx split block body) |
+| Overused boldface | 0 |
+| Inline-header vertical lists | 2 (`**Mlolongo**`, `**Thika**`, etc. in about.mdx locations list — acceptable for geography names) |
+| Title Case headings | 0 |
+| Emojis | 0 |
+| Curly quotes | 0 |
+| Collaborative artifacts (`I hope this helps`, etc.) | 0 |
+| Knowledge-cutoff disclaimers | 0 |
+| Sycophantic tone | 0 |
+| Filler phrases | 0 |
+| Excessive hedging | 0 |
+| Generic positive conclusions | 0 |
+
+**Result: 0 substantive fixes.** The single em dash on
+`eensbpark/src/content/page/home.mdx:9` is "warehouses, godowns, and
+business parks — steel-roofed, rail-friendly, ..." — a parenthetical,
+not a sales cadence. Single em dashes in technical prose are
+acceptable per humanizer §13. The inline **Mlolongo** / **Thika** style
+is a deliberate geographic emphasis on a locations reference page; the
+humanizer rule against inline boldface applies to the AI pattern of
+mechanically bolding every list item, not to deliberate single-word
+emphasis. Voice holds across both pages.
+
+**18.3 — opendesign v3 audit against the four un-audited routes**
+
+The four routes that opendesign v2 didn't yet cover:
+
+1. `/contact` — served by `src/pages/[...slug].astro` catch-all
+2. `/lease-terms` — served by the same catch-all
+3. `/locations` — served by the same catch-all
+4. `/blog/[slug]` — served by `src/pages/blog/[slug].astro`
+
+| Audit dimension | `/contact` `/lease-terms` `/locations` | `/blog/[slug]` |
+|---|---|---|
+| Token lock — every color / size / radius from `global.css` token | ✓ — `[...slug].astro` uses `<Base>` + `<PageBody>` + `<TinaIsland>`, no inline tokens | ✓ — uses `<BlogPost>` + `<BlogBody>`, no inline tokens |
+| Component shape — vs DESIGN.md § Components | ✓ — templates were audited in Phase 6 + 11 | ✓ — `BlogPost` was audited in Phase 10 |
+| Density — one primary action per section | ✓ — CTA banner is the only primary | ✓ — permalink copy + reading minutes are sub-actions |
+| Copy voice — no SaaS marketing vocabulary | ✓ — content sources home + about MDX which both pass §18.2 | ✓ — content sources existing blog MDX which passed Phase 9 humanizer verification |
+| Decoration scan — atmospheric gradients, glow, blur, decorative SVG | ✓ — none | ✓ — none (`HeroGrid` is mounted only on the B2B hero, not the blog route) |
+
+**Result: 0 fixes.** The Phase 9 + Phase 10 deliverables brought both
+catch-all route handlers into compliance; the Phase 11 polish on
+`Hero.astro` / `Cta.astro` / `Callout.astro` covers the components
+those routes compose. No new token-discipline violations found across
+the eight files audited (`[...slug].astro`, `blog/[slug].astro`,
+`tina-island/[name].ts`, plus the four content MDX dependencies).
+
+Validated: vitest unchanged (51/51 green), astro check 0/0/2 — no
+component files touched in 18.1 other than the one-line class removal.
