@@ -2,14 +2,32 @@
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
 ---
-<Base title="Page not found (404)" description="This page could not be found.">
-	<section class="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
-		<div class="flex flex-col items-center">
-			<img src="/eens-glyph.svg" alt="Eens" width="120" height="120" class="mb-6 size-28 object-contain" />
-			<p class="text-sm font-medium tracking-widest text-primary uppercase">Error 404</p>
-			<h1 class="mt-2 text-4xl font-semibold tracking-tight lg:text-5xl">Lost in space</h1>
-			<p class="mx-auto mt-4 max-w-md text-muted-foreground">This page drifted out of orbit. Let's get you back to mission control.</p>
-			<Button href="/" class="mt-8">Back to home</Button>
-		</div>
-	</section>
+
+<Base
+	title="Address not found (404) — Eens Limited"
+	description="The page you requested could not be located. Browse the portfolio or send us the URL for a fix."
+>
+	<main class="bg-background">
+		<section class="mx-auto flex min-h-[72vh] max-w-3xl flex-col items-center justify-center px-6 py-section text-center">
+			<p class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">
+				HTTP 404 — page not found
+			</p>
+			<h1 class="mt-4 font-display text-balance text-4xl font-semibold tracking-[-0.6px] md:text-5xl">
+				The listing or page is not published.
+			</h1>
+			<p class="mt-5 max-w-xl text-pretty text-base text-muted-foreground">
+				The page you requested does not exist on this site. The most common cause is a stale
+				link from email or an outdated document — the listing may have been withdrawn, the
+				unit relisted under another reference, or the page was never published.
+			</p>
+			<div class="mt-10 grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
+				<Button href="/" size="lg">Return home</Button>
+				<Button href="/properties" variant="secondary" size="lg">Browse properties</Button>
+			</div>
+			<p class="mt-8 max-w-md font-mono text-[13px] text-muted-foreground">
+				If this page was linked from an email or printed document, send the URL to
+				hello@eens.co.ke and we will fix the link.
+			</p>
+		</section>
+	</main>
 </Base>
