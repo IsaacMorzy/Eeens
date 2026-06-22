@@ -282,7 +282,7 @@ zonesInUse, linkWith). `countWords` + `readingMinutes` extracted from
 commas before matching, so `"1,200 kVA"` returned `1` instead of
 `1200`. One-line fix mirrored the `parseSqft` tolerance.
 
-### Phase 13 — A11y + Features polish + test-coverage expansion  `[ACTIVE]`
+### Phase 13 — A11y + Features polish + test-coverage expansion  `[SHIPPED]`  (commit `bc9b7c3`)
 
 Direction: ship the leftover CUTs from the Phase 11 opendesign
 audit; modernize a11y infrastructure; left-align the Features block
@@ -296,18 +296,30 @@ uncovered by the new test surface.
 
 Validated: `pnpm test` 47 + 4 = 51/51 green, `astro check` 0/0/2.
 
-### Phase 14 — utils expansion + skip-link utility  `[ACTIVE]`
+### Phase 14 — utils expansion + skip-link utility  `[SHIPPED]`  (commit `eddf472`)
 
 Direction: capitalise on the `firstInteger` consolidation by extending
 spec-sheet parsing to the remaining three annotation types without
 copy-paste; amortise the 90-token skip-link class string into a single
 `@layer utilities` rule.
 
-- **14.1 — `parseWater` / `parseClearHeight` / `parseFloorLoading`** `[ACTIVE]` — three new one-liner exports in `src/lib/property-filters.ts`, each delegating to `firstInteger`. Inline comment captures the consolidation thesis for future spec-sheet additions.
-- **14.2 — `.skip-link` utility in `src/styles/global.css`** `[ACTIVE]` — `@layer utilities .skip-link { @apply ... }` absorbs the long class string previously inlined in `Base.astro`. Markup collapses to `<a href="#main" class="skip-link">`.
+- **14.1 — `parseWater` / `parseClearHeight` / `parseFloorLoading`** `[SHIPPED]` — three new one-liner exports in `src/lib/property-filters.ts`, each delegating to `firstInteger`. Inline comment captures the consolidation thesis for future spec-sheet additions.
+- **14.2 — `.skip-link` utility in `src/styles/global.css`** `[SHIPPED]` — `@layer utilities .skip-link { @apply ... }` absorbs the long class string previously inlined in `Base.astro`. Markup collapses to `<a href="#main" class="skip-link">`.
 - **14.3 — Playwright smoke tests** `[DEFERRED]` — Playwright install + first test would require Chromium download + a running `pnpm dev` (port 9106). Per plan.md § 7.1 the dev box has a long history of port/Tina-datalayer conflicts; smoke tests belong on a clean box. Continuing the existing `vitest`-only strategy covers what runs deterministically on this host.
 
 Validated: vitest 51 + 6 = 57/57 green, astro check 0/0/2.
+
+### Phase 15 — Tidy dangling churn + drop the spec-sheet abstraction  `[ACTIVE]`
+
+Direction: ship the leftover Phase-12 consumer refactor edit that got
+dropped during the multi-pass fix; apply the minimum-viable decision on
+the generic spec-sheet renderer; defer Playwright with rationale.
+
+- **15.1 — Commit dangling `permalink={/blog/${slug}}/` line on `<BlogPost>` in `src/pages/blog/[slug].astro`** `[ACTIVE]` — `git status` has shown this single line as still-unstaged since the Phase 12 consumer refactor (commit `1b0c473`). Folded into the next chore commit so the worktree stays clean and the next `git status` returns zero.
+- **15.2 — Generic spec-sheet renderer on `/properties/[slug]`** `[DEFERRED]` — `thinker-with-files-gemini` evaluated the cost of a `.map()` over a config tuple vs. the existing inline JSX. The five `<div><dt>{label}</dt><dd>{annotated} {unit}</dd></div>` blocks total ~25 lines; a `.map()` over `{ key, label, unit }` tuples costs the same line count with no extraction win. Status quo preserved; revisit when a 6th spec field appears (probably never — three parsers + Power already covers every field on offer).
+- **15.3 — Playwright smoke tests** `[DEFERRED]` — same deferral as 14.3 (env-blocked on this dev box per § 7.1 + 7.1b). Continuing the vitest-only strategy covers what runs deterministically here.
+
+Validated: vitest 57/57 green, astro check 0/0/2.
 
 
 - `astro check` reports **0 errors / 0 warnings** (currently 0 / 0 / 1 hint).

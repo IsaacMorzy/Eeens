@@ -25,6 +25,7 @@ if (!blog.pubDate) return new Response('Not Found', { status: 404 });
 	pubDate={new Date(blog.pubDate)}
 	updatedDate={blog.updatedDate ? new Date(blog.updatedDate) : undefined}
 	heroImage={blog.heroImage ?? null}
+	permalink={`/blog/${slug}`}
 >
 	<BlogBody data={blog} />
 </BlogPost>
