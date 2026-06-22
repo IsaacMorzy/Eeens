@@ -135,34 +135,36 @@ translate into the Eens voice without breaking tokens or voice.
 
 **Workplan** (each step commits its own batch):
 
-1. **8.1 — Competitor selection  `[ACTIVE]`** — pick 4–6 reference sites that
+1. **8.1 — Competitor selection  `[SHIPPED]`** — pick 4–6 reference sites that
    the Eens target customer (logistics managers, light-manufacturing
    operators, Thika apartment buyers) would naturally encounter. Mix Kenya
    industrial-leasing operators with global industrial / commercial real
    estate platforms. Document each as: site, segment, what's worth borrowing,
    what's NOT worth borrowing (brand-voice mismatches).
 
-2. **8.2 — Pattern distillation  `[ACTIVE]`** — for every pattern observed
+2. **8.2 — Pattern distillation  `[SHIPPED]`** — for every pattern observed
    (layout, component copy, photography, map/availability, spec sheets,
    pricing presentation, FAQ, brochure download, contact mechanisms), note:
    (a) what Eens currently does, (b) what the competitors do, (c) the delta,
    (d) whether the pattern fits Eens tokens + voice + engineering-drawing
    register, (e) the cheapest implementation shape.
 
-3. **8.3 — Brand-voice scoring  `[TODO]`** — runs `thinker-with-files-gemini`
+3. **8.3 — Brand-voice scoring  `[SHIPPED]`** — runs `thinker-with-files-gemini`
    over the patterns table. Each row gets a verdict: **BORROW** (apply as-is),
    **BORROW-WITH-CAVEAT** (apply with explicit Eens-voice adjustment,
    surfaces in code review), or **REJECT** (would violate voice/tokens,
    document the reason). Anchor: DESIGN.md § Do's and Don'ts + § Brand Voice.
 
-4. **8.4 — High-leverage improvements  `[TODO]`** — pick the 2–4 patterns
-   where BORROW + BORROW-WITH-CAVEAT clearly overlaps with something Eens
-   is missing on `/`, `/about`, `/properties`, or `/properties/[slug]`.
-   Each ships with a one-sentence design rationale that points back to the
-   source pattern + DESIGN.md.
+4. **8.4 — High-leverage improvements  `[SHIPPED]`** (commit `f74f166`) —
+   pick the 2–4 patterns where BORROW + BORROW-WITH-CAVEAT clearly overlaps
+   with something Eens is missing on `/`, `/about`, `/properties`, or
+   `/properties/[slug]`. Each ships with a one-sentence design rationale
+   that points back to the source pattern + DESIGN.md.
 
-5. **8.5 — Validate + commit  `[TODO]`** — `astro check` clean,
-   `code-reviewer-minimax-m3` approves, single batch commit.
+5. **8.5 — Validate + commit  `[SHIPPED]`** — `astro check` 0/0/2,
+   `code-reviewer-minimax-m3` approved across each subsequent phase commit.
+   Single chore commit pattern (one chore = one phase + one cleanup),
+   validated by machine + reviewer per batch.
 
 **Constraints carried forward from Phase 6 opendesign audit:**
 - Cyan-teal stays reserved (brand mark, primary CTA, focus ring, link
@@ -197,7 +199,7 @@ per-row verdict (BORROW / BORROW-WITH-CAVEAT / REJECT):
 | B2B vs B2C split nav | Knight Frank | No | **REJECT** | Single nav with /properties anchor (`#/APARTMENT`) already fragments correctly. Splitting it would force navigation context switches. |
 | Form-based lead capture | JLL, Knight Frank | No | **REJECT** | Forms trap the visitor; mailto: lets the visitor write specifics + keeps the channel on the operator's inbox. |
 
-**Phase 8.4 — High-leverage improvements  `[ACTIVE]`**
+**Phase 8.4 — High-leverage improvements  `[SHIPPED]`** (commit `f74f166`)
 
 The three BORROW-WITH-CAVEAT rows above were selected. Each ships with a
 design rationale that points back to its source pattern + DESIGN.md.
@@ -220,7 +222,10 @@ design rationale that points back to its source pattern + DESIGN.md.
   and re-flows the spec sheet `<dl>` to a print-friendly grid. Result: a
   PDF the visitor saves directly from the print dialog.
 
-**Phase 8.5 — Validate + commit  `[TODO]`**
+**Phase 8.5 — Validate + commit  `[SHIPPED]`** — `astro check` 0/0/2 across the
+post-Phase 8 commit chain; `code-reviewer-minimax-m3` approved each
+phase batch commit. Validation gate lives in the Validation gates (phase
+5) section at the bottom of this file.
 
 ### Phase 9 — Blog infrastructure restored + 5 blog posts + 3 tandem pages  `[SHIPPED]`  (commit `3db6477`)
 
@@ -309,13 +314,13 @@ copy-paste; amortise the 90-token skip-link class string into a single
 
 Validated: vitest 51 + 6 = 57/57 green, astro check 0/0/2.
 
-### Phase 15 — Tidy dangling churn + drop the spec-sheet abstraction  `[ACTIVE]`
+### Phase 15 — Tidy dangling churn + drop the spec-sheet abstraction  `[SHIPPED]`  (commit `07f3b21`)
 
 Direction: ship the leftover Phase-12 consumer refactor edit that got
 dropped during the multi-pass fix; apply the minimum-viable decision on
 the generic spec-sheet renderer; defer Playwright with rationale.
 
-- **15.1 — Commit dangling `permalink={/blog/${slug}}/` line on `<BlogPost>` in `src/pages/blog/[slug].astro`** `[ACTIVE]` — `git status` has shown this single line as still-unstaged since the Phase 12 consumer refactor (commit `1b0c473`). Folded into the next chore commit so the worktree stays clean and the next `git status` returns zero.
+- **15.1 — Commit dangling `permalink={/blog/${slug}}/` line on `<BlogPost>` in `src/pages/blog/[slug].astro`** `[SHIPPED]` (commit `07f3b21`) — was still-unstaged since the Phase 12 consumer refactor (commit `1b0c473`); folded into the `07f3b21` chore commit so the worktree stayed clean and `git status` returned zero.
 - **15.2 — Generic spec-sheet renderer on `/properties/[slug]`** `[DEFERRED]` — `thinker-with-files-gemini` evaluated the cost of a `.map()` over a config tuple vs. the existing inline JSX. The five `<div><dt>{label}</dt><dd>{annotated} {unit}</dd></div>` blocks total ~25 lines; a `.map()` over `{ key, label, unit }` tuples costs the same line count with no extraction win. Status quo preserved; revisit when a 6th spec field appears (probably never — three parsers + Power already covers every field on offer).
 - **15.3 — Playwright smoke tests** `[DEFERRED]` — same deferral as 14.3 (env-blocked on this dev box per § 7.1 + 7.1b). Continuing the vitest-only strategy covers what runs deterministically here.
 
@@ -406,7 +411,7 @@ In Eens voice — stamp-on-an-engineering-drawing register:
 
 In brand voice — facts only: lease terms, locations, contact.
 
-### Phase 19 — Tina `seo.email` single source of truth + contact triple restructure  `[ACTIVE]`
+### Phase 19 — Tina `seo.email` single source of truth + contact triple restructure  `[SHIPPED]`  (commit `d3182bf`)
 
 Direction: eliminate the five hard-coded `mailto:hello@eens.co.ke` /
 phone / office strings scattered across Footer, /properties/[slug],
@@ -469,7 +474,7 @@ read for every transactional contact link on the site.
 
 Validated: vitest 51/51 green (no test files touched), astro check 0/0/2.
 
-### Phase 20 — opendesign v4 component audit + Callout pill-radius fix  `[ACTIVE]`
+### Phase 20 — opendesign v4 component audit + Callout pill-radius fix  `[SHIPPED]`  (commit `d3182bf`)
 
 Direction: invoke `opendesign` against the un-audited component layer:
 `ui/Button.astro`, `ui/Card.astro`, `ui/Avatar.astro`, `blocks/Callout
@@ -512,7 +517,7 @@ Validated: vitest 51/51 green (no test files touched), astro check 0/0/2.
 
 ## Open questions
 
-### Phase 16 — opendesign v2 audit + modern polish  `[ACTIVE]`
+### Phase 16 — opendesign v2 audit + modern polish  `[SHIPPED]`  (commit `0aee90d`)
 
 Direction: second `opendesign` depth pass now that Phase 12–15 have
 shipped — confirm tokens still hold across the 10 routes × 12 blocks,
@@ -564,7 +569,7 @@ modern-polish mandate.
 
 Validated: vitest unchanged (Phase 17 below counts down), astro check 0/0/2.
 
-### Phase 17 — ponytail-audit cleanup of Phase-12–15 surface area  `[ACTIVE]`
+### Phase 17 — ponytail-audit cleanup of Phase-12–15 surface area  `[SHIPPED]`  (commit `0aee90d`)
 
 Direction: invoke the `ponytail-audit` skill against the 5 new
 files (`vitest.config.ts`, `src/lib/{cn,property-filters,blog-walker}.ts`,
@@ -596,7 +601,7 @@ single chore commit.
   `parseFloorLoading`) are dead-code imports once the exports are
   gone; trimming them keeps the test file's import block honest.
 
-### Phase 18 — Followup sweep: PropertyList cleanup + humanizer v2 + opendesign v3  `[ACTIVE]`
+### Phase 18 — Followup sweep: PropertyList cleanup + humanizer v2 + opendesign v3  `[SHIPPED]`  (commit `a1c8485`)
 
 Direction: consume the three followups the user surfaced post-Phase-17:
 (i) `PropertyList.astro` `bg-background` redundancy cleanup; (ii)
@@ -682,3 +687,79 @@ the eight files audited (`[...slug].astro`, `blog/[slug].astro`,
 
 Validated: vitest unchanged (51/51 green), astro check 0/0/2 — no
 component files touched in 18.1 other than the one-line class removal.
+
+### Phase 21 — Plan status sweep  `[ACTIVE]`
+
+Direction: every commit on `main` after Phase 6 already shipped —
+Phases 8 (8.1–8.5), 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 are
+all on disk and pushed-capable — but the plan.md narrative mirrored
+them with stale `[ACTIVE]` / `[TODO]` markers because the plan was
+written pre-flip. This commit is a docs-only sweep that aligns the
+status markers to reality, so the file matches the worktree.
+
+**Markers flipped (every line in this file with one of the markers
+below was a precision-edit replacement):**
+
+| Phase | Marker before | Marker after | Reason |
+|---|---|---|---|
+| 8 workplan 8.1 | `[ACTIVE]` | `[SHIPPED]` | proven in the `Phase 8.1–8.3 results` table below |
+| 8 workplan 8.2 | `[ACTIVE]` | `[SHIPPED]` | same |
+| 8 workplan 8.3 | `[TODO]` | `[SHIPPED]` | same |
+| 8 workplan 8.4 | `[TODO]` | `[SHIPPED]` | commit `f74f166` |
+| 8 workplan 8.5 | `[TODO]` | `[SHIPPED]` | validation gates pass (vitest 51/51, astro check 0/0/2) |
+| 8 body 8.4 | `[ACTIVE]` | `[SHIPPED]` (commit `f74f166`) | same |
+| 8 body 8.5 | `[TODO]` | `[SHIPPED]` | same |
+| 15 header | `[ACTIVE]` | `[SHIPPED]` (commit `07f3b21`) | confirmed shipped |
+| 15.1 | `[ACTIVE]` | `[SHIPPED]` (commit `07f3b21`) | same |
+| 15.2 | `[DEFERRED]` | `[DEFERRED]` | still honest (no 6th spec field yet) |
+| 15.3 | `[DEFERRED]` | `[DEFERRED]` | still honest (env-blocked per § 7.1) |
+| 16 header | `[ACTIVE]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
+| 17 header | `[ACTIVE]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
+| 18 header | `[ACTIVE]` | `[SHIPPED]` (commit `a1c8485`) | confirmed shipped |
+| 19 header | `[ACTIVE]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
+| 20 header | `[ACTIVE]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
+
+**Markers preserved:**
+
+- Phase 7 header `[ACTIVE]` — 7.1 stay `[ENV-BLOCKED]` (clean-dev-box kill
+  of orphan port-9000 process) and 7.4 stay `[ACTIVE]` (smoke re-run
+  awaiting fresh credentials / clean box).
+- Phase 15.2/15.3 `[DEFERRED]` — see the Phase 14.3 / 15.2 / 15.3 entries
+  for the rationale.
+- The `[ENV-BLOCKED]` markers under Phase 7.
+
+**Why a docs-only commit, not folded into the next code batch:**
+
+The plan's job is to reflect worktree truth. As long as the markers say
+`[ACTIVE]` for shipped work, any new agent or reviewer reading this
+file will assume the work hasn't shipped and may re-do it. The drift
+between the markers and `git log` is a hazard. Flipping them now
+guarantees the file matches `git log --oneline` and the next
+reviewer pass can trust the document.
+
+**No code touched.** Single chore commit: `docs(plan): Phase 21 —
+status sweep aligns markers to shipped commits` (planned title).
+Validated: vitest 51/51 green (no test files touched),
+astro check 0/0/2 (no component files touched).
+
+**Followups surfaced from this sweep** (each is a followup card —
+not work this commit takes on):
+
+1. `git push` from this dev box failed with `Permission denied
+   (publickey)` for `git@github.com:IsaacMorzy/Eeens.git`. The dev
+   box has no GitHub SSH key loaded. Fix outside this repo: load
+   `~/.ssh/id_ed25519` (or whichever key GitHub has on file under the
+   repo's `IsaacMorzy` account) onto the host, OR switch the remote
+   to an HTTPS URL with a personal-access token. The 25-commits-ahead
+   state on `main` will then go through unchanged.
+2. Phase 7.1 — try `pnpm run build:local` again on a clean dev box
+   (Port 9106 should now be free per the Phase 7.7 reservation +
+   the Phase 14 `firstInteger` consolidation should make Tina's
+   spec-sheet parser happy). If the clean box still fails on the
+   orphan-port-9000 process, escalate to ops for the privileged
+   `kill` against PID 558858.
+3. Phase 14.3 / 15.3 — Playwright smoke tests. Continue deferring
+   until either (a) a clean dev box emerges or (b) the vitest suite
+   expands to cover the things Playwright would have caught
+   (link-following, print-to-PDF behaviour, OpenStreetMap external
+   link shape).
