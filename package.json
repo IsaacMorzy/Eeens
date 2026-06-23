@@ -17,7 +17,11 @@
     "astro": "astro",
     "prebuild": "node scripts/smoke-env.mjs",
     "smoke:env": "node scripts/smoke-env.mjs",
-    "audit": "pnpm audit --prod --audit-level=critical"
+    "audit": "pnpm audit --prod --audit-level=critical",
+    "lint:wrappers": "node scripts/lint-wrappers.mjs",
+    "verify": "pnpm run lint:wrappers && pnpm exec astro check && pnpm test",
+    "install:hooks": "node scripts/setup-hooks.mjs",
+    "ci:vercel": "node scripts/replicate-vercel-build.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.2",

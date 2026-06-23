@@ -1,20 +1,28 @@
 ---
-import { Icon } from 'astro-icon/components';
+import Icon from './ui/Icon.astro';
 import type { HTMLAttributes } from 'astro/types';
 
 type Props = HTMLAttributes<'a'> & {
 	title?: string | null;
 	link?: string | null;
-	/** Any Iconify icon name, e.g. "tabler:brand-x". */
+	/** Any Iconify icon name, e.g. "tabler:brand-x" or "tabler:mail". */
 	icon?: string | null;
 };
 
 const { title, link, icon, ...rest } = Astro.props;
 const safeTitle = title ?? '';
 const safeLink = link ?? '#';
+// Strip the legacy `tabler:` set prefix from CMS-supplied icon names
+// before handing to the local wrapper — the wrapper auto-prepends
+// `tabler:` once. The regex is case-insensitive and tolerates
+// accidental surrounding whitespace from author edits so existing
+// CMS data (`tabler:brand-x`) resolves as `tabler:brand-x` rather
+// than `tabler:tabler:brand-x`, while new data may also pass bare
+// names (`brand-x`).
+const iconName = icon?.replace(/^\s*tabler:/i, '').trim() || null;
 ---
 
 <a href={safeLink} target="_blank" aria-label={`Go to ${safeTitle}`} {...rest}>
 	<span class="sr-only">{safeTitle}</span>
-	{icon && <Icon name={icon} size={32} />}
+	{iconName && <Icon name={iconName} size={32} />}
 </a>

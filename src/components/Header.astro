@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
+import Icon from './ui/Icon.astro';
 import { tinaField } from "@tinacms/astro/tina-field";
 import type { CmsConfig } from '../lib/data';
 import IconLink from "./IconLink.astro";
@@ -49,8 +49,8 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 			aria-expanded="false"
 			class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none xl:hidden"
 		>
-			<Icon name="tabler:menu-2" class="icon-open size-5" />
-				<Icon name="tabler:x" class="icon-close size-5" />
+		<Icon name="menu-2" class="icon-open size-5" />
+			<Icon name="x" class="icon-close size-5" />
 		</button>
 		</div>
 	</nav>

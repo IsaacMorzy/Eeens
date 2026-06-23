@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
+import Icon from './ui/Icon.astro';
 ---
 <button
 	data-theme-toggle
@@ -7,8 +7,8 @@ import { Icon } from 'astro-icon/components';
 	aria-label="Toggle color theme"
 	class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
 >
-	<Icon name="tabler:sun" class="hidden size-5 dark:block" />
-	<Icon name="tabler:moon" class="block size-5 dark:hidden" />
+	<Icon name="sun" class="hidden size-5 dark:block" />
+	<Icon name="moon" class="block size-5 dark:hidden" />
 </button>
 <script is:inline>
 	// Delegate from document so the handler survives DOM swaps from

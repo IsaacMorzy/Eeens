@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
+import Icon from '../components/ui/Icon.astro';
 import Base from './Base.astro';
 import { listBlogs, type CmsBlog } from '../lib/data';
 
@@ -31,7 +31,7 @@ const related: CmsBlog[] = allBlogs
 			href="/blog"
 			class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
 		>
-			<Icon name="tabler:arrow-left" size={16} />
+			<Icon name="arrow-left" size={16} />
 			Back to blog
 		</a>
 	</div>
@@ -90,7 +90,7 @@ const related: CmsBlog[] = allBlogs
 					class="inline-flex items-center gap-1.5 rounded-sm border border-hairline-steel/60 bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-ring/50"
 					aria-label="Copy permalink"
 				>
-					<Icon name="tabler:link" size={14} />
+					<Icon name="link" size={14} />
 					<span data-label>Copy link</span>
 				</button>
 			</div>

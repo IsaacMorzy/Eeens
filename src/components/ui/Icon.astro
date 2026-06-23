@@ -4,10 +4,13 @@ import { Icon as Iconify } from 'astro-icon/components';
 interface Props {
 	/** Any Tabler icon name (without the `tabler:` prefix). */
 	name?: string | null;
+	/** Tailwind width/height utility, e.g. "size-4" or "size-8". */
 	class?: string;
+	/** Native width/height in px, forwarded to astro-icon. */
+	size?: number | string;
 }
 
-const { name, class: className } = Astro.props;
+const { name, class: className, size } = Astro.props;
 const iconName = name ? `tabler:${name}` : null;
 ---
-{iconName && <Iconify name={iconName} class={className ?? 'size-5'} />}
+{iconName && <Iconify name={iconName} class={className ?? 'size-5'} size={size} />}
