@@ -1,4 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "export NODE_OPTIONS=--max-old-space-size=6144; pnpm run audit || exit 1; pnpm build || exit 1; pnpm build:search || echo 'warning: search index sync failed (non-fatal) -- see Vercel build log'"
+  "buildCommand": "export NODE_OPTIONS=--max-old-space-size=6144; node scripts/smoke-env.mjs || exit 1; pnpm run audit || exit 1; pnpm build:local || exit 1; pnpm build:search || echo 'warning: search index sync failed (non-fatal) -- see Vercel build log'"
 }
