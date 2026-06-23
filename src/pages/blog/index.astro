@@ -1,9 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
-import { getConfig, listBlogs, type CmsBlog } from '../../lib/data';
+import { listBlogs, type CmsBlog } from '../../lib/data';
 
-const config = (await getConfig()).data?.config ?? null;
 const blogs: CmsBlog[] = await listBlogs();
 ---
 

@@ -29,7 +29,7 @@ interface PropertyListBlockData {
 
 interface Props { data: PropertyListBlockData }
 
-const { data } = Astro.props;
+const { data } = Astro.props as Props & Record<string, unknown>;
 const blockActions: Action[] = (data.actions ?? []).filter(
 	(a: Action | null | undefined): a is Action => a !== null && a !== undefined,
 );
@@ -50,12 +50,12 @@ const filtered: PropertyNode[] = all
 		{(data.title || data.description) && (
 			<header class="mx-auto mb-10 max-w-3xl text-center md:text-left">
 				{data.title && (
-					<h2 data-tina-field={tinaField(data, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.4px] md:text-4xl">
+					<h2 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.4px] md:text-4xl">
 						{data.title}
 					</h2>
 				)}
 				{data.description && (
-					<p data-tina-field={tinaField(data, 'description')} class="mt-4 max-w-2xl text-pretty text-base text-muted-foreground">
+					<p data-tina-field={tinaField(data as { description?: unknown }, 'description')} class="mt-4 max-w-2xl text-pretty text-base text-muted-foreground">
 						{data.description}
 					</p>
 				)}
