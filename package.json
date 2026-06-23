@@ -5,10 +5,10 @@
   "engines": {
     "node": ">=22.22.0"
   },
-  "packageManager": "pnpm@^11",
+  "packageManager": "pnpm@11.8.0",
   "scripts": {
     "dev": "tinacms dev --datalayer-port 9106 -c \"astro dev\"",
-    "build": "tinacms build --datalayer-port 9106 --content=local && astro build",
+    "build": "tinacms build --datalayer-port 9106 --content=local --skip-cloud-checks && astro build",
     "build:local": "tinacms build --datalayer-port 9106 --local --skip-cloud-checks -c \"astro build\"",
     "build:search": "tinacms search-index",
     "test": "vitest run",
