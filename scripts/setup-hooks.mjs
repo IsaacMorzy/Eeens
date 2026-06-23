@@ -31,31 +31,36 @@ const MARKER = '# eensbpark:pre-push:install:hooks';
 
 const HOOK_CONTENT = `#!/usr/bin/env bash
 ${MARKER}
-# Pre-push guard for eensbpark — installed by scripts/setup-hooks.mjs.
+# Pre-push guard for eensbpark -- installed by scripts/setup-hooks.mjs.
 # Runs the local verify chain (astro check + lint:wrappers +
 # vitest) before allowing the push to reach Vercel.
 set -e
-cd "\\$(git rev-parse --show-toplevel)"
+cd "$(git rev-parse --show-toplevel)"
 echo '[pre-push] pnpm run verify'
 pnpm run verify
 `;
 
-if (existsSync(HOOK_PATH)) {
+// FORCE bypasses the marker check entirely; otherwise we check the marker
+// to avoid clobbering unrelated hooks. (Marker check is BEFORE the FORCE
+// override in the contract; FORCE is reserved for the explicit user
+// override case -- e.g. an old hook from a prior version, a source script
+// bug fix, or the dev-box first install)
+if (existsSync(HOOK_PATH) && !FORCE) {
 	const existing = readFileSync(HOOK_PATH, 'utf8');
 	if (existing.includes(MARKER)) {
 		console.log('install:hooks: pre-push hook already installed ✓');
 		process.exit(0);
 	}
-	if (!FORCE) {
-		console.error('install:hooks: a different pre-push hook already exists.');
-		console.error('Re-run with --force to replace it, or wire `pnpm run verify`');
-		console.error('into the existing hook manually.');
-		process.exit(1);
-	}
-	console.error('install:hooks: --force: replacing existing pre-push hook.');
+	console.error('install:hooks: a different pre-push hook already exists.');
+	console.error('Re-run with --force to replace it, or wire `\u0060pnpm run verify\u0060`');
+	console.error('into the existing hook manually.');
+	process.exit(1);
+}
+if (existsSync(HOOK_PATH) && FORCE) {
+	console.log('install:hooks: --force: replacing existing pre-push hook.');
 }
 
 writeFileSync(HOOK_PATH, HOOK_CONTENT);
 chmodSync(HOOK_PATH, 0o755);
 console.log(`install:hooks: pre-push hook installed at ${HOOK_PATH}`);
-console.log('Run `pnpm run install:hooks` once after each fresh clone.');
+console.log('Run `\u0060pnpm run install:hooks\u0060 once after each fresh clone.');

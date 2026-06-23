@@ -63,3 +63,14 @@ dist
 .understand-anything/auto-update.log
 .understand-anything/config.json
 .understand-anything/.understandignore
+# Understand-Anything skill runtime state (regenerated on each
+# invocation: checkpoint trash dirs, graph snapshots, fingerprints)
+.understand-anything/.trash-*/
+.understand-anything/fingerprints.json
+.understand-anything/knowledge-graph.json
+.understand-anything/meta.json
+.understand-anything/tmp/
+
+# Dev-box error log (Phase debug sessions overwrite; broader glob
+# catches error.log/error.md/error.json if the logger target changes)
+error.*
