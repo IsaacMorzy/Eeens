@@ -930,3 +930,53 @@ Validated end-to-end: `gh auth status` ✓, `gh repo view IsaacMorzy/Eeens` ✓,
 - No `/tmp` copies of either token survive.
 
 Validated: `gh auth status` ✓, `gh repo view IsaacMorzy/Eeens` ✓, `git fetch origin --dry-run` ✓, `vercel ls --yes` with `VERCEL_TOKEN` env var ✓ (project `musyokaisaac98s-projects/eens`, ~12 of last 18 deployments in `Error`, all-cause the Phase-23.1 vercel.json drift fix).
+
+### Phase 26 — Shell history tightening + post-reviewer hardening + deploy verification  `[ACTIVE]`
+
+**Direction:** close three loose ends from Phases 23–25: (i) `code-reviewer-minimax-m3` flagged that `~/.bash_history` was likely mode 644 by default and `HISTIGNORE` did not catch non-`export` token assignments like `VERCEL_TOKEN=v vercel ls …`; (ii) the first chore commit (`Phase 23–25`) shipped without a Phase 26 entry because the plan.md anchor wasn't unique enough; (iii) we still need a confirmed `Ready` deployment on Vercel from the corrected `vercel.json` buildCommand before the security work is "done done". One chore commit closes all three.
+
+**26.1 — Code-reviewer's `~/.bash_history` permissions tightening  `[SHIPPED]`**
+
+`~/.bash_history` created by the shell at first command-line run with whatever umask was active. On this host that's 644 (world-readable). Two-line fix:
+```sh
+chmod 600 ~/.bash_history
+touch ~/.bash_history                     # refresh mtime so the next read window behaves predictably
+```
+After this, the history file is owner-only. Combined with Phase 26.2's tighter `HISTIGNORE`, even unfiltered commands are no longer world-readable.
+
+**26.2 — Code-reviewer's `HISTIGNORE` extension (non-`export` assignments + curl auth flags)  `[SHIPPED]`**
+
+Existing `HISTIGNORE` glob from §26.1 of the prior chore covered only `export *TOKEN*:...`. Extended to also catch **non-`export`** env-set-and-run patterns:
+```
+HISTIGNORE="export *TOKEN*:*export *SECRET*:*export *KEY*:*export *PASS*:*export *GHP*:*export *VCP*:gh auth login*:gh auth refresh*:vercel login*:export PASSWORD=*:*TOKEN=*:*SECRET=*:*KEY=*:*PASS=*:curl *Bearer *:curl *Authorization*:*Token *"
+```
+New patterns:
+- `*TOKEN=*` / `*SECRET=*` / `*KEY=*` / `*PASS=*` — covers inline assignments like `VERCEL_TOKEN=v vercel ls …`, `GH_TOKEN=v gh …` (no `export` keyword; common bash idiom `var=val cmd`).
+- `curl *Bearer *` / `curl *Authorization*` — covers API-call curl lines that embed the token in a header (`curl -H 'Authorization: Bearer vcp_…'…`).
+- `*Token *` — catches `--token <arg>` to non-curl tools.
+
+Low real-world risk this session (everything was piped via stdin — no shell-visible token strings), but the pattern closes the gap.
+
+**26.3 — Phase 23-25 commit that omitted Phase 26  `[SHIPPED — folded into this Phase-26 chore commit]`**
+
+The earlier `chore(vercel+plan): Phase 23–26` commit pushed before §26 str_replace hit the wrong anchor string. This commit adds the missing Phase 26 entry on top of the already-shipped `vercel.json` + the prior 67-line `plan.md` delta. The commit title is now `chore(vercel+plan): Phase 23–26 vercel drift + creds + shell hardening + deploy verification` so future `git log --oneline` searches surface the same line.
+
+**26.4 — Vercel deploy verification (post-push)  `[AWAITING → SHIPPED once `vercel ls --yes` returns Ready]`**
+
+After this commit reaches `origin/main`, Vercel's GitHub-app integration (wired since Phase 22.1) auto-triggers a production build against the **corrected** `vercel.json` buildCommand (`pnpm build && pnpm build:search` per README intent). Expected outcomes:
+- Build status: `Ready` (no OOM, no error).
+- Tina Cloud env contract holds (the three vars were already on Vercel project).
+- Search-index sync: soft-warning or Ready via `|| echo 'warning:'`.
+
+`vercel ls --yes` post-push surfaces the new deployment's `id`/`url`/`state`. The first ~12 `Error` deployments from the last 48h will clear because the next push runs on the corrected path. The queue of failures resolves as the corrected build path runs through Vercel's build infrastructure.
+
+**Side-effect already documented in Plan §24.5c.** `gh auth setup-git` global `credential.helper = !gh auth git-credential` is a footgun for any future non-GH `git push`. Fine for the GH-only push at hand; switch to per-repo `git config --local credential.helper …` if you anticipate Bitbucket / GitLab / self-hosted remotes.
+
+Validated on this dev box (pre-second-push):
+- vitest 51/51 green (no test files touched), `astro check` 0/0/2.
+- Pre-commit scrub: 0 real tokens in the working tree (2 redacted documentary mentions in `plan.md`).
+- `gh auth status` ✓ (IsaacMorzy).
+- `~/.bash_history` mode 600 ✓ after tightening.
+- File mode 600 on `~/.bashrc`'s appended HISTIGNORE block.
+
+After this phase's `git push`: `vercel ls --yes | head -8` will surface the latest deployment's url/state; flipping the marker to `[SHIPPED]` once `Ready` lands.
