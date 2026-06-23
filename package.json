@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=22.22.0"
   },
+  "packageManager": "pnpm@^11",
   "scripts": {
     "dev": "tinacms dev --datalayer-port 9106 -c \"astro dev\"",
     "build": "tinacms build --datalayer-port 9106 --content=local && astro build",
