@@ -981,7 +981,7 @@ Validated on this dev box (pre-second-push):
 
 After this phase's `git push`: `vercel ls --yes | head -8` will surface the latest deployment's url/state; flipping the marker to `[SHIPPED]` once `Ready` lands.
 
-### Phase 28 — Icon wrapper hard-set + Vercel pipeline parity + TinaCloud 400 diagnosis  `[SHIPPED]`  (commits `0d79ddc` + `8a49657`, deployment `dpl_75SCXvNQrr2iBaMdAqb79QjFSCgz`)
+### Phase 28 — Icon wrapper hard-set + Vercel pipeline parity + TinaCloud 400 diagnosis  `[SHIPPED]`  (commits `0d79ddc` + `8a49657`, deployment `dpl_75SCXvNQrr2iBaMdAqb79QjFSCgz`; followups 28.5–28.7 below)
 
 **Direction.** Close the 6-push deploy-debug trail that began this session, turn the regression class structurally impossible, and document the TinaCloud 400 root cause in canonical form.
 
@@ -1024,3 +1024,29 @@ Conclusion: the cloud build path is architecturally incompatible with onsite Ast
 
 **Cost of activating the regression guard:**
 `pnpm run install:hooks` runs once per clone; all subsequent `git push` calls run `pnpm run verify` first.
+
+**28.5 — Phase 28 followups: dead-code + docs align + TS-hint cleanup  `[SHIPPED]`**  (commits `51ec585` + `17fb7b8`, deployment `dpl_5Mcoh1dgk3e4PBFyGNwVo9oaNXwo`)
+
+Three paperwork-debt items were still outstanding when §28 closed:
+
+1. **Stale `src/components/arch/HeroGrid.astro`** — orphaned SVG overlay from abandoned Phase 7/11 hero-decoration work. Zero imports anywhere in `src/` or `tina/` (verified via `<HeroGrid` and `import.*HeroGrid` greps). The `<pattern id="eens-arch-grid">` SVG id also had zero consumers (`git grep -In 'eens-arch-grid'` → `NO_MATCHES`). Dead-code delete + empty `arch/` directory removal.
+2. **README.md Phase-28 drift** — two paragraphs were stale. Line 40 paraphrased the icon system as direct `astro-icon/components` import, even though Phase 28.2 routed every page-level icon through `src/components/ui/Icon.astro`. Line 77–78 claimed `pnpm build:local` was "no longer used" and that the cloud path was the production build, an inverted-truth framing that contradicted the deployed deployments.
+3. **Two pre-existing astro check hints** — `PropertyList.astro:30 ts(6196) 'Props unused'` and `blog/index.astro:6 ts(6133) 'config unused'` had been carried across multiple phase commits as paperwork debt.
+
+All three landed in two chore commits:
+
+- **`51ec585 chore(deps+docs): Phase 28.5 -- drop dead HeroGrid + 3 stale doc refs + README Phase 28 align`** — 4 files, 5 insertions(+), 34 deletions(-). HeroGrid deletion + empty `arch/` removal; README's Icons paragraph rewritten to point at the local wrapper; README's build-paths paragraph rewritten to acknowledge production (Vercel runs `pnpm build && pnpm build:search` against TinaCloud with `TINA_TOKEN` set) and dev-box (`pnpm build:local` keeps a local datalayer-server alive on port 9106 when the TinaCloud auth env contract isn't satisfied); `plan.md` line 366 (Phase 1 Build order item 5) labeled `[DELETED in Phase 28.5]`; `plan.md` line 699 (Phase 18.3 decoration-scan row) parenthetical removed; `DESIGN.md` line 479 (implementation-sequence TODO 6) flipped to `[x] [DELETED in Phase 28.5]`. Deployment `dpl_EH7L8fXCEwWeAWvJuYjrNaFDbYWt` READY at `https://eens-5lidqeefh-musyokaisaac98s-projects.vercel.app`.
+
+- **`17fb7b8 chore(lint): silence 2 pre-existing astro check TS hints`** — 2 files, 4 insertions(+), 5 deletions(-). `blog/index.astro:6-9` simplified by removing the unused `getConfig` import + the unused `const config` line (page body never read it; SeoTitle/description are hardcoded). `PropertyList.astro:32` casts `Astro.props` through `Props & Record<string, unknown>` (matching the canonical `PropertyCard.astro:44` pattern) to reference the `Props` interface and silence `ts(6196)`. `PropertyList.astro:53,58` add inline `as { title?: unknown }` / `as { description?: unknown }` casts at the two `tinaField(data, …)` call sites because hand-typed `PropertyListBlockData` lacks an index signature; this also matches PropertyCard.astro:67+'s per-call-site cast idiom. After this commit `pnpm exec astro check` returns to baseline 0/0/0 (down from 0/0/2). Deployment `dpl_5Mcoh1dgk3e4PBFyGNwVo9oaNXwo` READY at `https://eens-er37jxobg-musyokaisaac98s-projects.vercel.app`.
+
+Both commits validated individually with vitest 51/51 green, lint:wrappers PASS, pre-commit secret scrub CLEAN, and the pre-push hook ran `pnpm run verify` (lint:wrappers + astro check 0/0/0 + vitest) before letting each push through.
+
+**28.6 — Simplify internal `PropertyListBlockData` typing  `[DEFERRED]`**
+
+Code-reviewer flagged a structural alternative to the §28.5 inline-casts fix: replace the hand-typed `interface PropertyListBlockData` (lines 19–29 of `PropertyList.astro`) with the generated `type PropertyListBlock = Extract<PageBlock, { __typename: 'PageBlocksPropertyList' }>` already exported from `src/lib/data.ts:86`. HeroBlock derives the same way at `lib/data.ts:81` and `Hero.astro` already gets `tinaField(data, 'image')` / `tinaField(data, 'headline')` calls well-typed without any inline cast — the generated type carries the wider shape the `tinaField` generic expects. If `PropertyListBlock` (the generated equivalent) also has it, replacing the hand-typed interface collapses §28.5's three-cascade of casts (destructure + two inline casts) into a single architectural edit.
+
+Cost: needs verification that the generated `PropertyListBlock` shape carries the index signature `tinaField` requires. That's a separate diagnostic on a dev box that can run `pnpm run build:local` through `tinacms`'s regenerate cycle. The §28.5 inline casts do the job for now; this is a hygiene pass to be picked up on a clean dev box.
+
+**28.7 — Visual sanity pass  `[DEFERRED — env-blocked]`**
+
+`pnpm exec astro check` + `pnpm run verify` + Vercel's READY state cover the typecheck + build + deploy chain but don't confirm the rendered `<output>` visually. A `browser-use` smoke pass would catch rendering regressions (Hero overlay ordering, bg-canvas alignment, gap grid, font-load timing) that typecheck+build+curl cannot. Chrome (or chromium) is not installed on this dev box; the `browser-use` agent requires Chrome and is therefore env-blocked here. Carry-forward until either Chrome is apt-installed on this dev box OR `browser-use` runs from a clean CI environment.
