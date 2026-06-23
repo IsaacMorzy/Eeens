@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
+import Icon from './ui/Icon.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
 import type { CmsConfig, CmsConfigContactLink } from '../lib/data';
 import { contactEmail } from '../lib/data';
@@ -83,7 +83,7 @@ const pageLinks = [
 				</p>
 				<div class="mt-6">
 					<Button href={viewingHref} variant="default" size="lg">
-						<Icon name="tabler:calendar" class="size-4" />
+						<Icon name="calendar" class="size-4" />
 						<span>Schedule a viewing</span>
 					</Button>
 				</div>
