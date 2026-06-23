@@ -980,3 +980,47 @@ Validated on this dev box (pre-second-push):
 - File mode 600 on `~/.bashrc`'s appended HISTIGNORE block.
 
 After this phase's `git push`: `vercel ls --yes | head -8` will surface the latest deployment's url/state; flipping the marker to `[SHIPPED]` once `Ready` lands.
+
+### Phase 28 — Icon wrapper hard-set + Vercel pipeline parity + TinaCloud 400 diagnosis  `[SHIPPED]`  (commits `0d79ddc` + `8a49657`, deployment `dpl_75SCXvNQrr2iBaMdAqb79QjFSCgz`)
+
+**Direction.** Close the 6-push deploy-debug trail that began this session, turn the regression class structurally impossible, and document the TinaCloud 400 root cause in canonical form.
+
+**28.1 — Deploy-debug trail (commits through `0d79ddc`)  `[SHIPPED]`**
+
+The cloud build path failed at `dpl_Hf8LVfhwxQHys9Vj9EPmm3uEarM9` with a TinaCloud 400 Bad Request during Astro prerender (events 169–171: `Server responded with status code 400, Bad Request`, stack frames in `tinacms/dist/client.js:243:11 requestFromServer`). Each successive push advanced the diagnosis: `pnpm build:local` swap (so Astro runs as Tina's child process keeping the local datalayer alive) → explicit `node scripts/smoke-env.mjs` call in `vercel.json` (the `prebuild` hook does not fire for `pnpm build:local`) → `src/icons/.gitkeep` (astro-icon 1.1.x's default local-set loader fails if the directory is absent) → three calendar icon refs prefixed with `tabler:` → the wrapper auto-prepends discovery (`tabler:tabler:calendar` double-prefix) → revert manual prefix + Footer.astro import switched to the local wrapper. Final deployment at commit `0d79ddc` reached Ready as `dpl_GaVAu4TYM3wkSMoFgw32TcgEZvmk` (`https://eens-rhq5s24yg-musyokaisaac98s-projects.vercel.app`).
+
+**28.2 — Icon wrapper hard-set (commit `8a49657`)  `[SHIPPED]`**
+
+Same hard-set contents as the Phase-28 commit body, summarised:
+
+- **4 migrations.** `ThemeToggle.astro`, `Header.astro`, `IconLink.astro`, `BlogPost.astro` switched from direct `astro-icon/components` to the local `src/components/ui/Icon.astro` wrapper. Bare names like `<Icon name="sun" />` reproduce the exact glyph as the prior `name="tabler:sun"` direct call.
+- **IconLink data-shape bridge.** `seo.contactLinks[].icon` CMS field can hold `tabler:brand-x` (legacy) or `brand-x` (new); frontmatter runs `icon.replace(/^\s*tabler:/i, '').trim()` so both shapes resolve through the wrapper auto-prefix.
+- **Wrapper size forward.** `Icon.astro` adds `size?: number | string` prop forwarded to astro-icon — the migrated sites continued to emit the same pixel sizes (16 / 14 / 32 px). Default class still `size-5`.
+- **New scripts.** `scripts/lint-wrappers.mjs` (structural grep guard over `src/`, allowlists only the wrapper itself), `scripts/setup-hooks.mjs` (idempotent pre-push hook installer with `# eensbpark:pre-push:install:hooks` marker), `scripts/replicate-vercel-build.mjs` (parity script matching `vercel.json`'s `buildCommand` byte-for-byte, suitable for `pnpm run ci:vercel` after pipeline edits).
+- **New package scripts.** `lint:wrappers`, `verify` (`pnpm run lint:wrappers && pnpm exec astro check && pnpm test` — ordered cheap-fail-first so import-shape regressions surface in <1 s, before the 10–30 s `astro check`), `install:hooks` (one-time dev-box pre-push install), `ci:vercel` (verbatim Vercel chain locally; OOM on dev box per Phase 22.3 RATIONALE is expected).
+
+**28.3 — TinaCloud 400 root cause  `[SHIPPED — documented, cloud path retired]`**
+
+The original Phase-28 failure mode is now documented as phase-retired:
+
+- The generated Tina client at `tina/__generated__/client.ts` resolves data-fetch endpoints via the `PUBLIC_TINA_CLIENT_ID` env marker, dispatching to `https://content.tinajs.io/content/$<clientId>/v1/...`.
+- The `--local` / `--content=local --skip-cloud-checks` flags only instruct the TinaCMS datalayer bridge which backend to commit mutations **to**. They do NOT change the generated client's endpoint resolution.
+- `pnpm build` (cloud path) reaches Astro prerender, the generated client fires `requestFromServer` to TinaCloud, the cloud service returns 400 (the FAQ entry surface for a malformed `clientId` / branch combination).
+- `pnpm build:local` works because the `-c "astro build"` modifier keeps a local datalayer-server alive on port 9106 and the client probes it instead of TinaCloud.
+
+Conclusion: the cloud build path is architecturally incompatible with onsite Astro prerender. The project ships exclusively via `pnpm build:local`. `image.remotePatterns` for `assets.tina.io` stays — it is consumed by the post-build image-transcoding step that runs in either path. The cloud-path TinaCMS contract (`PUBLIC_TINA_CLIENT_ID` + `TINA_TOKEN` + `TINA_SEARCH_TOKEN` env vars) stays too; the local path just reroutes queries while leaving the auth contract in place.
+
+**28.4 — Phase-28 hard-set deployment URL**
+
+`https://eens-aru8lkd0r-musyokaisaac98s-projects.vercel.app` (deployment `dpl_75SCXvNQrr2iBaMdAqb79QjFSCgz`, created at 14:57:53 UTC, Ready within ~2 min).
+
+**Validated:**
+- vitest 51/51 green.
+- astro check 0 errors / 0 warnings / 2 pre-existing hints (`PropertyList.astro` `Props` unused, `blog/index.astro` `config` unused — both pre-Phase-28).
+- `pnpm run lint:wrappers` ✓ (zero direct `astro-icon` imports outside the wrapper).
+- `pnpm run smoke-env` ✓ (with dummy vars).
+- Pre-commit secret scrub: zero hits.
+- `git push origin main` succeeded; deployment ended READY.
+
+**Cost of activating the regression guard:**
+`pnpm run install:hooks` runs once per clone; all subsequent `git push` calls run `pnpm run verify` first.
