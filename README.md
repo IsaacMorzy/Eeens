@@ -37,7 +37,7 @@ pnpm dev
 - Markdown and MDX with `<TinaMarkdown>` rich-text rendering
 - Collections for Pages, Blog, and global Config
 - Astro view transitions, SEO meta, OpenGraph, sitemap, and RSS
-- Icons via [`astro-icon`](https://github.com/natemoo-re/astro-icon) and the Tabler set
+- Icons via `src/components/ui/Icon.astro` (a thin local wrapper around [`astro-icon`](https://github.com/natemoo-re/astro-icon) + the Tabler set). All page-level icons route through this wrapper — import it instead of `astro-icon/components` directly so prefix handling and sizing stay consistent.
 
 ## A note on React
 
@@ -74,7 +74,7 @@ Three env vars must be set in **both** the Vercel project *and* your local `.env
 | `TINA_TOKEN` | App → *Tokens* → Content | **Read-only** in this repo's current setup. Saves from `/admin` will 403 until swapped for a `Read-and-write` token. |
 | `TINA_SEARCH_TOKEN` | App → *Tokens* → Search | Search-index push, run by `tinacms build:search`. |
 
-`pnpm build:local` (the offline fallback `tinacms build --local --skip-cloud-checks`) skips both creds and is no longer used; `vercel.json` invokes the full cloud path now.
+`vercel.json` invokes `pnpm build && pnpm build:search` against TinaCloud with `PUBLIC_TINA_CLIENT_ID` + `TINA_TOKEN` + `TINA_SEARCH_TOKEN` set; this is the production build path and the deployments you see on Vercel come off this path. `pnpm build:local` (`tinacms build --local --skip-cloud-checks`) is the dev-box fallback that keeps a local datalayer-server alive on port 9106 to answer the data-fetch queries when the Tina Cloud env contract isn't satisfied — `--local` only steers where mutations land, not where reads go, so without `TINA_TOKEN` set on a host without a local datalayer the cloud path surfaces a TinaCloud 400 at Astro prerender. See `plan.md` §28.3 for the full dev-box-vs-cloud distinction.
 
 ### Search index sync
 

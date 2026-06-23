@@ -476,7 +476,7 @@ Voice should invoke a structural blueprint. Trust is earned by stating facts pla
 3. [ ] Update `src/content/config/config.json` — `logo: "/eens-wordmark.svg"`, `title: "Eens Limited"`, `description: "Premium Commercial & Residential Real Estate in Kenya."`.
 4. [ ] Update `tina/collections/global-config.ts` — remove `footerStarfield`, default `logo` to `/eens-wordmark.svg`.
 5. [ ] Delete `src/components/space/*` (`rm src/components/space/*`).
-6. [ ] Add `HeroGrid.astro` under `src/components/arch/` — renders the 1px architectural-grid overlay behind the hero.
+6. `[x] [DELETED in Phase 28.5]` Add `HeroGrid.astro` under `src/components/arch/` — renders the 1px architectural-grid overlay behind the hero. Component dropped as orphan: zero imports anywhere in src/ or tina/; the SVG `<pattern id="eens-arch-grid">` id has zero consumers.
 7. [ ] Add `PropertyCard.astro` under `src/components/blocks/` — implements the `property-card` and `property-card-featured` specs. Update `tina/collections/blog.ts` and `tina/collections/page.ts` (or a new `property` collection) to wire it as a block on the home page.
 8. [ ] Audit `src/components/ui/Button.astro`'s `tailwind-variants` so primary → `bg-primary text-primary-foreground`, secondary → `bg-background border border-hairline text-foreground`, etc.
 9. [ ] Wire `availability-badge` and `location-pin` as Tabler icons via `astro-icon` (already configured).

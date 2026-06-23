@@ -363,7 +363,7 @@ Validated: vitest 57/57 green, astro check 0/0/2.
 2. Purge `src/components/space/*` (5 files: Aurora, ConstellationDivider, OrbitRings, Planet, Starfield).
 3. Drop dead `starfield: true` / `Starfield` references in `home.mdx` and the Hero block.
 4. Trim `@keyframes twinkle` + `.star-twinkle` from `global.css` once the Starfield purge lands.
-5. Add `src/components/arch/HeroGrid.astro` — 1 px hairline architectural grid at 64 px pitch over `#5d7290`, mounted behind the hero only.
+5. `[DELETED in Phase 28.5]` Add `src/components/arch/HeroGrid.astro` — 1 px hairline architectural grid at 64 px pitch over `#5d7290`, mounted behind the hero only. Component dropped as orphan: zero imports anywhere in src/ or tina/; the `<pattern id="eens-arch-grid">` SVG id has zero consumers.
 6. Audit `Button.astro` to match DESIGN.md (variants, hover, focus, disabled 38 %, no pill-radius CTAs).
 
 ### Phase 2 — Property model + new blocks
@@ -696,7 +696,7 @@ The four routes that opendesign v2 didn't yet cover:
 | Component shape — vs DESIGN.md § Components | ✓ — templates were audited in Phase 6 + 11 | ✓ — `BlogPost` was audited in Phase 10 |
 | Density — one primary action per section | ✓ — CTA banner is the only primary | ✓ — permalink copy + reading minutes are sub-actions |
 | Copy voice — no SaaS marketing vocabulary | ✓ — content sources home + about MDX which both pass §18.2 | ✓ — content sources existing blog MDX which passed Phase 9 humanizer verification |
-| Decoration scan — atmospheric gradients, glow, blur, decorative SVG | ✓ — none | ✓ — none (`HeroGrid` is mounted only on the B2B hero, not the blog route) |
+| Decoration scan — atmospheric gradients, glow, blur, decorative SVG | ✓ — none | ✓ — none |
 
 **Result: 0 fixes.** The Phase 9 + Phase 10 deliverables brought both
 catch-all route handlers into compliance; the Phase 11 polish on
