@@ -863,3 +863,70 @@ attempt is structurally impossible here).
 Validated: vitest 51/51 green (no test files touched),
 astro check 0/0/2. Pure YAML quoting — no behavioural change to
 the rendered blog pages.
+
+### Phase 23 — vercel.json buildCommand drift fix + post-deploy audit sweep  `[SHIPPED]`
+
+**Direction:** the deployment-failure analysis from this session surfaced two real issues. (i) `vercel.json` ran `pnpm build:local` concurrent with astro (`-c "astro build"`) and OOM'd the Node heap on Vercel, while the project's own README § "Deploy to Vercel" already documented the desired state as `pnpm build && pnpm build:search` and explicitly stated `pnpm build:local` was "no longer used". Fixing the drift unblocks the queue of ~12 of the last 18 deployments in `Error` state over the last 48 h. (ii) The README's prose contradicted the vercel.json in the same repo — a documentation-vs-config drift that any reviewer reading plan.md would hit. A audit sweep over the post-Phase-20 surface area with `opendesign` v5 + `ponytail-audit` + `humanizer` + `dependency-manager` validated that no further design / voice / component drift had crept in.
+
+**23.1 — vercel.json buildCommand corrected  `[SHIPPED]`**
+
+Single str_replace: `pnpm build:local || exit 1;` → `pnpm build || exit 1;`. README § "Deploy to Vercel" was already worded for the post-fix state (it quotes `pnpm build && pnpm build:search` and says "`pnpm build:local` … is no longer used"), so no README edit needed. Validated by `code-reviewer-minimax-m3`: the structural change is correct (removes the live Tina-datalayer concurrency that caused the OOM; keeps the soft-failed search-index sync via `|| echo 'warning:'`; keeps the hard-fail exit semantics via `|| exit 1`). The Tina Cloud env contract is unchanged — README's three required env vars (`PUBLIC_TINA_CLIENT_ID`, `TINA_TOKEN`, `TINA_SEARCH_TOKEN`) are still mandatory on the Vercel project. `astro check` 0/0/2 and `pnpm test` 51/51 are still green; nothing else in the repo moved.
+
+**23.2 — Post-deploy audit sweep (opendesign v5 + ponytail-audit + humanizer + dependency-manager)  `[SHIPPED — read-only report]`**
+
+Findings:
+- **opendesign v5** — token discipline holds across all post-Phase-20 components. `text-[13px]` and `text-[22px]` arbitrary sizes recur on eyebrow tags and card titles, but rhyme exactly with DESIGN.md § Typography Hierarchy table (eyebrow 13 px weight 500 +0.4 px tracking, card-title 22 px weight 500 -0.4 px tracking). Tokenizing into a `text-eyebrow` / `text-card-title` utility class would push complexity without extraction win — inline values are an acceptable verbatim expression of the documented hierarchy and have a full audit trail via the search catalog. `bg-white` literal and `bg-black/70` appear in `YouTubeFacade`'s play-button centre overlay (functional over a video frame; tokenizing would obscure intent). `bg-destructive text-white` on the Button destructive variant is the only literal `text-white` outside `YouTubeFacade`; accepted because `destructive-foreground` is not a documented token and the literal is semantically unambiguous.
+- **ponytail-audit** — repo-wide sweep returned three borderline items: (a) `src/lib/cn.ts` ships a 4-line `clsx`-and-`twMerge` wrapper that could be replaced with the two native imports at each call site — but the project standard is one `cn()` imported everywhere and the wrapper has a test, so ponytail flags it `stash-wins`; (b) `src/lib/property-filters.ts` carries 4 derived parsers from a single `firstInteger` extraction (Phase 14 deferred the generic renderer that would have collapsed them, and the inline comment captures the consolidation thesis for future spec-sheet additions); (c) `src/lib/blog-walker.ts` is a full Tina rich-text walker with 9 test cases — keep. **Net delta: 0 deletions. Lean already.**
+- **humanizer** — Phase 22.2 blog-title YAML quoting was the only Phase-22 copy surface. Title strings (`'Mombasa Road corridor: …'` etc.) pass the engineering-register test: factual, no SaaS-marketing vocabulary, no em-dash cadence. Eyebrow tags across components (`HOME`, `PROPERTIES`, `ABOUT`, `BLOG`, etc.) follow DESIGN.md § Typography rules. No AI-isms found in body copy. Phase 18.2 was already a clean pass on `home.mdx` + `about.mdx` — the Phase-22 reseed blog posts inherit that voice.
+- **dependency-manager** — locked file shape: `package.json` has 13 prod + 6 dev deps; `tina/tina-lock.json` pins the Tina client at the latest schema-rev. Astro 6.4 / TinaCMS 3.9 / Tailwind 4 / Vite 7 are the current stable rail. `pnpm audit` was not executed on this dev box (the npm advisory reader requires network egress); recommended as a follow-up to run in CI on the next push.
+
+**23.3 — Defense-in-depth: NODE_OPTIONS recommendation for Vercel project env  `[FOLLOW-UP]`**
+
+The vercel.json fix removes the OOM root cause. As a belt-and-braces for future regressions on the build surface (e.g., a future commit re-introducing `-c "astro build"` or growing the asset bundle), set `NODE_OPTIONS=--max-old-space-size=6144` on the Vercel project env vars. One line on the project settings page. Optional but cheap; protects the production push even if a future change regresses the build surface.
+
+Validated: vitest 51/51 green (no test files touched), astro check 0/0/2. Single file changed (`vercel.json`); token discipline + voice + component shape confirmed across the post-Phase-20 surface area.
+
+### Phase 24 — GitHub PAT canonical storage + gh CLI + git credential flow  `[SHIPPED]`
+
+**Direction:** matching the Vercel-token security posture established earlier this session, the GitHub Personal Access Token was migrated off `/tmp/_gh_t` (mode 600, but living on the same root ext4 partition as the rest of the dev box — the same `/tmp`-vs-disk-persistence critique from the Vercel audit) and onto gh CLI's canonical XDG store. Git was then wired through `gh auth setup-git` so all pushes without re-pasting the PAT.
+
+**24.1 — Token migrated via `gh auth login --with-token`  `[SHIPPED]`**
+
+Single pipeline: `cat /tmp/_gh_t | gh auth login --with-token --hostname github.com` reads the token from stdin and writes `~/.config/gh/hosts.yml` (XDG-default location; `XDG_CONFIG_HOME` is unset on this host so the path resolves to `$HOME/.config/gh/hosts.yml`). Final file mode **600**, owned by `grand`. `gh auth status` reports `Logged in to github.com as IsaacMorzy (oauth_token, https)` with the full token scope set the user generated. Same posture as Phase 23's Vercel work: token leaves `/tmp` immediately, lands in the canonical XDG dir under 600 perms, owned by the user.
+
+**24.2 — Git's credential helper routed through gh  `[SHIPPED]`**
+
+`gh auth setup-git` set `credential.helper=!gh auth git-credential` in the **global** `~/.gitconfig`. Every `git fetch` / `git push` against any GitHub URL now consults gh, which serves the token from `~/.config/gh/hosts.yml` on demand. No more inline-PAT remote URLs, no more `gh auth login --with-token` per debug session. Smoke-tested live: `cd eensbpark && git fetch origin --dry-run` returned clean; `gh repo view IsaacMorzy/Eeens --json name,owner` returned `{"name":"Eeens","owner":{"id":"MDQ6VXNlcjM2MTg5NTM2","login":"IsaacMorzy"}}` — token round-trips through the canonical path end-to-end.
+
+**24.3 — `/tmp/_gh_t` wiped  `[SHIPPED]`**
+
+`shred -u /tmp/_gh_t 2>/dev/null || (test -f /tmp/_gh_t && printf '' > /tmp/_gh_t && rm -f /tmp/_gh_t)`. `shred -u` overwrites and unlinks (best-effort on SSD — see reviewer caveat §24.5a); fallback to `printf '' && rm` if shred isn't on the path. `ls /tmp/_gh_t` confirms absent.
+
+**24.4 — Remote URL review**
+
+`git remote get-url origin` returns `https://github.com/IsaacMorzy/Eeens.git` — no embedded PAT, no inline credential. The Phase 22.1 push unblock used an `x-access-token:ghp_…@github.com/IsaacMorzy/Eeens.git` form, which has been replaced by the gh-mediated credential helper. Anonymous-credential URL is the right default for source-control hygiene — future contributors cloning the repo won't accidentally pick up the operator's token in their remote URL.
+
+**24.5 — Reviewer caveats (carry-forward followups)  `[FOLLOW-UP]`**
+
+`code-reviewer-minimax-m3` flagged three points that don't block this batch but should be tracked:
+
+1. **`shred -u` is best-effort on SSD** — wear-leveling can leave residue across FTL copies. Acceptable for a dev-box PAT scoped to repo access; NOT acceptable for a high-impact token. The only guaranteed-erasure paths are `nvme-format` (full low-level format) or filling the partition physically. Recorded here so a future auditor doesn't over-trust `shred -u` alone.
+2. **No rotation / TTL on the current PAT** — classic GitHub PATs are long-lived by default. Either schedule a 90-day rotation (calendar reminder), or switch to a **GitHub fine-grained PAT with explicit expiry**, or move to a **GitHub App installation token** (auto-rotated, 1-hour TTL) — best practice for production repos. Rotation cadence is a follow-up.
+3. **Side-effect of `gh auth setup-git`** — global `credential.helper=!gh auth git-credential` means every git repo on this box routes through gh. Fine if all repos are GitHub; if you operate against private non-GH remotes, switch per-repo with `git config --local credential.helper '!gh auth git-credential'`.
+
+Validated end-to-end: `gh auth status` ✓, `gh repo view IsaacMorzy/Eeens` ✓, `git fetch origin --dry-run` ✓, `/tmp/_gh_t` ✓ (absent). Single config surface changed: `~/.config/gh/hosts.yml` (token store), `~/.gitconfig` (global credential helper). The repo itself is untouched.
+
+### Phase 25 — Vercel CLI debug-session credential hygiene  `[SHIPPED]`
+
+**Direction:** match Phase 24's posture on the Vercel side. Earlier this session we confirmed Vercel CLI v54.14.2 does **not** auto-read `~/.vercel/auth.json` or `~/.config/vercel/auth.json` on this host (returns `No existing credentials found` despite both files written with mode 600 and the canonical `{"token": "..."}` shape). The CLI also rejects `--token <raw>` with `Must not contain: "{"`. Per-session env-var injection (`export VERCEL_TOKEN=…` before each `vercel` invocation; `unset` at the end of the shell) is the only working flow on this CLI version. Documented here so future debug sessions don't repeat the disk-store experiment.
+
+**Why this is right for THIS CLI version.** `vercel` v54.14.2 is on the new auth flow that expects the token file to be written by `vercel login`'s OAuth roundtrip — not hand-crafted. Plain `{"token": "..."}` JSON files aren't being consumed at runtime. The phase-22-style disk store is structurally unavailable until we run `vercel login` interactively (browser OAuth roundtrip). Documented here to skip the `~/.vercel/auth.json` retry loop on the next session.
+
+**Defense-in-depth (later this session already updated Phase 23.3).** Add `NODE_OPTIONS=--max-old-space-size=6144` to the Vercel project env vars as belt-and-braces against any future build-surface regression. One line on the project settings page; protects the production push even if a future change reintroduces `-c "astro build"` or grows the bundle.
+
+**Combined posture after Phase 24 + Phase 25.** Same model for every CLI-debug credential on this dev box:
+- GitHub PAT: persistent on disk at `~/.config/gh/hosts.yml` (mode 600), brokered at runtime by `gh auth git-credential` for `git` ops.
+- Vercel CLI token: per-session env var `VERCEL_TOKEN=…` (exported at the top of the debug shell, `unset` at the end). No disk footprint between sessions.
+- No `/tmp` copies of either token survive.
+
+Validated: `gh auth status` ✓, `gh repo view IsaacMorzy/Eeens` ✓, `git fetch origin --dry-run` ✓, `vercel ls --yes` with `VERCEL_TOKEN` env var ✓ (project `musyokaisaac98s-projects/eens`, ~12 of last 18 deployments in `Error`, all-cause the Phase-23.1 vercel.json drift fix).
