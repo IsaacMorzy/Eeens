@@ -8,9 +8,9 @@
  */
 import PropertyCard, { type PropertyCardData } from './PropertyCard.astro';
 
-interface Props { data: PropertyCardData }
+interface Props { data: PropertyCardData; fallbackImageSrc?: string | null }
 
-const { data } = Astro.props;
+const { data, fallbackImageSrc = null } = Astro.props;
 // Single source of truth for the badge — the inner PropertyCard owns the
 // rendering. Featured cards always show one, so default missing data to
 // ForRent rather than no-badge.
@@ -20,4 +20,4 @@ const normalized: PropertyCardData = {
 };
 ---
 
-<PropertyCard data={normalized} featured={true} />
+<PropertyCard data={normalized} featured={true} fallbackImageSrc={fallbackImageSrc} />

@@ -11,6 +11,7 @@ import {
 	groupByType,
 	zonesInUse,
 	linkWith,
+	getIllustrationSrc,
 	type PropertyFilters,
 } from './property-filters';
 import type { PropertyNode } from './data';
@@ -197,9 +198,18 @@ describe('firstInteger', () => {
 	});
 });
 
-// (Phase 17 verdict — see plan.md. parseWater / parseClearHeight /
-// parseFloorLoading were deleted from property-filters.ts because the
-// generic spec-sheet renderer they served was DEFERRED (Phase 15
-// thinker verdict). `firstInteger` remains the single source of truth
-// for every spec-sheet annotation; re-add as one-liners when a
-// renderer ships.)
+describe('getIllustrationSrc', () => {
+	it('returns the expected SVG path for every known property type', () => {
+		expect(getIllustrationSrc('WAREHOUSE')).toBe('/properties/illustration-warehouse.svg');
+		expect(getIllustrationSrc('GODOWN')).toBe('/properties/illustration-godown.svg');
+		expect(getIllustrationSrc('BUSINESS_PARK')).toBe('/properties/illustration-business-park.svg');
+		expect(getIllustrationSrc('APARTMENT')).toBe('/properties/illustration-apartment.svg');
+	});
+
+	it('returns null for null / undefined / empty / unknown types', () => {
+		expect(getIllustrationSrc(null)).toBeNull();
+		expect(getIllustrationSrc(undefined)).toBeNull();
+		expect(getIllustrationSrc('')).toBeNull();
+		expect(getIllustrationSrc('UNKNOWN_TYPE')).toBeNull();
+	});
+});

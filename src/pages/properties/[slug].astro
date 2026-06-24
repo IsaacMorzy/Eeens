@@ -10,6 +10,7 @@ import Icon from '../../components/ui/Icon.astro';
 import AnimatedBuilding from '../../components/arch/AnimatedBuilding.astro';
 import FloorPlan from '../../components/arch/FloorPlan.astro';
 import { getConfig, getProperty, listProperties, contactEmail, type PropertyNode } from '../../lib/data';
+import { getIllustrationSrc } from '../../lib/property-filters';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 
 export async function getStaticPaths() {
@@ -39,6 +40,10 @@ const subject = encodeURIComponent(
 	`Schedule a viewing — ${property.reference ?? property.title ?? 'listing'}`
 );
 const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
+
+// Resolve hero image: prefer Tina's heroImage.src, fall back to type-based SVG
+const heroSrc = property.heroImage?.src ?? getIllustrationSrc(property.type);
+const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 ---
 
 <Base
@@ -139,14 +144,14 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 				</aside>
 			</header>
 
-			{property.heroImage?.src && (
+			{heroSrc && (
 				<div
 					data-tina-field={tinaField(property, 'heroImage')}
 					class="mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"
 				>
 					<img
-						src={property.heroImage.src}
-						alt={property.heroImage.alt ?? property.title ?? ''}
+						src={heroSrc}
+						alt={heroAlt}
 						width={1920}
 						height={1080}
 						loading="eager"
@@ -165,31 +170,31 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 				<dl class="print-caption mt-6 grid divide-y divide-hairline-steel/40 overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">
 					{property.specSheet.power && (
 						<div class="flex items-baseline justify-between gap-3 p-4">
-							<dt class="text-sm text-muted-foreground">Power</dt>
+							<dt class="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Icon name="bolt" class="size-3.5 opacity-60" />Power</dt>
 							<dd class="font-mono text-sm">{property.specSheet.power} kVA</dd>
 						</div>
 					)}
 					{property.specSheet.water && (
 						<div class="flex items-baseline justify-between gap-3 p-4">
-							<dt class="text-sm text-muted-foreground">Water</dt>
+							<dt class="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Icon name="droplet" class="size-3.5 opacity-60" />Water</dt>
 							<dd class="font-mono text-sm">{property.specSheet.water} m³/day</dd>
 						</div>
 					)}
 					{property.specSheet.parking && (
 						<div class="flex items-baseline justify-between gap-3 p-4">
-							<dt class="text-sm text-muted-foreground">Parking bays</dt>
+							<dt class="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Icon name="truck" class="size-3.5 opacity-60" />Parking bays</dt>
 							<dd class="font-mono text-sm">{property.specSheet.parking}</dd>
 						</div>
 					)}
 					{property.specSheet.floorLoading && (
 						<div class="flex items-baseline justify-between gap-3 p-4">
-							<dt class="text-sm text-muted-foreground">Floor loading</dt>
+							<dt class="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Icon name="weight" class="size-3.5 opacity-60" />Floor loading</dt>
 							<dd class="font-mono text-sm">{property.specSheet.floorLoading} kN/m²</dd>
 						</div>
 					)}
 					{property.specSheet.clearHeight && (
 						<div class="flex items-baseline justify-between gap-3 p-4">
-							<dt class="text-sm text-muted-foreground">Clear height</dt>
+							<dt class="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Icon name="arrow-bar-up" class="size-3.5 opacity-60" />Clear height</dt>
 							<dd class="font-mono text-sm">{property.specSheet.clearHeight} m</dd>
 						</div>
 					)}

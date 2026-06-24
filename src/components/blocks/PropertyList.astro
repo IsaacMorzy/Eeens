@@ -13,6 +13,7 @@ import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import { listProperties, type PropertyNode, type Action } from '../../lib/data';
+import { getIllustrationSrc } from '../../lib/property-filters';
 import { tinaField } from '@tinacms/astro/tina-field';
 import type { Availability } from '../ui/AvailabilityBadge.astro';
 
@@ -77,6 +78,7 @@ const filtered: PropertyNode[] = all
 						ref: p._sys?.filename ?? null,
 						viewLabel: 'View listing',
 					}}
+					fallbackImageSrc={getIllustrationSrc(p.type)}
 				/>
 			))}
 		</div>

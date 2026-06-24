@@ -37,16 +37,21 @@ export interface PropertyCardData {
 interface Props {
 	data: PropertyCardData;
 	featured?: boolean;
+	fallbackImageSrc?: string | null;
 	[key: string]: unknown;
 }
 
-const { data, featured = false, ...rest } = Astro.props as Props & Record<string, unknown>;
+const { data, featured = false, fallbackImageSrc = null, ...rest } = Astro.props as Props & Record<string, unknown>;
 
 const viewHref = data.href ?? (data.ref ? `/properties/${data.ref}` : null);
 const viewLabel = data.viewLabel ?? 'View property';
 const mapHref = data.address || data.zone
 	? `https://www.google.com/maps/search/${encodeURIComponent((data.address ?? data.zone) as string)}`
 	: undefined;
+
+// Resolve image src: prefer Tina's heroImage.src, fall back to type-based SVG
+const resolvedImageSrc = data.image?.src ?? fallbackImageSrc;
+const resolvedImageAlt = data.image?.alt ?? data.title ?? '';
 ---
 
 <article
@@ -56,11 +61,11 @@ const mapHref = data.address || data.zone
 	]}
 	{...rest}
 >
-	{data.image?.src && (
+	{resolvedImageSrc && (
 		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
 			<img
-				src={data.image.src}
-				alt={data.image.alt ?? data.title ?? ''}
+				src={resolvedImageSrc}
+				alt={resolvedImageAlt}
 				width={1280}
 				height={720}
 				loading="lazy"

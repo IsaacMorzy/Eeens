@@ -6,12 +6,14 @@ import { getConfig, listProperties, type PropertyNode } from '../../lib/data';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import {
 	TYPE_LABEL,
+	TYPE_ORDER,
 	SQFT_TIERS,
 	KVA_TIERS,
 	applyFilters,
 	groupByType,
 	zonesInUse as computeZonesInUse,
 	linkWith,
+	getIllustrationSrc,
 	type PropertyFilters,
 } from '../../lib/property-filters';
 
@@ -118,33 +120,88 @@ const chipInactive = `${chipBase} border-hairline-steel/60 text-muted-foreground
 			{grouped.length === 0 && (
 				<p class="text-center text-muted-foreground">No listings published yet.</p>
 			)}
-			{grouped.map((group) => (
-				<section class="reveal-on-scroll mb-16 last:mb-0">
-					<header class="mb-6 flex items-baseline justify-between border-b border-hairline-steel/60 pb-3">
-						<h2 class="font-display text-2xl font-medium tracking-[-0.4px]">{TYPE_LABEL[group.type] ?? group.type}</h2>
-						<span class="font-mono text-[13px] text-muted-foreground">{group.items.length} listing{group.items.length === 1 ? '' : 's'}</span>
-					</header>
-					<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{group.items.map((p: PropertyNode) => (
-							<PropertyCardFeatured
-								data={{
-									type: p.type ?? null,
-									title: p.title ?? null,
-									availability: (p.availability as Availability | undefined) ?? null,
-									address: p.address ?? null,
-									sqft: p.sqft ?? null,
-									price: p.price ?? null,
-									zone: p.zone ?? null,
-									leaseTerm: p.leaseTerm ?? null,
-									image: p.heroImage ?? null,
-									ref: p._sys?.filename ?? null,
-									viewLabel: 'View listing',
-								}}
-							/>
-						))}
-					</div>
-				</section>
-			))}
+			{/* Phase 37: segmented journeys — industrial first, then residential.
+				  Uses TYPE_ORDER from property-filters so new industrial types inherit the header. */}
+			{(() => {
+				const industrialTypes = TYPE_ORDER.filter((t) => t !== 'APARTMENT');
+				const industrialGroups = industrialTypes
+					.map((t) => grouped.find((g) => g.type === t))
+					.filter(Boolean);
+				const firstShown = industrialGroups.length > 0;
+				return industrialTypes.map((industrialType, idx) => {
+					const group = grouped.find((g) => g.type === industrialType);
+					if (!group) return null;
+					const isFirstIndustrial = idx === 0 && firstShown;
+					return (
+						<section class="reveal-on-scroll mb-16 last:mb-0">
+							{isFirstIndustrial && (
+								<div class="mb-8 border-b border-hairline-steel/60 pb-4">
+									<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">Industrial leasing</span>
+								</div>
+							)}
+						<header class="mb-6 flex items-baseline justify-between border-b border-hairline-steel/60 pb-3">
+							<h2 class="font-display text-2xl font-medium tracking-[-0.4px]">{TYPE_LABEL[group.type] ?? group.type}</h2>
+							<span class="font-mono text-[13px] text-muted-foreground">{group.items.length} listing{group.items.length === 1 ? '' : 's'}</span>
+						</header>
+						<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{group.items.map((p: PropertyNode) => (
+								<PropertyCardFeatured
+									data={{
+										type: p.type ?? null,
+										title: p.title ?? null,
+										availability: (p.availability as Availability | undefined) ?? null,
+										address: p.address ?? null,
+										sqft: p.sqft ?? null,
+										price: p.price ?? null,
+										zone: p.zone ?? null,
+										leaseTerm: p.leaseTerm ?? null,
+										image: p.heroImage ?? null,
+										ref: p._sys?.filename ?? null,
+										viewLabel: 'View listing',
+									}}
+									fallbackImageSrc={getIllustrationSrc(p.type)}
+								/>
+							))}
+						</div>
+					</section>
+					);
+				});
+			})()}
+			{(() => {
+				const residential = grouped.find((g) => g.type === 'APARTMENT');
+				if (!residential) return null;
+				return (
+					<section class="reveal-on-scroll mb-16 last:mb-0">
+						<div class="mb-8 border-b border-hairline-steel/60 pb-4">
+							<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">Premium apartments</span>
+						</div>
+						<header class="mb-6 flex items-baseline justify-between border-b border-hairline-steel/60 pb-3">
+							<h2 class="font-display text-2xl font-medium tracking-[-0.4px]">{TYPE_LABEL[residential.type] ?? residential.type}</h2>
+							<span class="font-mono text-[13px] text-muted-foreground">{residential.items.length} listing{residential.items.length === 1 ? '' : 's'}</span>
+						</header>
+						<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+							{residential.items.map((p: PropertyNode) => (
+								<PropertyCardFeatured
+									data={{
+										type: p.type ?? null,
+										title: p.title ?? null,
+										availability: (p.availability as Availability | undefined) ?? null,
+										address: p.address ?? null,
+										sqft: p.sqft ?? null,
+										price: p.price ?? null,
+										zone: p.zone ?? null,
+										leaseTerm: p.leaseTerm ?? null,
+										image: p.heroImage ?? null,
+										ref: p._sys?.filename ?? null,
+										viewLabel: 'View listing',
+									}}
+									fallbackImageSrc={getIllustrationSrc(p.type)}
+								/>
+							))}
+						</div>
+					</section>
+				);
+			})()}
 		</div>
 	</Section>
 </Base>
