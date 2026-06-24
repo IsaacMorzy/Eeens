@@ -8,6 +8,8 @@ import AvailabilityBadge from '../../components/ui/AvailabilityBadge.astro';
 import LocationPin from '../../components/ui/LocationPin.astro';
 import Button from '../../components/ui/Button.astro';
 import Icon from '../../components/ui/Icon.astro';
+import BuildingElevation from '../../components/arch/BuildingElevation.astro';
+import FloorPlan from '../../components/arch/FloorPlan.astro';
 import { getConfig, getProperty, listProperties, contactEmail, type PropertyNode } from '../../lib/data';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 
@@ -195,6 +197,50 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 						</div>
 					)}
 				</dl>
+			</div>
+		</Section>
+	)}
+
+	{/* Phase 31: parametric elevation drawing — same architecture as IsometricMap.
+	   Renders inline SVG for every listing that has either a non-apartment type
+	   (warehouse/godown/business_park) or apartments (with FloorPlan below). */}
+	<Section class="bg-background">
+		<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+			<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Building elevation</h2>
+			<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
+				Front elevation of the {property.type === 'APARTMENT' ? 'apartment block' : 'listed structure'}.
+				Tick marks at 60 px pitch denote 1 m of fabric; ground line is drawn to scale.
+				Indicative drawing — surveyor measurements on the spec sheet above are binding.
+			</p>
+			<div class="mt-6 aspect-video w-full overflow-hidden rounded-xl border border-hairline-steel">
+				<BuildingElevation
+					type={property.type as 'WAREHOUSE' | 'GODOWN' | 'BUSINESS_PARK' | 'APARTMENT'}
+					sqft={property.sqft}
+					parkingBays={property.specSheet?.parking ?? null}
+					clearHeight={property.specSheet?.clearHeight ?? null}
+					loadLabel={property.specSheet?.floorLoading ? `${property.specSheet.floorLoading} kN/m²` : null}
+				/>
+			</div>
+		</div>
+	</Section>
+
+	{/* Phase 31.1: top-down floor plan for APARTMENT listings only. Token-honoring
+	    top-down SVG with hairline walls, mono dimensions, north arrow, scale bar. */}
+	{property.type === 'APARTMENT' && (
+		<Section class="bg-background">
+			<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Floor plan</h2>
+				<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
+					Indicative 3-bed 2-bath strata layout for {property.bedrooms}-bed · {property.bathrooms}-bath at {property.sqft ?? '110–130 sqm'}.
+					Actual as-built dimensions are in the surveyor's report.
+				</p>
+				<div class="mt-6 w-full overflow-hidden rounded-xl border border-hairline-steel">
+					<FloorPlan
+						sqft={property.sqft}
+						bedrooms={property.bedrooms ?? 3}
+						bathrooms={property.bathrooms ?? 2}
+					/>
+				</div>
 			</div>
 		</Section>
 	)}

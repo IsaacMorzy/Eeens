@@ -1,0 +1,297 @@
+---
+/**
+ * FloorPlan — top-down 2D architectural plan for APARTMENT-type listings.
+ *
+ * Pattern follows `IsometricMap.astro` exactly: 1px hairlines, mono labels,
+ * blueprint-grid backdrop, blueprint-stroke draw-in via CSS keyframes, mono
+ * font for numerics, hairline-steel color throughout. NO decorative fills.
+ *
+ * **Indicative only.** Floor plan reflects a typical 3-bed 110–130 sqm stratum
+ * apartment for the Flame Tree Park Estate development. Actual as-built dims
+ * are subject to the registered surveyor's report (always published on the
+ * /properties/[slug] listing alongside the spec sheet). Not to scale.
+ *
+ * Token discipline (DESIGN.md):
+ * - 1 px hairlines only, color = var(--hairline-steel)
+ * - Mono labels at the documented 12 px caption floor
+ * - No raw hex, no gradient, no shadow
+ *
+ * SSR-friendly: inline SVG, no `client:*` directive, no client hydration.
+ * The blueprint-stroke keyframes (global.css) inherit from the global CSS
+ * short-circuit under `prefers-reduced-motion: reduce`.
+ */
+
+interface Props {
+	sqft?: string | null;
+	bedrooms?: number | null;
+	bathrooms?: number | null;
+}
+
+const { sqft, bedrooms = 3, bathrooms = 2 } = Astro.props;
+
+// Standard 110–130 sqm 3-bed internal footprint. These dimensions are
+// engineering-register approximations: the visitor reads "this is what
+// 1,200 sqm looks like", not "this is your unit's exact wall position".
+const O = 200;        // outer perimeter origin X
+const OT = 60;        // outer perimeter origin Y
+const OW = 360;       // outer perimeter width
+const OH = 280;       // outer perimeter height
+
+// Internal partition breakdown for a 3-bed 2-bath 110–130 sqm strata flat:
+// - Master bed (1):    3.6 × 3.4 m (12 × 11 floor units at 30 px / m)
+// - Bed 2:             3.2 × 3.0 m
+// - Bed 3:             3.0 × 2.8 m
+// - Living / dining:   open plan 6.0 × 3.4 m
+// - Kitchen:           2.4 × 2.6 m (galley)
+// - Bath 1 (ensuite):  2.2 × 1.6 m
+// - Bath 2:            2.0 × 1.6 m
+// - Hallway + foyer:   1.2 × 4.0 m
+// - Balcony:           3.0 × 1.5 m
+// Sum approx 116 sqm at 1 sqm = 900 px² — matches the typical sqft ≈ 1,250.
+// We render at 30 px / m, so 6 m = 180 px.
+const PT = OT;          // top of plan
+const PB = OT + OH;     // bottom of plan
+const PL = O;           // left of plan
+const PR = O + OW;      // right of plan
+---
+
+<div
+	class="floor-plan relative h-full w-full overflow-hidden rounded-xl bg-background"
+	data-floor-plan
+>
+	<svg
+		viewBox={`0 0 ${OW + 240} ${OH + 200}`}
+		width={OW + 240}
+		height={OH + 200}
+		preserveAspectRatio="xMidYMid meet"
+		role="img"
+		aria-label={`Floor plan for ${bedrooms}-bed ${bathrooms}-bath strata apartment${sqft ? `, ${sqft}` : ''}. Indicative layout — actual dims in the surveyor's report.`}
+		class="size-full"
+	>
+		<defs>
+			<pattern
+				id="floorplan-grid"
+				patternUnits="userSpaceOnUse"
+				width="30"
+				height="30"
+			>
+				<path
+					d="M 30 0 L 0 0 0 30"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="0.5"
+					stroke-opacity="0.15"
+				/>
+			</pattern>
+		</defs>
+
+		<rect
+			x="0"
+			y="0"
+			width={OW + 240}
+			height={OH + 200}
+			fill="url(#floorplan-grid)"
+			class="text-hairline-steel"
+		/>
+
+		{/* Outer perimeter wall */}
+		<rect
+			x={PL}
+			y={PT}
+			width={OW}
+			height={OH}
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.5"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Master bedroom (top-left) — 3.6 × 3.4 m */}
+		<rect
+			x={PL + 4}
+			y={PT + 4}
+			width="108"
+			height="102"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Bed 2 (top-middle) — 3.2 × 3.0 m */}
+		<rect
+			x={PL + 116}
+			y={PT + 4}
+			width="96"
+			height="90"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Bed 3 (top-right) — 3.0 × 2.8 m */}
+		<rect
+			x={PL + 216}
+			y={PT + 4}
+			width="90"
+			height="84"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Hallway (band below the bedrooms) — 1.2 m wide × 4 m long */}
+		<rect
+			x={PL + 4}
+			y={PT + 110}
+			width={OW - 8}
+			height="36"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Bath 2 (mid-left, off hallway) — 2.0 × 1.6 m */}
+		<rect
+			x={PL + 4}
+			y={PT + 150}
+			width="60"
+			height="48"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Kitchen (mid-center, off hallway) — 2.4 × 2.6 m */}
+		<rect
+			x={PL + 68}
+			y={PT + 150}
+			width="72"
+			height="78"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Bath 1 ensuite (mid-right, off master) — 2.2 × 1.6 m */}
+		<rect
+			x={PL + 144}
+			y={PT + 150}
+			width="66"
+			height="48"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Living/dining (bottom row, open plan) — 6.0 × 3.4 m */}
+		<rect
+			x={PL + 4}
+			y={PT + 232}
+			width={OW - 8}
+			height="46"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Balcony (south, off living) — 3.0 × 1.5 m */}
+		<rect
+			x={PL + 200}
+			y={PT + 282}
+			width="90"
+			height="14"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1"
+			class="text-hairline-steel blueprint-stroke-poly"
+		/>
+
+		{/* Doorway gaps — short breaks in the perimeter wall, marked with arcs */}
+		{(() => {
+			// We draw arc indicators at five standard doorway positions.
+			// Arc radius 14 px, swept inward. Indicated doors only — no swing
+			// lines on the secondary doors per engineering-drawing register.
+			const arcs = [
+				{ x: PL + 56, y: PT + OH - 60, side: 'top' as const }, // foyer entry
+				{ x: PL + 70, y: PT + 110, side: 'top' as const },    // kitchen
+				{ x: PL + 144, y: PT + 110, side: 'top' as const },   // bath 1
+				{ x: PL + 200, y: PT + 110, side: 'top' as const },   // master (back)
+				{ x: PL + 308, y: PT + 110, side: 'top' as const },   // bed 3
+			];
+			return arcs.map((a) => (
+				<path
+					d={`M ${a.x} ${a.y} a 14 14 0 0 0 14 -14`}
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1"
+					class="text-hairline-steel blueprint-stroke-poly"
+				/>
+			));
+		})()}
+
+		{/* Room labels (mono, 12 px) */}
+		<g class="font-mono fill-foreground">
+			<text x={PL + 58} y={PT + 50} text-anchor="middle" class="text-[12px]">Master Bed</text>
+			<text x={PL + 164} y={PT + 50} text-anchor="middle" class="text-[12px]">Bed 2</text>
+			<text x={PL + 261} y={PT + 50} text-anchor="middle" class="text-[12px]">Bed 3</text>
+			<text x={PL + 184} y={PT + 134} text-anchor="middle" class="text-[12px]">Hallway</text>
+			<text x={PL + 34} y={PT + 180} text-anchor="middle" class="text-[12px]">Bath 2</text>
+			<text x={PL + 104} y={PT + 196} text-anchor="middle" class="text-[12px]">Kitchen</text>
+			<text x={PL + 177} y={PT + 180} text-anchor="middle" class="text-[12px]">Bath 1</text>
+			<text x={PL + 184} y={PT + 262} text-anchor="middle" class="text-[12px]">Living / Dining</text>
+			<text x={PL + 245} y={PT + 294} text-anchor="middle" class="text-[12px]">Balcony</text>
+		</g>
+
+		{/* Dimensions strip (right rail, mono) */}
+		<g class="font-mono fill-muted-foreground text-[12px]">
+			<text x={PR + 30} y={PT + 30}>3.6 × 3.4 m</text>
+			<text x={PR + 30} y={PT + 50} class="opacity-70">12 × 11</text>
+			<text x={PR + 30} y={PT + 90}>3.2 × 3.0 m</text>
+			<text x={PR + 30} y={PT + 110} class="opacity-70">11 × 10</text>
+			<text x={PR + 30} y={PT + 150}>3.0 × 2.8 m</text>
+			<text x={PR + 30} y={PT + 170} class="opacity-70">10 ×  9</text>
+			<text x={PR + 30} y={PT + 220}>2.0 × 1.6 m</text>
+			<text x={PR + 30} y={PT + 240}>2.4 × 2.6 m</text>
+			<text x={PR + 30} y={PT + 260}>6.0 × 3.4 m</text>
+			<text x={PR + 30} y={PT + 280}>3.0 × 1.5 m</text>
+		</g>
+
+		{/* North arrow (top-right) */}
+		<g class="text-hairline-steel">
+			<line x1={PR + 30} y1={PT - 30} x2={PR + 30} y2={PT} stroke="currentColor" stroke-width="1" />
+			<polygon points={`${PR + 24},${PT} ${PR + 36},${PT} ${PR + 30},${PT - 12}`} fill="currentColor" />
+			<text x={PR + 30} y={PT - 36} text-anchor="middle" class="font-mono text-[12px] fill-muted-foreground uppercase tracking-[0.4px]">
+				N
+			</text>
+		</g>
+
+		{/* Scale bar (bottom-left, engineering-drawing convention) */}
+		<g class="text-hairline-steel">
+			<line x1={PL} y1={PB + 50} x2={PL + 60} y2={PB + 50} stroke="currentColor" stroke-width="1" />
+			<line x1={PL} y1={PB + 44} x2={PL} y2={PB + 56} stroke="currentColor" stroke-width="1" />
+			<line x1={PL + 60} y1={PB + 44} x2={PL + 60} y2={PB + 56} stroke="currentColor" stroke-width="1" />
+			<text x={PL + 30} y={PB + 76} text-anchor="middle" class="font-mono text-[12px] fill-muted-foreground">
+				2 M
+			</text>
+		</g>
+
+		{/* Title + caption */}
+		<text x={PL} y={PT - 50} text-anchor="start" class="font-sans text-[14px] font-medium fill-foreground">
+			Floor plan · indicative
+		</text>
+		<text x={PL} y={PB + 100} text-anchor="start" class="font-mono text-[12px] fill-muted-foreground">
+			{bedrooms}-bed · {bathrooms}-bath · {sqft ?? '110–130 sqm'} · Scale 1:50
+		</text>
+		<text x={PL} y={PB + 118} text-anchor="start" class="font-mono text-[11px] fill-muted-foreground opacity-70">
+			Actual as-built dimensions are published in the surveyor's report
+		</text>
+	</svg>
+</div>
