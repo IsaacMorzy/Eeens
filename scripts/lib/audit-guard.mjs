@@ -69,9 +69,16 @@ export function validateWindow(value, source) {
  * @returns {WindowResolution}
  */
 export function resolveWindow(args, envValue, defaultValue = DEFAULT_WINDOW_DAYS) {
-	const winIdx = args.indexOf('--window');
+	// Support both `--window 7` and `--window=7`.
+	const winIdx = args.findIndex((a) => a === '--window' || a.startsWith('--window='));
 	if (winIdx !== -1) {
-		const raw = args[winIdx + 1];
+		let raw;
+		const arg = args[winIdx];
+		if (arg.startsWith('--window=')) {
+			raw = arg.slice('--window='.length);
+		} else {
+			raw = args[winIdx + 1];
+		}
 		const result = validateWindow(raw, 'cli');
 		if (!result.ok) return result;
 		return { ok: true, value: result.value, source: 'cli' };

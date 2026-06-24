@@ -35,18 +35,20 @@ const COUNTER_PATH = join(PROJECT_ROOT, '.audit-cycle.json');
 function readCounter() {
 	try {
 		return JSON.parse(readFileSync(COUNTER_PATH, 'utf8'));
-	} catch {
-		// ENOENT (first ever run) or SyntaxError (manually-mangled).
-		// Both fall back to the empty-counter shape so first-ever CI
-		// runs are not blocked by an undefined counter; a hand-edited
-		// corrupted file surfaces as `lastResult=null` → empty PASS.
+	} catch (err) {
+		// ENOENT (first ever run) → fall back to empty-counter shape so
+		// first-ever CI runs are not blocked by an undefined counter.
+		if (err?.code !== 'ENOENT') {
+			console.warn(
+				`audit:guard WARN — cannot read ${COUNTER_PATH}: ${err?.message ?? err}. Falling back to empty counter.`,
+			);
+		}
 		return { totalAttempts: 0, successfulCycles: 0, lastRunAt: null, lastResult: null };
 	}
 }
 
 function reportBadInput(scope, message) {
-	const label = scope === 'cli' ? '--window' : 'AUDIT_RECENCY_DAYS';
-	console.error(`audit:guard FAIL — ${label} ${message}`);
+	console.error(`audit:guard FAIL — ${message}`);
 	console.error(
 		scope === 'cli'
 			? 'Usage: --window N (N = block if red within last N days; 0 = today only).'
@@ -57,8 +59,9 @@ function reportBadInput(scope, message) {
 function main(args, envValue, exitFn) {
 	const resolution = resolveWindow(args, envValue, DEFAULT_WINDOW_DAYS);
 	if (!resolution.ok) {
-		const scope = args.indexOf('--window') !== -1 ? 'cli' : 'env';
-		const message = resolution.message.startsWith('unset') ? 'is empty/unset.' : resolution.message;
+		const scope = args.findIndex((a) => a === '--window' || a.startsWith('--window=')) !== -1 ? 'cli' : 'env';
+		const label = scope === 'cli' ? '--window' : 'AUDIT_RECENCY_DAYS';
+		const message = resolution.message.startsWith('unset') ? `${label} is empty/unset.` : resolution.message;
 		reportBadInput(scope, message);
 		exitFn(1);
 		return;

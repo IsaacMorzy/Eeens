@@ -53,6 +53,21 @@ describe('resolveWindow -- precedence (CLI > env > default)', () => {
 		expect(r.ok).toBe(false);
 		if (!r.ok) expect(r.message).toBe('unset');
 	});
+
+	it('supports --window=VALUE syntax (same as --window VALUE)', () => {
+		const r = resolveWindow(['--window=14'], '3', 7);
+		expect(r.ok).toBe(true);
+		if (r.ok) {
+			expect(r.value).toBe(14);
+			expect(r.source).toBe('cli');
+		}
+	});
+
+	it('--window=VALUE with empty value returns unset', () => {
+		const r = resolveWindow(['--window='], undefined, 7);
+		expect(r.ok).toBe(false);
+		if (!r.ok) expect(r.message).toBe('unset');
+	});
 });
 
 describe('validateWindow -- input-validation tiers', () => {
