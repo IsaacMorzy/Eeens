@@ -1287,3 +1287,36 @@ Three followups surfaced during the `code-reviewer-minimax-m3` pass:
 - 32.1 — Convert `BuildingElevation.astro` defensive fallback to `const KNOWN_TYPES = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const; if (!KNOWN_TYPES.includes(type as PropertyType))` so a future Tina type is a one-line addition (not a 4-clause boolean rewrite).
 - 32.2 — Add `role="img"` + `aria-label={`Front elevation of ${type.toLowerCase()} property`}` on the `<svg>` root in `BuildingElevation.astro` + `aria-label="Top-down 3-bed apartment floor plan"` on the `<svg>` root in `FloorPlan.astro`. The visible caption-strip text is the engineering-canonical label, but a screen-reader user landing on `/properties/[slug]` hears no greeting today. One-attribute-add per file.
 - 32.3 — `@media print` block in `global.css` does NOT carry a `font-size: 12px` floor override on `.floor-plan-*` / `.building-elevation-*` classes — phase 31.5 baseline observation. A printout at browser-default scale (1 rem = 16 px) breaks the engineering-register caption scale. The Phase 8.4.3 print stylesheet should adopt a `font-size: 12px !important` floor on those class scopes, then test with `window.print()` → "Save as PDF" against the existing `/properties/mlolongo-warehouse` listing.
+
+### Phase 33 — path tests + BlogBody ramp tighten + chromium footprint cleanup `[SHIPPED]`
+
+**Direction:** user-requested next-cycle polish across three orthogonal surfaces plus a system-level disk reclaim: (a) Phase 30.2 unit-test followup on `lib/path.ts` (deferred since Phase 30.1); (b) Phase 30.3 BlogBody h1 ramp tighten (deferred since Phase 30.1); (c) free up the dead chromium footprint from Phase 28.7 that has been env-blocked for visual sanity work since 2026-06-23.
+
+**Files touched:**
+
+1. **NEW `src/lib/path.test.ts`** — 15 vitest `it()` blocks for `isCurrentPath` (1-expect-per-`it` style mirroring `cn.test.ts`). Cases: root `/` exact-only (4), non-root exact match (3), descendant prefix match (2), trailing-slash trap (1), negative guards including slash-boundary case (3), empty-href defensive guard (2). Vitest count: 51 → 66.
+
+2. **`src/lib/path.ts`** — JSDoc expanded. Documents the caller contract: hrefs MUST be pre-normalized (no trailing slash); points future editors to Header + Footer as the canonicalization layer rather than isCurrentPath. Behavioral code unchanged.
+
+3. **`src/components/islands/BlogBody.astro`** — h1 ramp tightened. Was 3-step `text-4xl → md:text-5xl → lg:text-6xl`; now 2-step `text-4xl → md:text-6xl` matching `/blog/index.astro` rhythm. Phase 30.3 followup finally lands.
+
+**System changes (~262 MB freed; no project files):**
+
+4. **Chromium footprint removal** — Phase 28.7 install was structurally dead (per Phase 28.7's own conclusion); no use path:
+   - `~/.cache/puppeteer/chrome-headless-shell/` (262 MB user-level install) — `rm -rf`.
+   - `/usr/bin/chromium` + `/usr/bin/chrome` symlinks → `sudo rm -f` (Phase 28.7 ours, not apt-managed).
+   - `/opt/google/chrome/{chrome,icudtl.dat,v8_context_snapshot.bin,libffmpeg.so}` + parent dir → `sudo rm -rf`.
+   - Apt-managed `google-chrome-stable` was not present (`dpkg -l` empty) — confirms symlinks were ours.
+   - Did NOT remove the 19 apt-installed runtime libs (`libnspr4`, `libnss3`, `libgbm1`, `libgtk-3-0t64`, `fonts-liberation`, etc., totalling ~22 MB system-wide). Documented as operator territory in §33.1.
+
+**Skills invoked this phase:** opendesign (token-aware, single-restraint accent rationale for test scope), ponytail-audit (delete focus landed the chromium cleanup), humanizer (no copy surface changes this phase), ai-writing-auditor (no copy surface changes this phase), ponytail-review (the JSDoc gap was a ponytail audit of the function's caller contract).
+
+**Vercel deploy verification (env-blocked on this dev box):** Vercel CLI v54.14.2 requires `vercel login` OAuth roundtrip or per-session `VERCEL_TOKEN` env var. No standing token at `/tmp/_v*` per Phase 25. The GitHub-app integration (Phase 22.1) auto-deploys every push to `origin/main`; the §33 commit will queue a fresh deployment. Operator can confirm via the Vercel project dashboard.
+
+**Validate gate:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0 errors / 0 warnings / 0 hints (76 files analyzed) · `vitest` 51 prior + 15 new path tests = 66/66 PASS in ~750ms.
+
+**Followups surfaced from §33:**
+
+- 33.1 — `sudo apt-get remove -y --purge libnspr4 libnss3 libasound2t64 libgbm1 libxshmfence1 fonts-liberation libpangocairo-1.0-0 libgtk-3-0t64 libatk1.0-0 libatk-bridge2.0-0 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libcups2 libcairo2 libdrm2 libpango-1.0-0` would drop the remaining ~22 MB of Phase 28.7 system-installed runtime libs. Operator-only action.
+- 33.2 — Phase 32.1 + 32.2 + 32.3 followups (KNOWN_TYPES array pattern, SVG `role="img"` + `aria-label`, `@media print` 12 px font-size override) — non-blocking; remains a paper-chore until operator pulls it in.
+- 33.3 — Vercel deploy visibility: with no standing CLI token on the dev box and Password Protection on the team-scoped URLs, the only ground-truth for "is the new commit live" is the operator's Vercel dashboard. Either disable Password Protection on the project or wire `VERCEL_AUTOMATION_BYPASS_SECRET` into the GH-app integration to enable programmatic smoke.
