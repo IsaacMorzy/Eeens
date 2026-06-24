@@ -21,15 +21,13 @@
  *
  * Wired in four places:
  *   1. `audit:cycle` npm script in package.json — `pnpm run audit:cycle`.
- *   2. `--status` flag for cadence-only readout (no gate runs).
- *   3. `--check-recent` / `-c` flag — exits 1 if `lastResult === 'red'`
- *      AND the recorded `lastRunAt` is within the last 7 days. Wired
- *      into `prebuild` so `pnpm build` blocks any green-pipeline build
- *      from being forwards-propagated while a recent red run would
- *      reintroduce the same regression. Stale reds (older than the
- *      guard window) are NOT blocking — they reflect pre-fix history,
- *      not current state.
- *   4. `--help` flag for usage text.
+ *   2. `--status` flag for cadence-only readout (no gate runs, and
+ *      now also writes `.audit-feed.json` for dashboards).
+ *   3. `--help` flag for usage text.
+ *   4. Companion script `scripts/audit-guard.mjs` (Phase 37) owns
+ *      the build-pipeline recency guard that previously lived in
+ *      `checkRecent()`. Splitting keeps each script single-purpose:
+ *      cycle runs gates, guard decides whether a build may start.
  *
  * Exit-code contract: 0 = gate all-green + counter bumped, non-zero if
  * any gate failed.
@@ -53,6 +51,7 @@ import { join } from 'node:path';
 const PROJECT_ROOT = process.cwd();
 const COUNTER_PATH = join(PROJECT_ROOT, '.audit-cycle.json');
 const MAP_PATH = join(PROJECT_ROOT, '.audit-map.json');
+const FEED_PATH = join(PROJECT_ROOT, '.audit-feed.json');
 
 function readJson(path, fallback) {
 	try {
@@ -88,6 +87,37 @@ function printStatus() {
 	if (map.audits.length > tail.length) {
 		console.log(`    … +${map.audits.length - tail.length} earlier`);
 	}
+	// Phase 37: write a flat dashboard feed so non-developer surfaces
+	// (operator's daily rundown, CI summary) can read state without
+	// parsing console output. Best-effort: a write failure here must
+	// not mask the gate result. Wrapped in try/catch with a warn-and-
+	// continue posture so `cycle()` green exits are not flipped to
+	// red by a transient filesystem error.
+	writeFeed(counter, map);
+}
+
+function writeFeed(counter, map) {
+	const feed = {
+		generatedAt: new Date().toISOString(),
+		counter: {
+			totalAttempts: counter.totalAttempts ?? 0,
+			successfulCycles: counter.successfulCycles ?? 0,
+			lastRunAt: counter.lastRunAt ?? null,
+			lastResult: counter.lastResult ?? null,
+		},
+		recentAudits: (map.audits ?? []).slice(-5),
+		auditCount: (map.audits ?? []).length,
+	};
+	// Best-effort: feed is observability, not a gate. A write failure
+	// here (read-only filesystem, perm denied, EROFS) warns and
+	// continues. The gate exit code is the source of truth.
+	try {
+		writeJson(FEED_PATH, feed);
+	} catch (err) {
+		console.warn(
+			`audit:cycle WARN — .audit-feed.json write failed: ${err?.message ?? err}. Continuing; gate result is authoritative.`,
+		);
+	}
 }
 
 function runGate(label, cmd) {
@@ -99,63 +129,10 @@ function runGate(label, cmd) {
 	return result.status === 0;
 }
 
-// Recency guard for the build pipeline. The default `RECENCY_DAYS`
-// window is 7: a red run from yesterday MUST not silently propagate,
-// but a red run from before the last shipped fix should not block
-// forever. The window is documented in plan.md §36a.
-const RECENCY_DAYS = 7;
-
-function checkRecent() {
-	const counter = readJson(COUNTER_PATH, {
-		totalAttempts: 0,
-		successfulCycles: 0,
-		lastRunAt: null,
-		lastResult: null,
-	});
-	if (counter.lastResult !== 'red') {
-		console.log(
-			`audit:cycle:check-recent OK — lastResult="${counter.lastResult ?? 'none'}", build guard NOT triggered.`,
-		);
-		process.exit(0);
-	}
-	if (!counter.lastRunAt) {
-		console.log(
-			'audit:cycle:check-recent OK — no recorded run date, cannot evaluate recency (PASS).',
-		);
-		process.exit(0);
-	}
-	const today = new Date().toISOString().slice(0, 10);
-	const daysSinceRun = Math.round(
-		(new Date(today).getTime() - new Date(counter.lastRunAt).getTime()) / 86400000,
-	);
-	// A corrupted or non-parseable `lastRunAt` propagates NaN through
-	// the math. Without this guard, NaN <= 7 evaluates to FALSE and
-	// the script would silently PASS a build that should be blocked.
-	// Treat unparseable dates as FAIL + instruct re-running the gate
-	// to repair the file.
-	if (!Number.isFinite(daysSinceRun)) {
-		console.error(
-			`audit:cycle:check-recent FAIL — lastRunAt="${counter.lastRunAt}" is not a valid date; counter file is corrupted.`,
-		);
-		console.error(
-			'Re-run `pnpm run audit:cycle` to repair.',
-		);
-		process.exit(1);
-	}
-	if (daysSinceRun <= RECENCY_DAYS) {
-		console.error(
-			`audit:cycle:check-recent FAIL — lastResult=red on ${counter.lastRunAt} (${daysSinceRun} day(s) ago, within the ${RECENCY_DAYS}-day guard window).`,
-		);
-		console.error(
-			'Re-run `pnpm run audit:cycle` to verify green BEFORE building.',
-		);
-		process.exit(1);
-	}
-	console.log(
-		`audit:cycle:check-recent OK — lastResult=red but ${daysSinceRun} day(s) ago EXCEEDS the ${RECENCY_DAYS}-day guard window.`,
-	);
-	process.exit(0);
-}
+// Build-pipeline recency guard is now owned by
+// `scripts/audit-guard.mjs` (Phase 37 split). This script runs
+// gates and bumps the cadence counter; the guard script decides
+// whether a build may start based on those gates' output.
 
 function cycle() {
 	console.log('audit:cycle starting');
@@ -197,17 +174,19 @@ if (flag === '--status' || flag === '-s') {
 	printStatus();
 	process.exit(0);
 }
-if (flag === '--check-recent' || flag === '-c') {
-	checkRecent();
-}
 if (flag === '--help' || flag === '-h') {
-	console.log('audit:cycle — periodic validate-gate wrapper with cadence counter + build-pipeline recency guard');
+	console.log('audit:cycle — periodic validate-gate wrapper with cadence counter');
 	console.log('');
 	console.log('Usage:');
 	console.log('  pnpm run audit:cycle              # run gate + bump counter');
-	console.log('  pnpm run audit:cycle --status     # print cadence + recent audits only');
-	console.log('  pnpm run audit:cycle --check-recent  # exit 1 if last run was red within the last 7 days');
+	console.log('  pnpm run audit:cycle --status     # print cadence + recent audits + write .audit-feed.json');
 	console.log('  pnpm run audit:cycle --help       # this help');
+	console.log('');
+	console.log('Companion script (Phase 37 split):');
+	console.log('  node scripts/audit-guard.mjs           # prebuild recency guard (default 7d window)');
+	console.log('  AUDIT_RECENCY_DAYS=14 audit-guard.mjs  # env override');
+	console.log('');
+	console.log('Note: --status regenerates .audit-feed.json (best-effort; see .gitignore).');
 	process.exit(0);
 }
 cycle();
