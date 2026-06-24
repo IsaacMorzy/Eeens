@@ -1,0 +1,22 @@
+{
+  "audits": [
+    {
+      "phase": 33,
+      "summary": "path tests (15 it() for isCurrentPath) + BlogBody h1 ramp tighten + chromium footprint cleanup (~262 MB)",
+      "status": "shipped",
+      "shippedAt": "2026-06-24"
+    },
+    {
+      "phase": 34,
+      "summary": "KNOWN_TYPES refactor (BuildingElevation.astro) + print font-size floor (.floor-plan / .building-elevation SVG) + apt cleanup (~700 MB)",
+      "status": "shipped",
+      "shippedAt": "2026-06-24"
+    },
+    {
+      "phase": 35,
+      "summary": "spec-sheet print font-size floor extension + DRY collapse + class-name rename (print-12px-floor -> print-caption) + audit:cycle tooling wrapper + .audit-map.json + .audit-cycle.json",
+      "status": "shipped",
+      "shippedAt": "2026-06-24"
+    }
+  ]
+}

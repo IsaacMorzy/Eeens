@@ -1434,3 +1434,33 @@ Three followups surfaced during the `code-reviewer-minimax-m3` pass:
 **Skills invoked this phase:** opendesign (token-aware: invariant extension through the same 12 px caption token contract), ponytail-review (DRY collapse + class-name semantic rename).
 
 **Vercel deploy verification (env-blocked on this dev box):** GH-app integration auto-deploys off the push. Operator can confirm via the Vercel project dashboard. CLI roundtrip remains env-blocked per Phase 25.
+### Phase 35b — Audit-cycle tooling wrapper + manifest + cadence counter `[SHIPPED]`
+
+**Direction:** pin the `we-shipped-N-audit-cycles` cadence into a tractable JSON counter so the operator can `cat .audit-cycle.json` instead of grepping `plan.md` or `git log`. Thin wrapper around the existing 3-gate validate pipeline (`pnpm run verify`); the wrapper adds a cadence counter, a manifest reader, and a `--status` / `--help` flag. No new validation logic, no new dependencies — just observability around what already runs.
+
+**Files touched:**
+
+1. **NEW `scripts/audit-cycle.mjs`** — Node ESM (matches the existing `lint-wrappers.mjs` + `smoke-env.mjs` convention; chose `.mjs` not `.sh`). Behavior:
+   - No flag → run `lint:wrappers` → `astro check` → `vitest` serially, bump counter + record last run, exit 0/1.
+   - `--status` / `-s` → print cadence (`totalAttempts`, `successfulCycles`, `lastRunAt`, `lastResult`) + last 5 audits from `.audit-map.json`, exit 0. No gate runs.
+   - `--help` / `-h` → print usage, exit 0.
+   - Robust read-json via `try/catch` (ENOENT or SyntaxError → fallback to initial shape) so a one-byte local mis-edit on `.audit-map.json` / `.audit-cycle.json` does not brick the dev loop.
+   - 30-line opening comment block (WHY wiring + exit-code contract + counter semantics); on-par with the existing script comments, not over-verbose.
+   - Counter semantics: both `totalAttempts` AND `successfulCycles` are bumped on green runs; only `totalAttempts` is bumped on red. The `--status` readout surfaces both fields so the operator can see the head-count AND the success ratio at a glance.
+
+2. **NEW `.audit-map.json`** — committed JSON manifest of audit phases shipped to date. Initial entries: Phase 33, Phase 34, Phase 35 (this Phase 35b via the same churn). Schema: `{ phase: number, summary: string, status: 'shipped' | 'pending', shippedAt: string (YYYY-MM-DD) }`. Hand-curated by operator when a phase ships; the counter is machine-managed.
+
+3. **NEW `.audit-cycle.json`** — committed machine-managed cadence counter, initialized to `{ totalAttempts: 0, successfulCycles: 0, lastRunAt: null, lastResult: null }`. Bumped by `scripts/audit-cycle.mjs` on each invocation (green bumps both; red bumps only `totalAttempts`). Committed rather than `gitignored` so `git log` shows the cadence evolution.
+
+4. **`package.json`** — ADDED `"audit:cycle": "node scripts/audit-cycle.mjs"` script right after the existing `"audit"` line (cyclic checks sit alphabetically + thematically together).
+
+**End-to-end test:** three back-to-back invocations verified all code paths. `pnpm run audit:cycle` returned GREEN ✓ with `attempt #1 / successful #1`, `pnpm run audit:cycle --status` printed the cadence + last 3 audits without running any gate, `node scripts/audit-cycle.mjs --help` printed usage.
+
+**Reviewer-foldup:** post-SHIP verdict, two minor findings folded into the same commit:
+1. Comment-vs-code mismatch on `readJson` malformed-JSON behavior — comment now accurately documents ENOENT + SyntaxError → fallback shape (avoids the dev-loop-bricking risk of a stricter `exit 1 on malformed JSON` posture).
+2. Counter semantics — `totalCycles` was ambiguous (bumped unconditionally). Renamed to `totalAttempts` AND added `successfulCycles` (green-only). The `--status` print surfaces both so the success ratio is readable in one `cat`.
+
+**Followups** (paper for next chapter):
+- 35b.1: extend `.audit-map.json` with a `category` field (`chore` / `perf` / `spec-content` / `refactor`) so future `--status` can filter by category.
+- 35b.2: wire `prebuild` to abort build if `lastResult === 'red'` is within the last 7 days (anti-regression guard).
+- 35b.3: surface `.audit-cycle.json` as a JSON-LD or RSS-like feed for the operator dashboard (out of scope until the operator dashboard exists).
