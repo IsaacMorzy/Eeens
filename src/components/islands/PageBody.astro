@@ -8,4 +8,43 @@ interface Props {
 
 const { data } = Astro.props;
 ---
+
 {data && <Blocks data={data} />}
+
+<script>
+	// Phase 29 — singleton scroll-reveal observer. Adds `.is-visible` to
+	// every `.reveal-on-scroll` element as it crosses into the viewport.
+	// Bails out at the JS layer under `prefers-reduced-motion: reduce`
+	// (the global.css media-query already clamps every animation /
+	// transition to < 0.01 ms; this is just the JS leg of the same guard).
+	// Gates on a one-shot flag so a second mount of PageBody (Tina SSR
+	// hydration refresh) doesn't bind two observers.
+	(() => {
+		const w = window as Window & { __revealOnce?: boolean };
+		if (w.__revealOnce) return;
+		w.__revealOnce = true;
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const els = document.querySelectorAll<HTMLElement>('.reveal-on-scroll');
+		if (!els.length) return;
+		if (reduce) {
+			els.forEach((el) => el.classList.add('is-visible'));
+			return;
+		}
+		if (typeof IntersectionObserver === 'undefined') {
+			els.forEach((el) => el.classList.add('is-visible'));
+			return;
+		}
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('is-visible');
+						io.unobserve(entry.target);
+					}
+				}
+			},
+			{ rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
+		);
+		els.forEach((el) => io.observe(el));
+	})();
+</script>

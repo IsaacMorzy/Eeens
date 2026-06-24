@@ -174,10 +174,12 @@
 	}
 }
 
-/* Respect user motion preferences. Today the codebase carries no explicit
-   @keyframes (Phase-6 polish stripped the only `transform` decoration), so
-   this rule is a null-op; future motion handlers inherit this guard rail
-   automatically. */
+/* Respect user motion preferences. Phase 29 introduces choreographed
+   motion (IsometricMap stroke-dashoffset draw + zone-pin pulse +
+   scroll-reveal utility), but the rule below short-circuits every
+   animation / transition to < 0.01 ms so the choreography collapses
+   to its initial frame under reduced-motion. The scroll-reveal
+   IntersectionObserver (PageBody.astro) also bails out at the JS layer. */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -187,6 +189,112 @@
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+}
+
+/* ============================================================================
+ * PHASE 29 — MOTION TOKENS
+ * Per DESIGN.md § Token discipline (introduced with the Phase 29 hero
+ * animation + scroll-reveal utility): all motion specs are token-resident
+ * in global.css. New utility classes:
+ *   .blueprint-stroke       — 1.4 s stroke-dashoffset reveal for the road
+ *                             line + ground-plane stroke.
+ *   .blueprint-stroke-poly  — 1.0 s stroke-dashoffset reveal for cuboid /
+ *                             polygon outlines (zone-cluster buildings).
+ *   .blueprint-stroke-tick  — 0.6 s stroke-dashoffset reveal for scale ticks.
+ *   .zone-pin-pulse         — infinite 4 s ease-in-out pulse on the 4 cyan
+ *                             zone pins. Subtle (max scale 1.4, opacity 0.6).
+ *   .reveal-on-scroll       — fades + rises 16 px into view when `.is-visible`
+ *                             is added by the singleton IntersectionObserver
+ *                             in PageBody.astro.
+ *   .shadow-hero-frame      — token-bound subtle elevation for the Hero
+ *                             IsometricMap frame (no SaaS elevation; respects
+ *                             DESIGN.md § Elevation & Depth = surface + hairline).
+ * ============================================================================ */
+
+@keyframes draw-blueprint {
+	from { stroke-dashoffset: var(--blueprint-dash, 1100); }
+	to { stroke-dashoffset: 0; }
+}
+
+.blueprint-stroke {
+	stroke-dasharray: 1100;
+	stroke-dashoffset: 1100;
+	animation: draw-blueprint 1.4s ease-out 0.1s forwards;
+	will-change: stroke-dashoffset;
+}
+
+.blueprint-stroke-poly {
+	--blueprint-dash: 220;
+	stroke-dasharray: 220;
+	stroke-dashoffset: 220;
+	animation: draw-blueprint 1s ease-out 0.5s forwards;
+	will-change: stroke-dashoffset;
+}
+
+.blueprint-stroke-tick {
+	--blueprint-dash: 12;
+	stroke-dasharray: 12;
+	stroke-dashoffset: 12;
+	animation: draw-blueprint 0.6s ease-out 0.7s forwards;
+	will-change: stroke-dashoffset;
+}
+
+@keyframes pulse-zone {
+	0%, 100% { transform: scale(1); opacity: 1; }
+	50%      { transform: scale(1.4); opacity: 0.6; }
+}
+
+.zone-pin-pulse {
+	transform-origin: center;
+	transform-box: fill-box;
+	animation: pulse-zone 4s ease-in-out infinite;
+}
+
+/* Operations-sweep beam (Phase 29.4) — pixel-wide duplicated stroke that
+   travels left to right along the ground line via stroke-dashoffset.
+   Subtle (40 px beam length on 1040 px trail). Inherits the global
+   prefers-reduced-motion short-circuit in global.css. */
+@keyframes beam-travel {
+	from { stroke-dashoffset: 1080; }
+	to   { stroke-dashoffset: 0; }
+}
+
+.corridor-beam {
+	animation: beam-travel 3.4s linear infinite;
+	will-change: stroke-dashoffset;
+}
+
+.reveal-on-scroll {
+	opacity: 0;
+	transform: translateY(16px);
+	transition: opacity 600ms ease-out, transform 600ms ease-out;
+	will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Singleton scroll-reveal observer (PageBody.astro) staggers the hero's
+   inner choreography: image first, then headline, tagline, actions.
+   The wrapper class is `reveal-on-scroll-stagger` (smooth ≤ 4 children);
+   children scope their own delays so the JS observer still adds
+   `.is-visible` to each independently. The CSS just widens the visual
+   orchestration and keeps each reveal-on-scroll child visually
+   staggered when all elements share a parent. */
+.reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(1) { transition-delay: 0ms;  }
+.reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(2) { transition-delay: 80ms; }
+.reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(3) { transition-delay: 160ms; }
+.reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(4) { transition-delay: 240ms; }
+
+/* Hero frame shadow — per DESIGN.md § Elevation & Depth table, the only
+   legitimate elevation beyond surface + hairline is the focus-ring tier.
+   This shadow is a structural cue for the IsometricMap frame, kept at
+   0.06 opacity so it doesn't read as SaaS-elevation. Exposed here so it
+   resolves through the same reduced-motion short-circuit above. */
+:root {
+	--shadow-hero-frame: 0 1px 2px 0 rgb(15 23 42 / 0.06);
 }
 
 /* Print stylesheet — supports the "Print / Save as PDF" button on

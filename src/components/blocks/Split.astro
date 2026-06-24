@@ -14,7 +14,7 @@ const { data } = Astro.props;
 const actions = (data.actions ?? []).filter(a => a !== null);
 ---
 <Section>
-	<div class="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-16">
+	<div class="reveal-on-scroll mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-16">
 		<div class={cn('space-y-6', data.reverse && 'md:order-2')}>
 			{data.title && <h2 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-3xl font-semibold tracking-[-0.4px] lg:text-4xl">{data.title}</h2>}
 			{data.body && (

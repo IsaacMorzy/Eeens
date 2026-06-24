@@ -20,7 +20,7 @@ const { data } = Astro.props;
 ---
 
 <Section class="bg-canvas-dark text-ink-dark">
-	<div class="mx-auto grid max-w-5xl gap-8 px-6 py-16 md:grid-cols-[2fr_1fr] md:items-end md:py-20">
+	<div class="reveal-on-scroll mx-auto grid max-w-5xl gap-8 px-6 py-16 md:grid-cols-[2fr_1fr] md:items-end md:py-20">
 		<div class="space-y-4">
 			{data.eyebrow && (
 				<span data-tina-field={tinaField(data, 'eyebrow')} class="inline-block text-[13px] font-medium uppercase tracking-[0.4px] text-primary-dark">

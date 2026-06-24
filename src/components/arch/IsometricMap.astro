@@ -1,0 +1,439 @@
+---
+/**
+ * IsometricMap — parametric isometric SVG wireframe of the Eens Business
+ * Park footprint along the Mombasa Road corridor.
+ *
+ * Value to the visitor:
+ * - Eliminates the "stamp-on-an-engineering-drawing" gap on the home page
+ *   by giving the visitor a literal view of where the four zones sit
+ *   (Mlolongo KM 14, Syokimau, Baba Dogo, Thika) before they scroll into
+ *   the PropertyList. Reads like a site plan, not a marketing graphic.
+ *
+ * Token discipline (DESIGN.md § Token discipline):
+ * - All colors come from documented tokens (`--primary`,
+ *   `--hairline-steel`, `--background`, `--foreground`,
+ *   `--muted-foreground`). Per Phase 29.1 audit, the four zone pins are
+ *   intentionally NOT cyan-teal — that would push the home page over the
+ *   4-slot accent budget (header wordmark dot + 3 property-card
+ *   availability badges + Footer primary CTA + CTABanner inverse CTA
+ *   already consume the chrome accent slots). Pins render as hairline-steel
+ *   outer rings with ink-light (foreground) inner dots; the pulse
+ *   animation stays on hairlines so the zone markers behave like
+ *   engineering-drawing pins, not chrome accent.
+ * - 1px hairlines only. No raw hex. No full-card fills. The Phase 29.0
+ *   `<linearGradient id="ground-plane-fade">` was reverted in Phase 29.1
+ *   — even at 5% opacity it sat at the boundary of "atmospheric gradient
+ *   on a colorless surface". Replaced by a stroked-only ellipse.
+ *
+ * Typography:
+ * - All text in this component is at the DESIGN.md documented floor of
+ *   12 px (`caption` token). Phase 29.0 used ad-hoc 10/11 px; Phase 29.1
+ *   steps them up.
+ *
+ * Animation (global.css) — gated by `prefers-reduced-motion: reduce`:
+ *   the rule globally clamps animation-duration + transition-duration,
+ *   so every reveal collapses to a static frame under reduced motion.
+ *
+ * SSR-friendly: no `client:*` directive, no client-render hydration.
+ * The inline `<script>` is hoisted + deduped by Astro.
+ */
+---
+
+<div
+	class="isometric-map relative h-full w-full overflow-hidden rounded-xl bg-background"
+	data-isometric-map
+>
+	<svg
+		viewBox="0 0 1280 720"
+		width="1280"
+		height="720"
+		preserveAspectRatio="xMidYMid meet"
+		role="img"
+		aria-label="Eens Business Park footprint along the Mombasa Road corridor — Mlolongo (KM 14), Syokimau, Baba Dogo, Thika"
+		class="size-full"
+	>
+		<defs>
+			<!-- 40px-pitch blueprint grid: 0.5 px hairlines at 18% opacity. -->
+			<pattern
+				id="eens-blueprint-grid"
+				patternUnits="userSpaceOnUse"
+				width="40"
+				height="40"
+			>
+				<path
+					d="M 40 0 L 0 0 0 40"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="0.5"
+					stroke-opacity="0.18"
+				/>
+			</pattern>
+		</defs>
+
+		<!-- Background blueprint grid (1 px hairlines via token) -->
+		<rect
+			x="0"
+			y="0"
+			width="1280"
+			height="720"
+			fill="url(#eens-blueprint-grid)"
+			class="text-hairline-steel"
+		/>
+
+		<!-- Stroke-only ground-plane cue (Phase 29.1: gradient fill removed). -->
+		<ellipse
+			cx="640"
+			cy="540"
+			rx="540"
+			ry="100"
+			stroke="currentColor"
+			stroke-width="1"
+			stroke-opacity="0.3"
+			class="text-hairline-steel"
+		/>
+
+		<!-- Mombasa Road corridor (the ground line). Drawn-in via CSS @keyframes. -->
+		<line
+			x1="120"
+			y1="500"
+			x2="1160"
+			y2="500"
+			stroke="currentColor"
+			stroke-width="1.5"
+			class="text-hairline-steel blueprint-stroke"
+		/>
+
+		<!-- Operations-sweep beam (Phase 29.4). Token-honoring: hairline-steel
+		     on a duplicated stroke, animated stroke-dashoffset, looping left
+		     to right. The beam is NOT cyan-teal — that's already the
+		     accent-slot budget — so it stays in hairline-steel and reads
+		     as engineering-drawing motion. The beam is deliberately
+		     unlabeled (no KM claim): Mlolongo/Syokimau sit on Mombasa Road
+		     while Baba Dogo is on Outering Road and Thika is on A2 north,
+		     so a single linear "KM 14 → KM 42" reading would be incorrect.
+		     The motion is the message: "we operate across this footprint".
+		     prefers-reduced-motion guard is inherited from the global media
+		     query in global.css. -->
+		<line
+			x1="120"
+			y1="500"
+			x2="1160"
+			y2="500"
+			stroke="currentColor"
+			stroke-width="1.5"
+			stroke-dasharray="40 1040"
+			stroke-dashoffset="1080"
+			class="text-hairline-steel corridor-beam"
+		/>
+
+		<!-- 10 km tick marks at every 100 px (engineering-drawing register) -->
+		<g
+			class="text-hairline-steel blueprint-stroke-tick"
+			stroke="currentColor"
+			stroke-width="1"
+		>
+			<line x1="220" y1="495" x2="220" y2="505" />
+			<line x1="320" y1="495" x2="320" y2="505" />
+			<line x1="420" y1="495" x2="420" y2="505" />
+			<line x1="520" y1="495" x2="520" y2="505" />
+			<line x1="620" y1="495" x2="620" y2="505" />
+			<line x1="720" y1="495" x2="720" y2="505" />
+			<line x1="820" y1="495" x2="820" y2="505" />
+			<line x1="920" y1="495" x2="920" y2="505" />
+			<line x1="1020" y1="495" x2="1020" y2="505" />
+			<line x1="1120" y1="495" x2="1120" y2="505" />
+		</g>
+
+		<!-- ZONE 1: Mlolongo (Mombasa Road, KM 14) — industrial warehouse cluster -->
+		<g class="zone-cluster">
+			<polygon
+				points="180,470 240,455 240,395 180,410"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<polygon
+				points="240,470 300,455 300,395 240,410"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<!-- Top face cap -->
+			<line
+				x1="180"
+				y1="410"
+				x2="300"
+				y2="395"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<circle cx="240" cy="445" r="6" fill="currentColor" class="zone-pin-pulse text-hairline-steel" />
+			<circle cx="240" cy="445" r="2.5" fill="var(--foreground)" />
+			<text
+				x="240"
+				y="385"
+				text-anchor="middle"
+				class="font-sans text-[12px] font-medium tracking-tight fill-foreground"
+			>
+				Mlolongo
+			</text>
+			<text
+				x="240"
+				y="565"
+				text-anchor="middle"
+				class="font-mono text-[12px] uppercase tracking-[0.4px] fill-muted-foreground"
+			>
+				KM 14 · Industrial
+			</text>
+		</g>
+
+		<!-- ZONE 2: Syokimau — mixed-use cluster (godowns + small warehouse) -->
+		<g class="zone-cluster">
+			<rect
+				x="430"
+				y="430"
+				width="60"
+				height="60"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<polygon
+				points="490,430 550,415 550,385 490,400"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<line
+				x1="430"
+				y1="430"
+				x2="490"
+				y2="400"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<line
+				x1="490"
+				y1="430"
+				x2="550"
+				y2="415"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<circle cx="490" cy="445" r="6" fill="currentColor" class="zone-pin-pulse text-hairline-steel" />
+			<circle cx="490" cy="445" r="2.5" fill="var(--foreground)" />
+			<text
+				x="490"
+				y="385"
+				text-anchor="middle"
+				class="font-sans text-[12px] font-medium tracking-tight fill-foreground"
+			>
+				Syokimau
+			</text>
+			<text
+				x="490"
+				y="560"
+				text-anchor="middle"
+				class="font-mono text-[12px] uppercase tracking-[0.4px] fill-muted-foreground"
+			>
+				Godown + Depot
+			</text>
+		</g>
+
+		<!-- ZONE 3: Baba Dogo — business park (3-bay elevation) -->
+		<g class="zone-cluster">
+			<polygon
+				points="780,470 820,455 820,395 780,410"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<polygon
+				points="820,470 860,455 860,395 820,410"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<polygon
+				points="860,470 900,455 900,395 860,410"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<line
+				x1="780"
+				y1="410"
+				x2="900"
+				y2="395"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<circle cx="840" cy="445" r="6" fill="currentColor" class="zone-pin-pulse text-hairline-steel" />
+			<circle cx="840" cy="445" r="2.5" fill="var(--foreground)" />
+			<text
+				x="840"
+				y="385"
+				text-anchor="middle"
+				class="font-sans text-[12px] font-medium tracking-tight fill-foreground"
+			>
+				Baba Dogo
+			</text>
+			<text
+				x="840"
+				y="565"
+				text-anchor="middle"
+				class="font-mono text-[12px] uppercase tracking-[0.4px] fill-muted-foreground"
+			>
+				Business Park
+			</text>
+		</g>
+
+		<!-- ZONE 4: Thika — Flame Tree Estate apartments (residential elevation) -->
+		<g class="zone-cluster">
+			<rect
+				x="1060"
+				y="380"
+				width="50"
+				height="110"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<rect
+				x="1110"
+				y="400"
+				width="40"
+				height="90"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel blueprint-stroke-poly"
+			/>
+			<!-- Floor hairlines (engineering register for multi-floor blocks) -->
+			<line
+				x1="1060"
+				y1="410"
+				x2="1110"
+				y2="410"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel"
+			/>
+			<line
+				x1="1060"
+				y1="440"
+				x2="1110"
+				y2="440"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel"
+			/>
+			<line
+				x1="1060"
+				y1="470"
+				x2="1110"
+				y2="470"
+				stroke="currentColor"
+				stroke-width="1"
+				class="text-hairline-steel"
+			/>
+			<circle cx="1085" cy="445" r="6" fill="currentColor" class="zone-pin-pulse text-hairline-steel" />
+			<circle cx="1085" cy="445" r="2.5" fill="var(--foreground)" />
+			<text
+				x="1085"
+				y="370"
+				text-anchor="middle"
+				class="font-sans text-[12px] font-medium tracking-tight fill-foreground"
+			>
+				Thika
+			</text>
+			<text
+				x="1085"
+				y="565"
+				text-anchor="middle"
+				class="font-mono text-[12px] uppercase tracking-[0.4px] fill-muted-foreground"
+			>
+				Flame Tree Estate
+			</text>
+		</g>
+
+		<!-- Scale bar (engineering-drawing convention, bottom-left) -->
+		<g class="text-hairline-steel">
+			<line x1="100" y1="660" x2="200" y2="660" stroke="currentColor" stroke-width="1" />
+			<line x1="100" y1="654" x2="100" y2="666" stroke="currentColor" stroke-width="1" />
+			<line x1="200" y1="654" x2="200" y2="666" stroke="currentColor" stroke-width="1" />
+			<text
+				x="150"
+				y="685"
+				text-anchor="middle"
+				class="font-mono text-[12px] fill-muted-foreground"
+			>
+				10 KM
+			</text>
+		</g>
+
+		<!-- North arrow (top-right) -->
+		<g class="text-hairline-steel">
+			<line x1="1180" y1="100" x2="1180" y2="140" stroke="currentColor" stroke-width="1" />
+			<polygon points="1175,140 1185,140 1180,128" fill="currentColor" />
+			<text
+				x="1180"
+				y="160"
+				text-anchor="middle"
+				class="font-mono text-[12px] fill-muted-foreground uppercase tracking-[0.4px]"
+			>
+				N
+			</text>
+		</g>
+
+		<!-- Caption: engineering-drawing caption strip at the foot of the map -->
+		<text
+			x="640"
+			y="685"
+			text-anchor="middle"
+			class="font-mono text-[12px] fill-muted-foreground"
+		>
+			Eens Limited · Operating Footprint · Mombasa Road Corridor · ISO Projection
+		</text>
+	</svg>
+</div>
+
+<script>
+	// Scroll-tied parallax: ≤4° Y-axis tilt based on the map's vertical
+	// position within the viewport. Gated by prefers-reduced-motion so the
+	// dev-box `prefers-reduced-motion: reduce` global.css short-circuit
+	// already wipes it out at the CSS layer; this is a JS belt.
+	(() => {
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (reduce) return;
+		const el = document.querySelector('[data-isometric-map]') as HTMLElement | null;
+		if (!el) return;
+		let raf = 0;
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+			const norm = Math.max(-1, Math.min(1, center / (window.innerHeight / 2)));
+			const tiltY = -norm * 4;
+			const tiltX = -norm * 1;
+			el.style.transform = `perspective(1200px) rotateY(${tiltY}deg) rotateX(${tiltX}deg)`;
+		};
+		const onScroll = () => {
+			cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(update);
+		};
+		window.addEventListener('scroll', onScroll, { passive: true });
+		update();
+	})();
+</script>

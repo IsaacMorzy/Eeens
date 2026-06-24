@@ -1133,3 +1133,68 @@ A `vercel.json`-configuration grep returns 0 hits for `password`, `vercel-protec
 **Re-test path:** once the operator unblocks Layer A or Layer B above, the chromium infra is already in place — re-run `browser-use` from this dev box against the unblocked URL. No additional install work needed.
 
 **Validated:** git status shows only `plan.md` (+this §28.7 entry). Worktree otherwise clean.
+
+---
+
+### Phase 29 — Home-page revamp: parametric SVG "3D" hero (IsometricMap) + reveal-on-scroll motion system + token audit `[SHIPPED]`
+
+**Why this phase:** the prior home-page hero rendered an `<Image src="/eens-wordmark.svg">` inside a 16:9 frame, which left the frame feeling like "a stamp on an engineering drawing" — no footprint, no sense of place for a property-first B2B site. The user asked to (a) make the page look more impressive and (b) put a "3D animation" in the first hero. Both legs needed careful registration with the existing engineering-drawing voice (DESIGN.md § Do's and Don'ts forbids decorative gradients, particle fields, glass morphism, decoration that doesn't carry information).
+
+**Approach:** parametric isometric SVG wireframe of the actual Eens footprint along the Mombasa Road corridor (Phase 29.0 → 29.1 audit trail below). No `<canvas>`, no Three.js, no client-side JS beyond a tiny scroll-tied parallax script on the hero frame. SSR-friendly, prefers-reduced-motion guarded at both CSS and JS layers, single accent (cyan-teal) preserved.
+
+**Files touched:**
+- NEW `src/components/arch/IsometricMap.astro` (~280 lines) — 1px-hairline SVG wireframe: Mombasa Road ground line, 10 km tick marks, four isometric zone clusters (Mlolongo KM 14 industrial, Syokimau godown, Baba Dogo business park, Thika Flame Tree estate), 10 KM scale bar, north arrow, mono caption. Stroke-dashoffset keyframes draw the road / ticks / polygons on load; zone pins pulse on a 4 s loop. Scroll parallax ≤ 4° tilt on Y-axis.
+- MOD `src/components/blocks/Hero.astro` — restored `astro:assets` Image import; new conditional: `data.image?.src ? <Image /> : <IsometricMap />` so future CMS operators can override the map per page. h1 tracking now matches DESIGN.md display-xl spec (`text-4xl tracking-[-3px] md:text-6xl xl:text-[5rem]`). Added `reveal-on-scroll` on the frame / h1 / tagline / actions rows + `reveal-on-scroll-stagger` wrapper for entrance choreography.
+- MOD `src/styles/global.css` — added `@keyframes draw-blueprint` / `@keyframes pulse-zone` / utility classes `.blueprint-stroke` / `.blueprint-stroke-poly` / `.blueprint-stroke-tick` / `.zone-pin-pulse` / `.reveal-on-scroll` / `.reveal-on-scroll-stagger` :nth-child(n) transition-delay ladder. Existing prefers-reduced-motion media query short-circuit absorbs every new animation/transition under reduced motion.
+- MOD `src/components/islands/PageBody.astro` — added singleton IntersectionObserver that adds `.is-visible` to every `.reveal-on-scroll` element as it crosses into the viewport. Gates on a `__revealOnce` flag so a Tina SSR hydration refresh doesn't double-bind. Bails out under reduced-motion and when IntersectionObserver is undefined (older browser fallback).
+- MOD `src/components/blocks/Stats.astro` — `reveal-on-scroll` on inner grid + `reveal-on-scroll-stagger`; divider-on-child fix migrated from `divide-y divide-x` (raw token) to `divide-border` so it follows the token ladder.
+- MOD `src/components/blocks/Features.astro` — `reveal-on-scroll` on inner grid + `reveal-on-scroll-stagger`.
+- MOD `src/components/blocks/Testimonial.astro` — `reveal-on-scroll` on the title block + `reveal-on-scroll-stagger` on the cards grid.
+- MOD `src/components/blocks/CTABanner.astro` — `reveal-on-scroll` on the dark-mode `bg-canvas-dark` block.
+- MOD `src/components/blocks/Split.astro` — `reveal-on-scroll` on the inner two-column grid.
+- `src/content/page/home.mdx` — unchanged (Hero block had no `image:` field anyway; the conditional default on the home page was empty all along).
+
+**Phase 29.1 audit fixes (rolled into the same commit):**
+- Phase 29.0 had 4 cyan-teal zone pins in IsometricMap, which would have pushed the home page's accent slot count past DESIGN.md's documented 4-slot budget (Header wordmark dot + 3 featured-property availability badges + Footer primary CTA + CTABanner inverse CTA already consume the chrome slots). Phase 29.1 retinted the pins to `currentColor` (= `--hairline-steel` outer ring + `--foreground` ink inner dot). Pulse animation stays on hairlines so they behave like engineering-drawing pins, not chrome accents.
+- Phase 29.0 had a `<linearGradient>` ground-plane shadow at 5% opacity — sat at the boundary of DESIGN.md § Decorative anti-patterns ("Atmospheric gradients on colorless surfaces"). Phase 29.1 replaced with a stroked-only ellipse.
+- Phase 29.0 used ad-hoc 10 px / 11 px font sizes on the map caption labels — below DESIGN.md documented floor of 12 px. Phase 29.1 steps everything up to `text-[12px]`.
+- Phase 29.0 had `shadow-[var(--shadow-hero-frame)]` on the Hero frame. DESIGN.md § Elevation & Depth table forbids shadow outside the focus-ring tier. Phase 29.1 dropped it.
+
+**Validate gate:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0 errors / 0 warnings / 0 hints (72 files analyzed) · `pnpm test` 51/51 PASS.
+
+**Followups considered, deferred:**
+- 29.2 — Print stylesheet carve-out for the home page (probably unnecessary; the canonical print surface is `/properties/[slug]` per Phase 8.4.3).
+- 29.3 — Optional Three.js upgrade only if a future product surface genuinely needs to fly a camera around the portfolio (current home page is satisfied with the parallax tilt).
+
+### Phase 29.4 — Operations-sweep beam animation on the corridor ground line `[SHIPPED]`
+
+**Why:** the user's three "suggested followups" included a subtle corridor beam animation. The prior "KM 14 → 42" framing I drafted in the 29.0 followup section was retroactively wrong — Baba Dogo sits on Outering Road, Thika on A2 north, so the corridor isn't a single linear KM reading. Phase 29.4 strips the mileage claim and makes the beam an unlabeled "operations sweep": we operate across this footprint, full stop.
+
+**Files touched:**
+- MOD `src/components/arch/IsometricMap.astro` — added a second `<line>` overlaid on the Mombasa Road ground line, with `stroke-dasharray="40 1040"`, `stroke-dashoffset="1080"`, class `text-hairline-steel corridor-beam`. The stroke-dasharray + offset pattern reveals a 40 px beam segment that travels left to right over a 3.4 s infinite loop. Comment updated to drop the inaccurate KM claim.
+- MOD `src/styles/global.css` — added `@keyframes beam-travel` (1080 → 0 stroke-dashoffset) + `.corridor-beam { animation: beam-travel 3.4s linear infinite; will-change: stroke-dashoffset; }`. Inherits the existing global prefers-reduced-motion short-circuit (collapsed to < 0.01 ms under reduced motion).
+- `plan.md` (this entry).
+
+**Token discipline:** beam stays `--hairline-steel` (NOT cyan-teal — accent slot budget intact).
+
+### Phase 29.5 — Extend reveal-on-scroll motion system to /about and /locations page blocks `[SHIPPED]`
+
+**Why:** Phase 29.0 added reveal-on-scroll only to the home-page blocks (Hero / Stats / Features / Testimonial / CTABanner / Split). The `/about` and `/locations` pages use the `content` block for primary body and `CtaBanner` for the closing surface. Without reveal-on-scroll on `Content.astro`, those pages feel static vs. /index's motion system.
+
+**Files touched:**
+- MOD `src/components/blocks/Content.astro` — added `reveal-on-scroll` to the inner `<div class="mx-auto max-w-3xl">`. Single component edit; the same wrapper renders on /about (1 Content block) AND /locations (4 Content blocks — one per district), so 5 places gain motion at once.
+
+**Page-block inventory after Phase 29.5:**
+- Hero — reveal-on-scroll ✓
+- Stats — reveal-on-scroll ✓
+- Features — reveal-on-scroll + reveal-on-scroll-stagger ✓
+- Testimonial — reveal-on-scroll ✓
+- Split — reveal-on-scroll ✓
+- CTABanner — reveal-on-scroll ✓
+- Content — reveal-on-scroll ✓ (Phase 29.5)
+- PropertyCard (in PropertyList) — hover translate ✓
+- Callout — hover transition ✓
+
+Every read-direction block on the site now has an entrance animation that collapses to a static frame under prefers-reduced-motion.
+
+**Validate gate post-29.4/29.5:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0/0/0 (72 files) · `pnpm test` 51/51 PASS.

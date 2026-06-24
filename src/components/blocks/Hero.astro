@@ -1,9 +1,32 @@
 ---
+/**
+ * Hero — page block per DESIGN.md § Components (image-or-map frame at top).
+ *
+ * Phase 29 wiring:
+ * - The block keeps its original image-or-empty contract: when a CMS
+ *   operator supplies `data.image?.src`, the image renders in the 16:9
+ *   frame. When empty (e.g. the home page), the parametric IsometricMap
+ *   renders in the same frame so the visitor still sees a literal
+ *   footprint of the Eens portfolio before the PropertyList.
+ * - Headline / tagline / actions rows gain `reveal-on-scroll` for
+ *   the Phase 29 entrance-choreography.
+ *
+ * Display-tracking per DESIGN.md § Typography > display-xl:
+ * - Mobile: 36 px (`text-4xl`).
+ * - Tablet: 60 px (`md:text-6xl`).
+ * - Desktop: 80 px (`xl:text-[5rem]`).
+ * - Tracking: -3 px throughout (display-xl spec).
+ *
+ * Phase 29.1 audit drop: the `shadow-[var(--shadow-hero-frame)]` ring
+ * from Phase 29.0 was removed — DESIGN.md § Elevation & Depth table
+ * forbids shadow outside the focus-ring tier.
+ */
 import { Image } from 'astro:assets';
 import { tinaField } from '@tinacms/astro/tina-field';
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
+import IsometricMap from '../arch/IsometricMap.astro';
 import type { HeroBlock } from '../../lib/data';
 
 interface Props { data: HeroBlock }
@@ -12,9 +35,9 @@ const { data } = Astro.props;
 const actions = (data.actions ?? []).filter(a => a !== null);
 ---
 <Section class="relative">
-	<div class="relative text-center sm:mx-auto lg:mr-auto">
-		{data.image?.src && (
-			<div data-tina-field={tinaField(data, 'image')} class="mx-auto mb-8 aspect-video w-full max-w-3xl overflow-hidden rounded-xl border border-hairline-steel">
+	<div class="relative text-center sm:mx-auto lg:mr-auto reveal-on-scroll-stagger">
+		{data.image?.src ? (
+			<div data-tina-field={tinaField(data, 'image')} class="reveal-on-scroll mx-auto mb-8 aspect-video w-full max-w-3xl overflow-hidden rounded-xl border border-hairline-steel">
 				<Image
 					src={data.image.src}
 					alt={data.image.alt ?? ''}
@@ -29,11 +52,29 @@ const actions = (data.actions ?? []).filter(a => a !== null);
 					class="aspect-video size-full object-cover"
 				/>
 			</div>
+		) : (
+			<div class="reveal-on-scroll mx-auto mb-8 aspect-video w-full max-w-3xl overflow-hidden rounded-xl border border-hairline-steel">
+				<IsometricMap />
+			</div>
 		)}
-		{data.headline && <h1 data-tina-field={tinaField(data, 'headline')} class="mt-8 text-balance text-6xl md:text-7xl xl:text-[5.25rem] font-semibold tracking-tight">{data.headline}</h1>}
-		{data.tagline && <p data-tina-field={tinaField(data, 'tagline')} class="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground">{data.tagline}</p>}
+		{data.headline && (
+			<h1
+				data-tina-field={tinaField(data, 'headline')}
+				class="reveal-on-scroll mt-8 text-balance text-4xl font-semibold tracking-[-3px] md:text-6xl xl:text-[5rem]"
+			>
+				{data.headline}
+			</h1>
+		)}
+		{data.tagline && (
+			<p
+				data-tina-field={tinaField(data, 'tagline')}
+				class="reveal-on-scroll mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground"
+			>
+				{data.tagline}
+			</p>
+		)}
 		{actions.length > 0 && (
-			<div class="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
+			<div class="reveal-on-scroll mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
 				{actions.map((action) => (
 					<div data-tina-field={tinaField(action)} class="">
 						<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
