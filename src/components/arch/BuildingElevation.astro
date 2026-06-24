@@ -67,6 +67,12 @@ const SLAB_Y = 540; // ground line
 
 // Pixel-based parking forecourt for industrial listings
 const baysRemaining = parkingBays ?? 0;
+
+// Single source of truth for valid `type` values. Used by the defensive
+// fallback below so a future Tina type addition is a one-line change here
+// rather than a 4-clause boolean rewrite in the JSX. `as const` + spread
+// gives a stable union type without the runtime cost of Object.freeze.
+const KNOWN_TYPES = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const satisfies PropertyType[];
 ---
 
 <div
@@ -387,7 +393,7 @@ const baysRemaining = parkingBays ?? 0;
 		     a type outside the four blessed values (Tina schema drift, future
 		     property type, or a CMS operator typo), draw a hairline placeholder
 		     frame + mono caption instead of silently producing an empty SVG. */}
-		{type !== 'WAREHOUSE' && type !== 'GODOWN' && type !== 'BUSINESS_PARK' && type !== 'APARTMENT' && (
+		{!KNOWN_TYPES.includes(type) && (
 			<g class="text-hairline-steel">
 				<rect
 					x={CX - FACE_W / 2}

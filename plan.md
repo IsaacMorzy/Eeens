@@ -1320,3 +1320,60 @@ Three followups surfaced during the `code-reviewer-minimax-m3` pass:
 - 33.1 — `sudo apt-get remove -y --purge libnspr4 libnss3 libasound2t64 libgbm1 libxshmfence1 fonts-liberation libpangocairo-1.0-0 libgtk-3-0t64 libatk1.0-0 libatk-bridge2.0-0 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libcups2 libcairo2 libdrm2 libpango-1.0-0` would drop the remaining ~22 MB of Phase 28.7 system-installed runtime libs. Operator-only action.
 - 33.2 — Phase 32.1 + 32.2 + 32.3 followups (KNOWN_TYPES array pattern, SVG `role="img"` + `aria-label`, `@media print` 12 px font-size override) — non-blocking; remains a paper-chore until operator pulls it in.
 - 33.3 — Vercel deploy visibility: with no standing CLI token on the dev box and Password Protection on the team-scoped URLs, the only ground-truth for "is the new commit live" is the operator's Vercel dashboard. Either disable Password Protection on the project or wire `VERCEL_AUTOMATION_BYPASS_SECRET` into the GH-app integration to enable programmatic smoke.
+
+### Phase 34 — Phase 32 micro-fix backlog + 33.1 apt cleanup `[SHIPPED]`
+
+**Direction:** roll the four Phase-32 micro-fix followups (32.1 fallback refactor + 32.2 SVG aria-label + 32.3 print font-size floor) plus the 33.1 system-level apt cleanup. Phase 32.2 was already shipped during the Phase 31 arch components drop (both files got `role="img"` + dynamic `aria-label`); the work here is 32.1, 32.3, and 33.1. Total disk-free across the chapter (Phase 33 cleanup + this chapter): ~960 MB.
+
+**Files touched:**
+
+1. **`src/components/arch/BuildingElevation.astro`** (Phase 32.1):
+   - ADDED frontmatter (after `const baysRemaining = parkingBays ?? 0;`):
+     `const KNOWN_TYPES = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const satisfies PropertyType[];`
+     A 3-line inline comment captures the one-line-add semantics for future Tina property types.
+   - REPLACED JSX condition on the defensive fallback:
+     - Before: `{type !== 'WAREHOUSE' && type !== 'GODOWN' && type !== 'BUSINESS_PARK' && type !== 'APARTMENT' && (…)}`
+     - After: `{!KNOWN_TYPES.includes(type) && (…)}`
+     - Functional outcome identical; extension path is now a one-line edit on the array.
+
+2. **`src/styles/global.css`** (Phase 32.3):
+   - ADDED inside the existing `@media print` block (just before the closing `}`):
+     ```css
+     /* SVG drawings (floor-plan, building-elevation): force every label to
+        the DESIGN.md documented 12 px caption token. !important overrides
+        the inline Tailwind text-[nnpx] utilities so the visitor's "Save
+        as PDF" output reads at the engineering-drawing scale. */
+     .floor-plan *,
+     .building-elevation * {
+         font-size: 12px !important;
+     }
+     ```
+   - Existing print rules (hide chrome, white bg, navy ink, plain links, dl break-inside, image max-height 40vh) untouched.
+
+3. **Already-shipped from Phase 31** (Phase 32.2 no-op):
+   - `src/components/arch/BuildingElevation.astro` `<svg>` root carries `role="img"` + dynamic `aria-label={\`Building elevation${type ? \`: ${type.toLowerCase().replace('_', ' ')}\` : ''}${sqft ? \`, ${sqft}\` : ''}${clearHeight ? \`, clear height ${clearHeight} m\` : ''}.\`}`.
+   - `src/components/arch/FloorPlan.astro` `<svg>` root carries `role="img"` + dynamic `aria-label={\`Floor plan for ${bedrooms}-bed ${bathrooms}-bath strata apartment${sqft ? \`, ${sqft}\` : ''}. Indicative layout — actual dims in the surveyor's report.\`}`.
+   - Both shipped during the Phase 31 arch components drop. §34 records the verification; no new code needed.
+
+**System changes (~700 MB freed; no project files):**
+
+4. **`sudo apt-get remove -y --purge`** on 19 Phase 28.7 runtime libs: libnspr4, libnss3, libasound2t64, libgbm1, libxshmfence1, fonts-liberation, libpangocairo-1.0-0, libgtk-3-0t64, libatk1.0-0, libatk-bridge2.0-0, libxkbcommon0, libxcomposite1, libxdamage1, libxfixes3, libxrandr2, libcups2, libcairo2, libdrm2, libpango-1.0-0. Followed by `sudo apt-get autoremove -y --purge` to sweep transitive orphans.
+   - `dpkg -l` confirms all 19 return "not-installed".
+   - Browser-rotation fully removed post-Phase-33 cleanup: no `chromium` / `chrome` binaries on PATH, no symlinks in `/opt/google/` or `/usr/bin/`, `~/.cache/puppeteer/` collapsed to a 4 KB directory stub.
+   - Orphan-dependent scan: only minimal font packages remain (`fonts-dejavu-core`, `fonts-dejavu-mono`, `fonts-ubuntu`) — all unrelated to Chromium runtime.
+
+**Skills invoked this phase:** opendesign (token-aware print scale rationale anchoring 32.3 to the DESIGN.md caption token), ponytail-review (cast cleanup + `as const satisfies` simplification on 32.1).
+
+**Code-reviewer verdict:** SHIP with two cosmetic findings folded into the same commit:
+- Drop redundant inner cast `type as PropertyType` (TS already narrows `type` to `PropertyType` via the frontmatter's `Astro.props as Props`). KNOWN_TYPES.includes(type) is the right form.
+- Drop redundant `readonly` modifier on the `satisfies` clause (`as const` already provides it).
+
+**Vercel deploy verification (env-blocked on this dev box):** Per Phase 25, Vercel CLI v54.14.2 requires `vercel login` OAuth roundtrip or per-session `VERCEL_TOKEN` env var. No standing token at `/tmp/_v*`. The GH-app integration (Phase 22.1) auto-deploys the §34 commit; operator can confirm via the Vercel project dashboard.
+
+**Validate gate:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0 errors / 0 warnings / 0 hints (76 files analyzed) · `vitest` 66/66 PASS in ~750ms · pre-commit secret scrub clean.
+
+**Followups surfaced from §34:**
+
+- 34.1 — Vercel CLI verify path remains env-blocked without an operator-supplied `VERCEL_TOKEN`. The only ground-truth for "is the new commit live" is the operator's Vercel dashboard. Disable Password Protection on the project (or wire `VERCEL_AUTOMATION_BYPASS_SECRET` into the GH-app) to enable programmatic smoke.
+- 34.2 — Phase 32 backlog closed: 32.1 + 32.2 + 32.3 all landed or no-op-verified.
+- 34.3 — The Chromium footprint chapter (Phase 33 + Phase 34 §33.1) is now structurally complete. Any future browser-use work will need a fresh `puppeteer download` and a clean dev box per the original Phase 28.7 install recipe.
