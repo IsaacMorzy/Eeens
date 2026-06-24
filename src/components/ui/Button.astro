@@ -4,11 +4,12 @@ import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '../../lib/cn';
 
 /**
- * Eens button — 6 variants keyed to DESIGN.md § Components > Buttons:
+ * Eens button — 7 variants keyed to DESIGN.md § Components > Buttons:
  *   default     → button-primary   (cyan-teal #0e7490 bg, warm-white text)
  *   secondary   → button-secondary (off-white bg, 1 px hairline border, navy ink)
  *   ghost       → button-tertiary  (no bg, navy ink)
  *   inverse     → button-inverse   (navy bg, cyan-300 text — for use inside dark sections)
+ *   industrial  → button-industrial (amber #f59e0b bg, navy text — scheduling CTAs only)
  *   destructive → error states only (#EF4444 bg, white text)
  *   link        → inline text link (no chrome)
  *
@@ -25,6 +26,9 @@ const button = tv({
 	variants: {
 		variant: {
 			default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
+			// Industrial-energy amber accent — reserved for "Schedule a viewing"
+			// primary conversion CTAs. Steelix-inspired; one per page maximum.
+			industrial: 'bg-amber text-amber-foreground hover:bg-amber-hover',
 			// Off-white card surface, hairline-steel 1 px border, navy ink.
 			// Hover swaps the border to primary-hover so the CTA reads as a click affordance.
 			secondary: 'border border-hairline-steel bg-background text-foreground hover:border-primary-hover hover:text-primary-hover',

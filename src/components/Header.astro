@@ -23,8 +23,8 @@ const nav = (config?.nav ?? []).filter(item => item !== null);
 const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 ---
 
-<!-- backdrop-blur is functional, not decoration: keeps the sticky header legible over scrolled content. opendesign's glass-morphism anti-pattern qualifier "without a UX reason" is satisfied — sticky chrome is one. -->
-<header class="fixed top-0 z-20 w-full border-b bg-background/50 backdrop-blur-xl">
+<!-- backdrop-blur is functional, not decoration: keeps the sticky header legible over scrolled content. Increased to bg-background/80 for Steelix-inspired slickness — still translucent, but more grounded. -->
+<header class="fixed top-0 z-20 w-full border-b bg-background/80 backdrop-blur-xl">
 	<nav class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
 		<a href="/" class="flex items-center gap-2 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, "title") : undefined}>
 			<img src={seo?.logo ?? EensWordmark} alt="Eens" width="32" height="32" class="size-8" data-tina-field={seo?.logo ? tinaField(seo, "logo") : undefined} />

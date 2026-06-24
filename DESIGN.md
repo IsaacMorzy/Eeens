@@ -41,6 +41,15 @@ colors:
   primary-dark:                             # dark-mode ladder-up
     hex: "#67e8f9"
     oklch: "0.86 0.11 235"
+  accent-amber:                             # industrial energy accent, reserved for primary scheduling CTAs
+    hex: "#f59e0b"
+    oklch: "0.80 0.16 85"
+  accent-amber-hover:                       # pressed/hovered amber
+    hex: "#d97706"
+    oklch: "0.67 0.15 75"
+  accent-amber-dark:                        # dark-mode ladder-up for amber
+    hex: "#fbbf24"
+    oklch: "0.88 0.14 90"
   ink-light:                                # navy appears as ink on light surfaces
     hex: "#0F172A"
     oklch: "0.20 0.04 265"
@@ -98,6 +107,7 @@ components:
     - button-secondary
     - button-tertiary
     - button-inverse
+    - button-industrial              # NEW: amber accent for scheduling CTAs (Steelix-inspired)
     - pricing-tab-default
     - pricing-tab-selected
     - pricing-card
@@ -359,6 +369,7 @@ The navy `#0F172A` does double duty — in dark mode it's the canvas; in light m
 - **button-secondary** — Off-white `#FFFFFF` background, 1px `#5d7290` hairline border, navy `#0F172A` text, 8px/14px padding, 8px radius. Hover → `--primary-hover` border.
 - **button-tertiary** — No background, navy `#0F172A` text. On dark surfaces swap to cyan-teal `#67e8f9` text.
 - **button-inverse** — Navy `#0F172A` background, cyan-teal `#67e8f9` text. Used inside dark sections.
+- **button-industrial** — (NEW, Steelix-inspired) Amber `#f59e0b` background, navy `#0F172A` text, 8px/14px padding, 8px radius. Hover → `#d97706`. Reserved exclusively for "Schedule a viewing" primary conversion CTAs. Only one industrial button per page. NEVER used for navigation, secondary actions, or decorative purposes. In dark mode: amber `#fbbf24` bg, navy `#0F172A` text for contrast.
 
 ### Cards
 
@@ -419,7 +430,8 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 
 ### Do
 
-- Reserve cyan-teal `#0e7490` for: brand mark, primary CTA, focus ring, link emphasis, eyebrow, ONE secondary CTA per property-card.
+- Reserve cyan-teal `#0e7490` for: brand mark, focus ring, link emphasis, eyebrow, secondary CTAs.
+- Reserve amber `#f59e0b` for: primary "Schedule a viewing" CTAs only. One per page maximum.
 - Always show property sq-ft in JetBrains Mono.
 - Always lead a property card with a 16:9 photograph and a 12px cyan-teal eyebrow tag.
 - Always include the literal address on every property detail screen.
@@ -428,8 +440,9 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 ### Don't
 
 - Don't ship a marketing page that feels like a SaaS dashboard.
-- Don't use cyan-teal as a section background or full-card fill.
-- Don't introduce a second chromatic color (no greens, oranges, reds in marketing chrome).
+- Don't use cyan-teal or amber as a section background or full-card fill.
+- Don't introduce a third chromatic color beyond cyan-teal + amber.
+- Don't use amber for navigation, secondary buttons, links, or eyebrow tags.
 - Don't add atmospheric gradients or spotlight cards.
 - Don't pill-round CTAs.
 - Don't use stock-couple photography.

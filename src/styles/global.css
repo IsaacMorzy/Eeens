@@ -74,6 +74,10 @@
 	--color-ink-light: var(--ink-light);
 	--color-ink-dark: var(--ink-dark);
 	--color-hairline-steel: var(--hairline-steel);
+	--color-amber: var(--amber);
+	--color-amber-foreground: var(--amber-foreground);
+	--color-amber-hover: var(--amber-hover);
+	--color-amber-dark: var(--amber-dark);
 }
 
 :root {
@@ -113,6 +117,10 @@
 	--ink-dark: oklch(0.98 0.005 85);
 	--hairline-steel: oklch(0.55 0.04 220);
 	--primary-dark: oklch(0.86 0.11 235);        /* cyan-300 — dark-mode ladder-up */
+	--amber: oklch(0.80 0.16 85);                /* #f59e0b — industrial energy accent */
+	--amber-foreground: oklch(0.20 0.04 265);    /* navy ink on amber */
+	--amber-hover: oklch(0.67 0.15 75);          /* #d97706 — pressed amber */
+	--amber-dark: oklch(0.88 0.14 90);           /* #fbbf24 — dark-mode amber ladder-up */
 }
 
 .dark {
@@ -142,6 +150,9 @@
 	--chart-3: oklch(0.62 0.10 220);
 	--chart-4: oklch(0.45 0.08 235);
 	--chart-5: oklch(0.27 0.04 265);
+	--amber: oklch(0.88 0.14 90);               /* #fbbf24 — amber bright on navy */
+	--amber-foreground: oklch(0.20 0.04 265);   /* navy ink on amber */
+	--amber-hover: oklch(0.80 0.16 85);         /* bright hover on dark */
 }
 
 @layer base {
