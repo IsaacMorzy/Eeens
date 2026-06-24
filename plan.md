@@ -1377,3 +1377,60 @@ Three followups surfaced during the `code-reviewer-minimax-m3` pass:
 - 34.1 — Vercel CLI verify path remains env-blocked without an operator-supplied `VERCEL_TOKEN`. The only ground-truth for "is the new commit live" is the operator's Vercel dashboard. Disable Password Protection on the project (or wire `VERCEL_AUTOMATION_BYPASS_SECRET` into the GH-app) to enable programmatic smoke.
 - 34.2 — Phase 32 backlog closed: 32.1 + 32.2 + 32.3 all landed or no-op-verified.
 - 34.3 — The Chromium footprint chapter (Phase 33 + Phase 34 §33.1) is now structurally complete. Any future browser-use work will need a fresh `puppeteer download` and a clean dev box per the original Phase 28.7 install recipe.
+
+### Phase 35a — Spec-sheet print font-size floor + DRY collapse + class-name semantic rename `[SHIPPED]`
+
+**Direction:** Phase 32.3 added the print font-size floor for the SVG drawings (.floor-plan *, .building-elevation *). Phase 35a extends the same invariant to the property spec sheet `<dl>` on /properties/[slug], and folds two reviewer findings (DRY collapse + class-name semantic rename) into the same commit.
+
+**Files touched:**
+
+1. **`src/styles/global.css`** — extended the existing `@media print` block.
+   - **Before** (two rules + a 13-line Phase-35a comment block):
+     ```css
+     .floor-plan *, .building-elevation * {
+         font-size: 12px !important;
+     }
+
+     /* Phase 35a: extend the print font-size floor to the property spec sheet ... */
+     .print-12px-floor * {
+         font-size: 12px !important;
+     }
+     ```
+   - **After** (single multi-selector rule + 10-line naming-the-three-surfaces comment block):
+     ```css
+     /* Print font-size floor — force every label downstream of the three
+        caption-token surfaces (the two ArchPhase SVG drawings + the
+        property spec sheet `<dl>` on /properties/[slug]) to the DESIGN.md
+        documented 12 px caption token. !important overrides the inline
+        Tailwind `text-[nnpx]` utilities so the visitor's "Save as PDF"
+        output reads at the engineering-drawing scale, not at the
+        browser's default. Apply `.print-caption` to any subtree that
+        needs to print at the caption floor; FAQ lists and other pure-HTML
+        <dl> usages stay at their runtime-computed size. */
+     .floor-plan *,
+     .building-elevation *,
+     .print-caption * {
+         font-size: 12px !important;
+     }
+     ```
+
+2. **`src/pages/properties/[slug].astro`** line 168 — added `print-caption` class to the spec-sheet `<dl>`:
+   - Before: `<dl class="mt-6 grid ... sm:divide-y-0">`
+   - After: `<dl class="print-caption mt-6 grid ... sm:divide-y-0">`
+   - The 5 spec-sheet dt/dd children (Power / Water / Parking bays / Floor loading / Clear height) gain the 12 px floor in print.
+   - Existing `reveal-on-scroll`, `aspect-video`, `divide-y` divider tokens — no class-list drift.
+
+**Class-name contract (DRY + semantic):**
+- Old name: `print-12px-floor` — value-coupled to 12 px.
+- New name: `print-caption` — semantic. If DESIGN.md § Typography ever shifts the caption token to 13 px or 14 px, only the @media print rule body changes; rename ripple is zero.
+- Future caption-token surfaces: apply `.print-caption` to the subtree that should print at the engineering-drawing scale.
+
+**Code-reviewer verdict:** SHIP (29-pre foldup) with two non-blocking findings folded into this same commit:
+- (1) DRY collapse: two identical rules → one multi-selector rule.
+- (2) Semantic class name: `print-12px-floor` → `print-caption`.
+
+**Validate gate:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0 errors / 0 warnings / 0 hints (76 files) · `pnpm test` 66/66 PASS in ~750ms · pre-commit secret scrub clean.
+
+**Skills invoked this phase:** opendesign (token-aware: invariant extension through the same 12 px caption token contract), ponytail-review (DRY collapse + class-name semantic rename).
+
+**Vercel deploy verification (env-blocked on this dev box):** GH-app integration auto-deploys off the push. Operator can confirm via the Vercel project dashboard. CLI roundtrip remains env-blocked per Phase 25.

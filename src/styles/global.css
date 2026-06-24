@@ -338,14 +338,18 @@
 	/* The spec sheet <dl> stays in a 3-up grid on print — no folding
 	   into a 1-up list. Keeps it scannable for the visitor's records. */
 
-	/* SVG drawings (floor-plan, building-elevation): force every label to
-	   the DESIGN.md documented 12 px caption token. !important overrides
-	   the inline Tailwind `text-[nnpx]` utilities so the visitor's "Save
-	   as PDF" output reads at the engineering-drawing scale, not at the
-	   browser's default. Identical invariant applies to both ArchPhase
-	   components so a single rule covers the whole printing surface. */
+	/* Print font-size floor — force every label downstream of the three
+	   caption-token surfaces (the two ArchPhase SVG drawings + the
+	   property spec sheet `<dl>` on /properties/[slug]) to the DESIGN.md
+	   documented 12 px caption token. !important overrides the inline
+	   Tailwind `text-[nnpx]` utilities so the visitor’s "Save as PDF"
+	   output reads at the engineering-drawing scale, not at the
+	   browser's default. Apply `.print-caption` to any subtree that
+	   needs to print at the caption floor; FAQ lists and other pure-HTML
+	   <dl> usages stay at their runtime-computed size. */
 	.floor-plan *,
-	.building-elevation * {
+	.building-elevation *,
+	.print-caption * {
 		font-size: 12px !important;
 	}
 }
