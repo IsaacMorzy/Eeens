@@ -46,12 +46,12 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 >
 	<Section class="bg-background pt-12">
 		<div class="mx-auto max-w-6xl px-6">
-			<header class="grid gap-8 lg:grid-cols-[2fr_1fr]">
-				<div>
+		<header class="grid gap-8 lg:grid-cols-[2fr_1fr]">
+			<div class="reveal-on-scroll">
 					<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{property.type}</span>
 					<h1
 						data-tina-field={tinaField(property, 'title')}
-						class="mt-3 font-display text-balance text-4xl font-semibold tracking-[-0.6px] md:text-5xl"
+						class="mt-3 font-display text-balance text-4xl font-semibold tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px]"
 					>
 						{property.title}
 					</h1>
@@ -105,7 +105,7 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 						</div>
 					)}
 				</div>
-				<aside class="flex flex-col gap-3 self-start rounded-xl border border-hairline-steel bg-background p-5">
+				<aside class="reveal-on-scroll flex flex-col gap-3 self-start rounded-xl border border-hairline-steel bg-background p-5">
 					<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">
 						{property.availability === 'ForSale' ? 'Sale price' : 'Lease'}
 					</div>
@@ -151,6 +151,7 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 						format="webp"
 						quality={85}
 						loading="eager"
+						fetchpriority="high"
 						class="aspect-[16/9] w-full object-cover"
 					/>
 				</div>
@@ -160,8 +161,8 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 
 	{isIndustrial && property.specSheet && (
 		<Section class="bg-background">
-			<div class="mx-auto max-w-6xl px-6">
-				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Spec sheet</h2>
+		<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+			<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Spec sheet</h2>
 				<dl class="mt-6 grid divide-y divide-hairline-steel/40 overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">
 					{property.specSheet.power && (
 						<div class="flex items-baseline justify-between gap-3 p-4">

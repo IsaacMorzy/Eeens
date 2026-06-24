@@ -35,6 +35,8 @@ const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
 				height={510}
 				src={data.heroImage}
 				alt=""
+				loading="eager"
+				fetchpriority="high"
 				class="aspect-[16/9] w-full rounded-2xl border border-hairline-steel object-cover"
 			/>
 		</div>
@@ -68,11 +70,11 @@ const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
 					)}
 				</div>
 			)}
-			<h1
-				id={headlineId}
-				data-tina-field={tinaField(data, 'title')}
-				class="font-display text-balance text-4xl font-semibold tracking-[-0.6px] lg:text-5xl"
-			>
+		<h1
+			id={headlineId}
+			data-tina-field={tinaField(data, 'title')}
+			class="reveal-on-scroll font-display text-balance text-4xl font-semibold tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px] lg:text-6xl lg:tracking-[-1.8px]"
+		>
 				{data.title}
 			</h1>
 			{data.description && (

@@ -1198,3 +1198,45 @@ A `vercel.json`-configuration grep returns 0 hits for `password`, `vercel-protec
 Every read-direction block on the site now has an entrance animation that collapses to a static frame under prefers-reduced-motion.
 
 **Validate gate post-29.4/29.5:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0/0/0 (72 files) · `pnpm test` 51/51 PASS.
+
+### Phase 30 — All-aspects polish (active nav + reveal propagation + LCP tuning + tracking math) `[SHIPPED]`
+
+**Why:** the prior three phases (Phase 28 Icon wrapper hard-set, Phase 29 hero + motion, Phase 29.4/29.5) shipped but left three orthogonal polish surfaces unallocated: (a) `aria-current="page"` on the active nav link so visitors with screen readers can locate their section; (b) `reveal-on-scroll` propagation to /properties/* /blog/* /404; (c) display-tracking math across h1/h2 elements that drifted to `-0.6px` everywhere despite the documented display-xl ramp.
+
+**Files touched (Phase 30.0):**
+- MOD `src/components/Header.astro` — `aria-current={...}` on both desktop nav link and mobile nav link; `aria-[current=page]:text-foreground` class so the matched item promotes from grey-foreground to ink.
+- MOD `src/components/Footer.astro` — same aria-current pattern on the 7 `pageLinks`. Zone-links (filter URLs with `?zone=`) intentionally skip aria-current — see Phase 30.1.
+- MOD `src/pages/properties/index.astro` — `reveal-on-scroll` on the hero block, the filter strip row, and every type-grouped card grid; h1 ramp to `text-4xl tracking-[-1.0px] md:text-6xl md:tracking-[-1.8px]`.
+- MOD `src/pages/properties/[slug].astro` — `reveal-on-scroll` on listing-header inner-wrapper, on the price-and-CTA aside, and on the spec-sheet `<div>`. Hero image gained `fetchpriority="high"` (LCP on /properties/[slug]). h1 ramp to `text-4xl tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px]`.
+- MOD `src/pages/blog/index.astro` — `reveal-on-scroll` on the hero block; the post-list wrapped in `reveal-on-scroll-stagger`; each `<li>` `reveal-on-scroll` so the staircase animation reads per post. h1 same ramp.
+- MOD `src/pages/404.astro` — section `reveal-on-scroll`. h1 same ramp.
+- MOD `src/components/blocks/CTABanner.astro` — h2 ramp tightened to `tracking-[-0.7px] md:text-4xl md:tracking-[-1.0px]` (text-[28px] stays at -0.7 for its size band).
+- MOD `src/components/islands/BlogBody.astro` — blog hero image gained `loading="eager" fetchpriority="high"` (LCP on /blog/[slug]); h1 gained `reveal-on-scroll` + full ramp `text-4xl tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px] lg:text-6xl lg:tracking-[-1.8px]`.
+
+### Phase 30.1 — Post-review polish: factor aria-current into shared helper + drop dead-code aria-current on zone chips `[SHIPPED]`
+
+**Why: code-reviewer-minimax-m3 flagged three issues (REJECT + 2 MODIFY):**
+- REJECT — `Footer.astro` zoneLinks aria-current on URLs carrying `?zone=` query: `Astro.url.pathname` never includes the query, so the `===` comparison was permanently false. Dead code masquerading as semantic markup.
+- MODIFY — aria-current expression repeated 3× across `Header.astro` desktop nav, `Header.astro` mobile nav, and `Footer.astro` pageLinks. Drift risk on the next nav edit.
+- MODIFY — `BlogBody.astro` h1 had `text-4xl tracking-[-1.0px] lg:text-5xl lg:tracking-[-1.4px]` with no md step, inconsistent with the rest of the polish pass which scales at md too.
+
+**Fixes:**
+- NEW `src/lib/path.ts` — `isCurrentPath(pathname: string, href: string): boolean` is the single source of truth. Root `/` is exact-only (no `startsWith('/' + '/')` would-always-true trap); everything else matches exact-or-prefix so `/properties/mlolongo-warehouse` correctly highlights the `/properties` nav item. Defensive `if (!href) return false;` short-circuit on empty-href callers.
+- `Header.astro` + `Footer.astro` refactored to import + call `isCurrentPath(Astro.url.pathname, item.link)` on every site that needs it.
+- `Footer.astro` zoneLinks: `aria-current={...}` attribute dropped entirely on the four filter-URL entries (Mlolongo / Syokimau / Baba Dogo / Thika). The `aria-[current=page]:text-ink-dark` class on those links is also removed (was conditional on a never-true attribute anyway).
+- `BlogBody.astro` h1 ramp updated: `text-4xl tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px] lg:text-6xl lg:tracking-[-1.8px]`.
+
+**Ship verdict from code-reviewer-minimax-m3 (parallel with validate gate = green):**
+
+- `lib/path.ts` — KEEP. Correct across edge cases (root exact-only, sub-path prefix-match).
+- Three callsites — KEEP. Single source of truth landed; no future drift risk.
+- Footer zoneLinks — KEEP. Dead code removed.
+- `BlogBody.astro` h1 ramp — KEEP (3-step vs 2-step is consistent enough given broader context).
+- lib/path.ts empty-href guard — additional safety further added in this same turn.
+- Validate gate: `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0/0/0 (73 files, +1 from new path.ts) · vitest 51/51 PASS.
+
+**Followups considered, deferred:**
+- 30.2 — Unit-test for `lib/path.ts`. The repo pattern (`cn.test.ts`, `blog-walker.test.ts`, `property-filters.test.ts`) suggests testing shared helpers, but `isCurrentPath` is a 5-line function with two branches. Add when a second consumer appears or the helper grows.
+- 30.3 — Tighten BlogBody h1 ramp to match the rest of the polish pass (drop `lg:text-6xl`, stay at `md:text-5xl` + `md:tracking-[-1.4px]`). Cosmetic.
+- 30.4 — `aria-current="true"` on matched property-availability-zone chips in the /properties filter strip (would require URLSearchParams parsing in `isCurrentPath`).
+- 30.5 — Move the inline `isCurrentPath` import line to a shared `nav-utils` location once a second consumer appears (currently duplicated import on 3 sites).

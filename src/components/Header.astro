@@ -4,6 +4,7 @@ import { tinaField } from "@tinacms/astro/tina-field";
 import type { CmsConfig } from '../lib/data';
 import IconLink from "./IconLink.astro";
 import ThemeToggle from './ThemeToggle.astro';
+import { isCurrentPath } from '../lib/path';
 
 interface Props {
 	config?: CmsConfig | null;
@@ -31,7 +32,7 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 		</a>
 		<div class="hidden items-center gap-6 text-sm xl:flex">
 			{nav.map((item) => (
-				<a href={item.link} class="text-muted-foreground transition-colors hover:text-foreground" data-tina-field={tinaField(item, "title")}>{item.title}</a>
+				<a href={item.link} aria-current={isCurrentPath(Astro.url.pathname, item.link) ? "page" : undefined} class="text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground" data-tina-field={tinaField(item, "title")}>{item.title}</a>
 			))}
 		</div>
 		<div class="flex items-center gap-3">
@@ -61,11 +62,12 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 	>
 		<div class="mx-auto flex max-w-6xl flex-col px-6 py-4">
 			{nav.map((item) => (
-				<a
-					href={item.link}
-					class="border-b border-border/50 py-3 text-sm text-muted-foreground transition-colors last:border-b-0 hover:text-foreground"
-					data-tina-field={tinaField(item, "title")}
-				>
+			<a
+				href={item.link}
+				aria-current={isCurrentPath(Astro.url.pathname, item.link) ? "page" : undefined}
+				class="border-b border-border/50 py-3 text-sm text-muted-foreground transition-colors last:border-b-0 hover:text-foreground aria-[current=page]:text-foreground"
+				data-tina-field={tinaField(item, "title")}
+			>
 					{item.title}
 				</a>
 			))}

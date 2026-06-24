@@ -5,6 +5,7 @@ import type { CmsConfig, CmsConfigContactLink } from '../lib/data';
 import { contactEmail } from '../lib/data';
 import Button from './ui/Button.astro';
 import IconLink from './IconLink.astro';
+import { isCurrentPath } from '../lib/path';
 
 // Footer glyph: navy square + white E + cyan-teal accent dot. `currentColor`
 // driven by the surrounding `text-ink-dark` so it inverts naturally against
@@ -95,13 +96,12 @@ const pageLinks = [
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
 						Zones
 					</h3>
-					<ul class="mt-4 space-y-2 text-sm">
-						{zoneLinks.map((l) => (
-							<li>
-								<a
-									href={l.href}
-									class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark"
-								>
+					<ul class="mt-4 space-y-2 text-sm">				{zoneLinks.map((l) => (
+					<li>
+						<a
+							href={l.href}
+							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark"
+						>
 									{l.title}
 								</a>
 							</li>
@@ -113,13 +113,13 @@ const pageLinks = [
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
 						Pages
 					</h3>
-					<ul class="mt-4 space-y-2 text-sm">
-						{pageLinks.map((l) => (
-							<li>
-								<a
-									href={l.href}
-									class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark"
-								>
+					<ul class="mt-4 space-y-2 text-sm">				{pageLinks.map((l) => (
+					<li>
+						<a
+							href={l.href}
+							aria-current={isCurrentPath(Astro.url.pathname, l.href) ? "page" : undefined}
+							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark aria-[current=page]:text-ink-dark"
+						>
 									{l.title}
 								</a>
 							</li>
