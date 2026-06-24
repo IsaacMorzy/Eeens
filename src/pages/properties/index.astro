@@ -148,21 +148,21 @@ const fmt = (n: number): string =>
 	{/* Portfolio overview stats bar */}
 	<Section class="bg-background pb-0">
 		<div class="reveal-on-scroll mx-auto max-w-5xl px-6">
-			<div class="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-hairline-steel bg-hairline-steel/30 sm:grid-cols-4">
+			<div id="portfolio-stats" class="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-hairline-steel bg-hairline-steel/30 sm:grid-cols-4">
 				<div class="bg-background p-5 text-center">
-					<div class="font-display text-3xl font-semibold tracking-[-0.6px]">{fmt(totalSqft)}</div>
+					<div class="font-display text-3xl font-semibold tracking-[-0.6px]" data-countup data-target={totalSqft}>{fmt(totalSqft)}</div>
 					<div class="mt-1 font-mono text-[13px] text-muted-foreground">sq ft total</div>
 				</div>
 				<div class="bg-background p-5 text-center">
-					<div class="font-display text-3xl font-semibold tracking-[-0.6px]">{fmt(totalPowerKva)}</div>
+					<div class="font-display text-3xl font-semibold tracking-[-0.6px]" data-countup data-target={totalPowerKva}>{fmt(totalPowerKva)}</div>
 					<div class="mt-1 font-mono text-[13px] text-muted-foreground">kVA across portfolio</div>
 				</div>
 				<div class="bg-background p-5 text-center">
-					<div class="font-display text-3xl font-semibold tracking-[-0.6px]">{totalParking}</div>
+					<div class="font-display text-3xl font-semibold tracking-[-0.6px]" data-countup data-target={totalParking}>{totalParking}</div>
 					<div class="mt-1 font-mono text-[13px] text-muted-foreground">parking bays</div>
 				</div>
 				<div class="bg-background p-5 text-center">
-					<div class="font-display text-3xl font-semibold tracking-[-0.6px]">{zoneSet.size}</div>
+					<div class="font-display text-3xl font-semibold tracking-[-0.6px]" data-countup data-target={zoneSet.size}>{zoneSet.size}</div>
 					<div class="mt-1 font-mono text-[13px] text-muted-foreground">zones covered</div>
 				</div>
 			</div>
@@ -334,4 +334,63 @@ const fmt = (n: number): string =>
 			</div>
 		</div>
 	</Section>
+
+<script is:inline>
+	// Phase 40.3 — Steelix-inspired animated stat counters.
+	// Counts up portfolio stat numbers (sqft, kVA, parking, zones) when the
+	// stats section scrolls into view. Uses IntersectionObserver + rAF for
+	// smooth 600ms ease-out animation. SSR-safe: collapses to static values
+	// when JS is unavailable. Gates on prefers-reduced-motion.
+	(function () {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const stats = document.getElementById('portfolio-stats');
+		if (!stats) return;
+
+		const counters = stats.querySelectorAll('[data-countup]');
+		if (counters.length === 0) return;
+
+		/** Ease-out cubic for natural deceleration. */
+		const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+		/** Animate a single counter from 0 to target over `duration` ms. */
+		const animate = (el, target, duration) => {
+			const start = performance.now();
+			const step = (now) => {
+				const elapsed = now - start;
+				const progress = Math.min(elapsed / duration, 1);
+				const eased = easeOutCubic(progress);
+				const current = Math.round(target * eased);
+				el.textContent = current >= 1000
+					? `${(current / 1000).toFixed(0)}k`
+					: String(current);
+				if (progress < 1) requestAnimationFrame(step);
+				else el.textContent = el.dataset.display ?? String(target);
+			};
+			requestAnimationFrame(step);
+		};
+
+		let fired = false;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (fired) return;
+				if (entries[0]?.isIntersecting) {
+					fired = true;
+					observer.disconnect();
+					counters.forEach((el) => {
+						const raw = el.dataset.target;
+						const target = raw ? parseInt(raw, 10) : 0;
+						if (!isNaN(target) && target > 0) {
+							// Store the formatted display string for the final frame
+							el.dataset.display = el.textContent ?? String(target);
+							animate(el, target, 600);
+						}
+					});
+				}
+			},
+			{ threshold: 0.3 },
+		);
+		observer.observe(stats);
+	})();
+</script>
 </Base>

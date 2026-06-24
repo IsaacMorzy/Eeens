@@ -159,6 +159,11 @@
 	* {
 		border-color: var(--border);
 	}
+	html {
+		scroll-behavior: smooth;
+	}
+	/* Smooth scroll collapses to auto under prefers-reduced-motion
+	   via the global @media rule below (Phase 7.3). */
 	body {
 		background-color: var(--background);
 		color: var(--foreground);

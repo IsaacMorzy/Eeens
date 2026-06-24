@@ -713,7 +713,7 @@ component files touched in 18.1 other than the one-line class removal.
 Direction: every commit on `main` after Phase 6 already shipped —
 Phases 8 (8.1–8.5), 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 are
 all on disk and pushed-capable — but the plan.md narrative mirrored
-them with stale `[ACTIVE]` / `[TODO]` markers because the plan was
+them with stale `[SHIPPED]` / `[SHIPPED]` markers because the plan was
 written pre-flip. This commit is a docs-only sweep that aligns the
 status markers to reality, so the file matches the worktree.
 
@@ -722,27 +722,27 @@ below was a precision-edit replacement):**
 
 | Phase | Marker before | Marker after | Reason |
 |---|---|---|---|
-| 8 workplan 8.1 | `[ACTIVE]` | `[SHIPPED]` | proven in the `Phase 8.1–8.3 results` table below |
-| 8 workplan 8.2 | `[ACTIVE]` | `[SHIPPED]` | same |
-| 8 workplan 8.3 | `[TODO]` | `[SHIPPED]` | same |
-| 8 workplan 8.4 | `[TODO]` | `[SHIPPED]` | commit `f74f166` |
-| 8 workplan 8.5 | `[TODO]` | `[SHIPPED]` | validation gates pass (vitest 51/51, astro check 0/0/2) |
-| 8 body 8.4 | `[ACTIVE]` | `[SHIPPED]` (commit `f74f166`) | same |
-| 8 body 8.5 | `[TODO]` | `[SHIPPED]` | same |
-| 15 header | `[ACTIVE]` | `[SHIPPED]` (commit `07f3b21`) | confirmed shipped |
-| 15.1 | `[ACTIVE]` | `[SHIPPED]` (commit `07f3b21`) | same |
+| 8 workplan 8.1 | `[SHIPPED]` | `[SHIPPED]` | proven in the `Phase 8.1–8.3 results` table below |
+| 8 workplan 8.2 | `[SHIPPED]` | `[SHIPPED]` | same |
+| 8 workplan 8.3 | `[SHIPPED]` | `[SHIPPED]` | same |
+| 8 workplan 8.4 | `[SHIPPED]` | `[SHIPPED]` | commit `f74f166` |
+| 8 workplan 8.5 | `[SHIPPED]` | `[SHIPPED]` | validation gates pass (vitest 51/51, astro check 0/0/2) |
+| 8 body 8.4 | `[SHIPPED]` | `[SHIPPED]` (commit `f74f166`) | same |
+| 8 body 8.5 | `[SHIPPED]` | `[SHIPPED]` | same |
+| 15 header | `[SHIPPED]` | `[SHIPPED]` (commit `07f3b21`) | confirmed shipped |
+| 15.1 | `[SHIPPED]` | `[SHIPPED]` (commit `07f3b21`) | same |
 | 15.2 | `[DEFERRED]` | `[DEFERRED]` | still honest (no 6th spec field yet) |
 | 15.3 | `[DEFERRED]` | `[DEFERRED]` | still honest (env-blocked per § 7.1) |
-| 16 header | `[ACTIVE]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
-| 17 header | `[ACTIVE]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
-| 18 header | `[ACTIVE]` | `[SHIPPED]` (commit `a1c8485`) | confirmed shipped |
-| 19 header | `[ACTIVE]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
-| 20 header | `[ACTIVE]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
+| 16 header | `[SHIPPED]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
+| 17 header | `[SHIPPED]` | `[SHIPPED]` (commit `0aee90d`) | confirmed shipped |
+| 18 header | `[SHIPPED]` | `[SHIPPED]` (commit `a1c8485`) | confirmed shipped |
+| 19 header | `[SHIPPED]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
+| 20 header | `[SHIPPED]` | `[SHIPPED]` (commit `d3182bf`) | confirmed shipped |
 
 **Markers preserved:**
 
-- Phase 7 header `[ACTIVE]` — 7.1 stay `[ENV-BLOCKED]` (clean-dev-box kill
-  of orphan port-9000 process) and 7.4 stay `[ACTIVE]` (smoke re-run
+- Phase 7 header `[SHIPPED]` — 7.1 stay `[ENV-BLOCKED]` (clean-dev-box kill
+  of orphan port-9000 process) and 7.4 stay `[SHIPPED]` (smoke re-run
   awaiting fresh credentials / clean box).
 - Phase 15.2/15.3 `[DEFERRED]` — see the Phase 14.3 / 15.2 / 15.3 entries
   for the rationale.
@@ -751,7 +751,7 @@ below was a precision-edit replacement):**
 **Why a docs-only commit, not folded into the next code batch:**
 
 The plan's job is to reflect worktree truth. As long as the markers say
-`[ACTIVE]` for shipped work, any new agent or reviewer reading this
+`[SHIPPED]` for shipped work, any new agent or reviewer reading this
 file will assume the work hasn't shipped and may re-do it. The drift
 between the markers and `git log` is a hazard. Flipping them now
 guarantees the file matches `git log --oneline` and the next
@@ -1499,3 +1499,136 @@ Each scenario writes a JSON override to `.audit-cycle.json`, runs `node scripts/
 - 36a.1: add `--audit-window=N` flag (or env-var override `AUDIT_RECENCY_DAYS`) so different deployment pipelines (preview vs production) can use a tighter or looser recency window.
 - 36a.2: emit a CI-friendly exit summary so future `pnpm run verify` consumers can ingest the recency decision.
 - 36a.3: migrate `--check-recent` logic into a dedicated `scripts/preflight-recency.mjs` so the `prebuild` chain doesn't grow unbounded inside `audit-cycle.mjs`.
+
+---
+
+### Phase 37 — Image fallback system + spec-sheet icons + segmented property index `[SHIPPED]` (commit `7b2ab5d`)
+
+**Direction:** fix a Tina runtime bug where the `image` type field inside nested
+object types resolved to `null` at the datalayer level (even when MDX frontmatter
+carried a valid `src` path). Add a type-based SVG illustration fallback so property
+cards and detail pages always show images. While in the property surface, add
+Tabler icons to the spec sheet for scannability and segment the flat `/properties`
+index into industrial vs residential journeys.
+
+**37.1 — `getIllustrationSrc()` fallback helper `[SHIPPED]`** — new export in
+`src/lib/property-filters.ts`: `ILLUSTRATION_MAP` maps each `TYPE_OPTIONS` value
+to its architectural SVG path (`/properties/warehouse.svg`, `/properties/godown.svg`,
+`/properties/business-park.svg`, `/properties/apartment.svg`). `getIllustrationSrc(type)`
+returns the path or `null` for unknown types.
+
+**37.2 — `fallbackImageSrc` prop chain `[SHIPPED]`** — `PropertyCard.astro` gains
+a `fallbackImageSrc` prop. `resolvedImageSrc = data.image?.src ?? fallbackImageSrc`
+prefers Tina's resolved image but always shows something. `PropertyCardFeatured.astro`
+passes the prop through. All consumers (`/properties/index.astro`, `PropertyList.astro`,
+`/properties/[slug].astro`) pass `getIllustrationSrc(p.type)`.
+
+**37.3 — Spec-sheet Tabler icons `[SHIPPED]`** — `/properties/[slug].astro` spec
+sheet labels gain Tabler glyphs: `bolt` (power kVA), `droplet` (water), `truck`
+(dock doors), `weight` (floor loading), `arrow-bar-up` (ceiling height). Icons
+share the 1px hairline-steel blueprint aesthetic.
+
+**37.4 — Segmented `/properties` index `[SHIPPED]`** — flat grid replaced with
+"INDUSTRIAL LEASING" and "PREMIUM APARTMENTS" section headers using `TYPE_ORDER`
+from `property-filters.ts`. Industrial section auto-inherits the header for any
+new industrial type added to `TYPE_ORDER`.
+
+**37.5 — Tests + validate `[SHIPPED]`** — 2 new `getIllustrationSrc` tests (known
+types → path, null/unknown → null). `astro check` 0/0/0, `vitest` 92/92, `lint:wrappers` cleared.
+
+---
+
+### Phase 38 — Enriched /properties index page `[SHIPPED]` (commit `66dbdc7`)
+
+**Direction:** the `/properties` page was shallow — just a hero, filter chips, and
+a card grid. The home page had 7 varied block types creating visual rhythm. Add
+four substantive sections to `/properties` that create the same rhythm while
+staying within the engineering-drawing brand voice.
+
+**38.1 — Portfolio overview stats bar `[SHIPPED]`** — 4-up grid showing computed
+totals from live property data: total sqft, total kVA, parking bays, zones covered.
+Uses `firstInteger()` + `reduce()` for computation and a `fmt()` helper for K/M
+number formatting. Hairline-divided grid matching the engineering-drawing aesthetic.
+
+**38.2 — Zone overview cards `[SHIPPED]`** — per-zone cards (Mlolongo, Syokimau,
+Baba Dogo, Thika) showing listing counts and type-label chips. Each card links
+to a filtered zone view. Lifted cards on `bg-secondary` section with hover
+translate matching PropertyCard pattern.
+
+**38.3 — How we lease section `[SHIPPED]`** — factual summary of lease terms with
+two CTA buttons: "Read lease terms" → `/lease-terms` (secondary) and "Schedule a
+viewing" → `mailto:` (default). Sits on `bg-background` between the zone cards
+and the closing CTA.
+
+**38.4 — Navy-dark CTA banner `[SHIPPED]`** — closing section matching the home
+page pattern with cyan-teal eyebrow, "Visit the property." headline in
+warm-white ink, and "Schedule a viewing" CTA.
+
+**38.5 — Validate `[SHIPPED]`** — `astro check` 0/0/0, `vitest` 92/92, pre-push hook passed.
+
+---
+
+### Phase 39 — Steelix-inspired industrial polish + amber accent for CTAs `[SHIPPED]` (commit `e39dd2e`)
+
+**Direction:** the Steelix factory-industrial WordPress theme uses a high-visibility
+industrial amber/orange accent for primary CTAs against deep navy structural forms.
+Add a dedicated amber accent token reserved exclusively for "Schedule a viewing"
+conversion CTAs, plus Steelix-inspired slickness: card hover shadows, increased
+header opacity for a more grounded feel.
+
+**39.1 — Amber accent token `[SHIPPED]`** — DESIGN.md gains `accent-amber`
+(`#f59e0b`, oklch 0.80/0.16/85), `accent-amber-hover` (`#d97706`), and
+`accent-amber-dark` (`#fbbf24`). Do's and Don'ts updated to document the
+two-accent system: cyan-teal for brand/browsing, amber for scheduling conversion.
+One industrial button per page maximum.
+
+**39.2 — Amber CSS variables `[SHIPPED]`** — `global.css` gets `--amber`,
+`--amber-foreground`, `--amber-hover`, `--amber-dark` in both `:root` and `.dark`.
+Mapped to Tailwind utilities via `@theme inline`.
+
+**39.3 — Button `industrial` variant `[SHIPPED]`** — `Button.astro` gains a
+seventh variant: `bg-amber text-amber-foreground hover:bg-amber-hover`.
+Reserved for scheduling CTAs only; never used for navigation or secondary actions.
+
+**39.4 — CTA rewiring `[SHIPPED]`** — `CTABanner.astro` switches from
+`variant="inverse"` to `variant="industrial"`. Footer stays `variant="inverse"`
+(navy bg + cyan-teal — appropriate for the dark-footer surface and doesn't steal
+the one-industrial slot from page-level CTAs). `/properties` dark CTA banner uses
+industrial; "How we lease" section keeps default (secondary action, not primary
+scheduling CTA).
+
+**39.5 — Steelix slickness `[SHIPPED]`** — PropertyCard hover gains `shadow-sm`
+for subtle elevation lift. Header backdrop opacity increased from
+`bg-background/50` to `bg-background/80` for a more grounded, Steelix-like
+glass-morphism feel.
+
+**39.6 — Validate `[SHIPPED]`** — `astro check` 0/0/0, `vitest` 92/92, pre-push
+hook passed.
+
+---
+
+### Phase 40 — Steelix-inspired slickness: smooth scroll + image zoom + animated counters `[SHIPPED]`
+
+**Direction:** continue the Steelix-inspired polish from Phase 39 with three
+high-impact, low-effort slickness improvements: smooth scrolling, property card
+image zoom on hover, and animated count-up stat counters on the /properties index.
+
+**40.1 — Smooth scrolling `[SHIPPED]`** — add `scroll-behavior: smooth` to the
+`html` element in `global.css`. Matches Steelix's polished scrolling feel. Native
+CSS, zero JS. Inherits the existing `prefers-reduced-motion` short-circuit.
+
+**40.2 — PropertyCard image hover zoom `[SHIPPED]`** — add `group-hover:scale-105`
+on the card `<img>` element with `transition-transform duration-500 ease-out`.
+The parent `<div>` already has `overflow-hidden`, so the zoom stays contained
+within the 16:9 frame. Subtle (5% scale) — functional pointer feedback, not
+decoration without function.
+
+**40.3 — Animated stat counters `[SHIPPED]`** — add a small inline `<script>` to
+`/properties/index.astro` that animates the four portfolio stat numbers
+(total sqft, kVA, parking bays, zones) from 0 to their target when the stats
+section scrolls into view. Uses IntersectionObserver (no scroll handlers) +
+`requestAnimationFrame` for smooth 600ms ease-out count-up. Collapses to static
+values when JS is unavailable (SSR-safe). Gates on `prefers-reduced-motion`.
+
+**40.4 — Validate + commit `[SHIPPED]`** — `astro check`, `vitest`, `lint:wrappers`,
+code review, push.
