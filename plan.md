@@ -1464,3 +1464,38 @@ Three followups surfaced during the `code-reviewer-minimax-m3` pass:
 - 35b.1: extend `.audit-map.json` with a `category` field (`chore` / `perf` / `spec-content` / `refactor`) so future `--status` can filter by category.
 - 35b.2: wire `prebuild` to abort build if `lastResult === 'red'` is within the last 7 days (anti-regression guard).
 - 35b.3: surface `.audit-cycle.json` as a JSON-LD or RSS-like feed for the operator dashboard (out of scope until the operator dashboard exists).
+### Phase 36a — Anti-regression prebuild guard 35b.2 `[SHIPPED]`
+
+**Direction:** make the audit:cycle cadence enforceable on the build pipeline. The audit:cycle tool already records `lastResult` + `lastRunAt` in `.audit-cycle.json`; this phase adds a `--check-recent` flag that exits 1 if the last run was RED within the last 7 days. Wired into `prebuild` so `pnpm build` short-circuits while a recent red is still in flight. Stale reds (>7d) do NOT block (they reflect pre-fix history).
+
+**Files touched:**
+
+1. **`scripts/audit-cycle.mjs`** — extended:
+   - Opening comment block expanded from "Wired in three places" to "Wired in four places" with a 5-line bullet describing `--check-recent` / `-c` semantics (red within 7d = fail-build; stale red = pass-build).
+   - `RECENCY_DAYS = 7` constant + `checkRecent()` function added (~45 lines).
+   - 14-line NaN/Infinity guard between `daysSinceRun` arithmetic and the `<= RECENCY_DAYS` branch (per reviewer foldup: `Number.isFinite(daysSinceRun)` failure closes a corruption loophole whereby `NaN <= 7` evaluates FALSE and would silently PASS a corrupted `.audit-cycle.json`).
+   - Flag dispatch extended with `--check-recent` / `-c` shortcut.
+   - `--help` text expanded to mention the recency guard + the 4th bullet usage.
+
+2. **`package.json`** — SINGLE-LINE change to `prebuild`:
+   - Before: `"node scripts/smoke-env.mjs"`.
+   - After: `"node scripts/smoke-env.mjs && node scripts/audit-cycle.mjs --check-recent"`. The `&&` short-circuits: if smoke-env fails, the recency check is skipped (build aborts anyway on missing TinaCMS env vars).
+
+**End-to-end verification:** 5 scenario coverage in one basher call, all passed:
+
+| Scenario | Expected | Actual |
+| --- | --- | --- |
+| Current green state | exit 0 | exit 0 ✓ |
+| Mocked red+today | exit 1 | exit 1 ✓ |
+| Mocked red+8 days ago (stale) | exit 0 | exit 0 ✓ |
+| Mocked `lastRunAt="definitely-not-a-date"` (corrupted) | exit 1 (NaN guard) | exit 1 ✓ |
+| Mocked `lastRunAt="2099-01-01"` (future-date clock-skew) | exit 1 | exit 1 ✓ |
+
+Each scenario writes a JSON override to `.audit-cycle.json`, runs `node scripts/audit-cycle.mjs --check-recent`, restores from backup, then `rm`s the backup. Counter landed at `{totalAttempts:3, successfulCycles:3, lastRunAt:2026-06-24, lastResult:green}` after the 3 audit:cycle runs during verification.
+
+**Reviewer-foldup:** prior-round reviewer flagged the `Math.round(NaN)` propagation loophole. This turn's 14-line NaN guard closes it (reviewer SHIP'd the foldup with one optional stylistic polish skipped to keep the diff tight).
+
+**Followups** (paper for next chapter):
+- 36a.1: add `--audit-window=N` flag (or env-var override `AUDIT_RECENCY_DAYS`) so different deployment pipelines (preview vs production) can use a tighter or looser recency window.
+- 36a.2: emit a CI-friendly exit summary so future `pnpm run verify` consumers can ingest the recency decision.
+- 36a.3: migrate `--check-recent` logic into a dedicated `scripts/preflight-recency.mjs` so the `prebuild` chain doesn't grow unbounded inside `audit-cycle.mjs`.
