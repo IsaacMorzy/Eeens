@@ -325,11 +325,14 @@ const baysRemaining = parkingBays ?? 0;
 
 		{type === 'APARTMENT' && (
 			<g class="text-hairline-steel">
-				{/* Three-storey apartment: stacked windows + balconies */}
+				{/* Three-storey apartment: stacked windows + balconies.
+				     Phase 31.1 polish: dropped the unused `storey` field; the
+				     iteration index is implicit in the array order so no
+				     additional metadata is carried. */}
 				{FLOORS.APARTMENT === 3 && ([
-					{ slabY: SLAB_Y - 30, storey: 1 },
-					{ slabY: SLAB_Y - 60, storey: 2 },
-					{ slabY: SLAB_Y - 90, storey: 3 },
+					{ slabY: SLAB_Y - 30 },
+					{ slabY: SLAB_Y - 60 },
+					{ slabY: SLAB_Y - 90 },
 				].map(({ slabY }) => (
 					<>
 						<line
@@ -377,6 +380,33 @@ const baysRemaining = parkingBays ?? 0;
 					stroke-width="1"
 					class="blueprint-stroke-poly"
 				/>
+			</g>
+		)}
+
+		{/* Defensive fallback (Phase 31.1 polish). When the listing carries
+		     a type outside the four blessed values (Tina schema drift, future
+		     property type, or a CMS operator typo), draw a hairline placeholder
+		     frame + mono caption instead of silently producing an empty SVG. */}
+		{type !== 'WAREHOUSE' && type !== 'GODOWN' && type !== 'BUSINESS_PARK' && type !== 'APARTMENT' && (
+			<g class="text-hairline-steel">
+				<rect
+					x={CX - FACE_W / 2}
+					y={SLAB_Y - 100}
+					width={FACE_W}
+					height="80"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1"
+					class="blueprint-stroke-poly"
+				/>
+				<text
+					x={CX}
+					y={SLAB_Y - 130}
+					text-anchor="middle"
+					class="font-mono text-[12px] fill-muted-foreground"
+				>
+					Type not yet drawn ({type ?? 'unknown'})
+				</text>
 			</g>
 		)}
 

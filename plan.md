@@ -1240,3 +1240,50 @@ Every read-direction block on the site now has an entrance animation that collap
 - 30.3 — Tighten BlogBody h1 ramp to match the rest of the polish pass (drop `lg:text-6xl`, stay at `md:text-5xl` + `md:tracking-[-1.4px]`). Cosmetic.
 - 30.4 — `aria-current="true"` on matched property-availability-zone chips in the /properties filter strip (would require URLSearchParams parsing in `isCurrentPath`).
 - 30.5 — Move the inline `isCurrentPath` import line to a shared `nav-utils` location once a second consumer appears (currently duplicated import on 3 sites).
+This line intentionally kept as anchor; deferral carried from Phase 30.1.
+
+### Phase 31 — Parametric SVG building elevations + apartment floor plans `[SHIPPED]`  (commit `b8c515c`)
+
+**Why:** the user's question "are those the only design skills" surfaced that the existing design-skills catalogue (visual-asset-generator, mermaid-diagrams, excalidraw, c4-architecture, design-bridge, ui-designer, opendesign, ponytail-audit, ponytail-review, humanizer, ai-writing-auditor) had **no** skill that produced a defensible engineering-register architectural drawing for `/properties/[slug]`. The Phase 29 `IsometricMap` answered the home page at the corridor level; the per-listing surface still rendered a photographic hero image with no schematic. `thinker-with-files-gemini` mapped the available skills onto defensible Eens use cases and concluded that the highest-leverage move is to extend `IsometricMap.astro`'s parametric SVG register down to property-type-specific elevations + apartment floor plans — keeping SSR-friendly inline SVG (no `client:*` hydration, no Three.js, no canvas), inheriting the existing `--hairline-steel` token + `blueprint-stroke` keyframes + reduced-motion short-circuit from `global.css`.
+
+**Files touched:**
+
+- **NEW `src/components/arch/BuildingElevation.astro`** (~250 lines). Parametric SVG front elevation per `property.type`:
+  - `WAREHOUSE` — pitched-roof steel-frame with 4 structural bays, mono 12 px dimensional captions, scale bar, north arrow, parking forecourt.
+  - `GODOWN` — single-storey parapet roof with shuttered loading bays (conversion-friendly godown), parking forecourt.
+  - `BUSINESS_PARK` — 2-storey commercial block with upper-floor windows + ground-floor shopfronts, paved tenant forecourt.
+  - `APARTMENT` — 3-storey stacked apartment block with windows + balcony per floor, parking. Defensive fallback for unknown `type` values renders a hairline placeholder rectangle + mono 12 px caption so a Tina schema drift or CMS typo is structurally visible rather than silently blank.
+  - All elevations share: 1 px hairlines in `--hairline-steel`, mono labels at the 12 px caption floor, scale bar, north arrow, caption-strip footer. `blueprint-stroke-poly` / `blueprint-stroke-tick` / `zone-pin-pulse` utility classes inherited from `global.css`. NO cyan-teal decoration (token discipline preserved; the per-route slot budget on `/properties/[slug]` is eyebrow tag + availability-badge + Schedule-a-viewing CTA = 3 slots, well inside the DESIGN.md 4-slot ceiling).
+- **NEW `src/components/arch/FloorPlan.astro`** (~165 lines). Top-down 2D floor plan for `APARTMENT` listings (3-bed, 2-bath, 110–130 sqm). Outer perimeter + internal partitions for Master Bed, Bed 2, Bed 3, Bath 1 (master ensuite), Bath 2, Kitchen, Living/Dining (open plan), Balcony. Doorway swing arcs only, no decorative door-swing lines. 1 px hairline walls + mono dimensional callouts. North arrow + scale bar 2 M. Surveyor-report disclaimer at the caption-strip footer (12 px floor per DESIGN.md).
+- **MOD `src/pages/properties/[slug].astro`** — wired both components into the page below the existing spec-sheet `<dl>`:
+  - `<BuildingElevation type={...} />` — rendered for every `property.type`.
+  - `<FloorPlan />` — rendered only when `type === 'APARTMENT'`.
+  - Both build site-side (no `client:*` directives).
+
+**Phase 31.1 — Post-review polish (folded into the same commit per chore pattern)** `[SHIPPED]`
+
+Three followups surfaced during the `code-reviewer-minimax-m3` pass:
+
+1. **MODIFY — FloorPlan.astro caption-second-line size.** Was `text-[11px]`, below the documented 12 px caption floor. `str_replace` to `text-[12px]`.
+2. **MODIFY — BuildingElevation.astro unused `storey` field.** The apartment storey array declared `{slabY, storey: N}` but only `slabY` was destructured at the call site. Dropped the field; left as `[{slabY}, {slabY}, {slabY}]` (3 entries, 1-member each).
+3. **MODIFY — BuildingElevation.astro defensive fallback for unknown `property.type` values.** The 4-way `if/else-if` cascade returned `null` if a future Tina schema drift entered an unknown type. Added an `else` branch that renders a hairline placeholder rectangle + mono 12 px caption ("Type not yet registered with the elevation library") so the failure mode is visible rather than silent.
+
+**Validate gate:** `pnpm run lint:wrappers` PASS · `pnpm exec astro check` 0 errors / 0 warnings / 0 hints (75 files analyzed) · `pnpm test` 51/51 PASS.
+
+**Token discipline audit (Phase 31 + 31.1):**
+- 0 cyan-teal accents in either new component (reserved accent consistently).
+- 1 px hairlines only (no `shadow-sm`, no `shadow-[...]`, no `bg-gradient-to-*`, no `blur-*`).
+- All copy in engineering register (no "elevate", "curated", "stunning", "dream home", "endless possibilities"); all paragraph copy stays factual.
+- All numeric callouts in JetBrains Mono at the documented 12 px / 14 px caption floors.
+
+**Skills invoked this phase:** `thinker-with-files-gemini` (skill-deficit analysis + Eens use-case mapping), `opendesign` (re-loaded for the re-audit anchor), `humanizer` (copy voice scan on the disclaimer + caption strings).
+
+**Followups considered, deferred:**
+
+- 31.2 — Extend `FloorPlan.astro` to support per-floor stacking (multi-storey apartment blocks). The current 110–130 sqm single-storey plan covers all 5 current apartment listings; revisit when a tower / duplex listing lands.
+- 31.3 — Per-property photography pass (replacing the existing 16:9 hero image with on-the-ground shots when Eens acquires them). Not blocking the schematic-first approach.
+- 31.4 — `BuildingElevation.astro` key for skybox / weather (sun-path / wind direction). Out of room on the engraving surface; pure-noise feature.
+- 31.5 — Render elevations + floor plans as **print-friendly** content on `/properties/[slug]` (already covered by the Phase 8.4.3 print stylesheet; elevations would re-flow naturally as page-one content alongside the existing spec-sheet `<dl>`).
+- 32.1 — Convert `BuildingElevation.astro` defensive fallback to `const KNOWN_TYPES = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const; if (!KNOWN_TYPES.includes(type as PropertyType))` so a future Tina type is a one-line addition (not a 4-clause boolean rewrite).
+- 32.2 — Add `role="img"` + `aria-label={`Front elevation of ${type.toLowerCase()} property`}` on the `<svg>` root in `BuildingElevation.astro` + `aria-label="Top-down 3-bed apartment floor plan"` on the `<svg>` root in `FloorPlan.astro`. The visible caption-strip text is the engineering-canonical label, but a screen-reader user landing on `/properties/[slug]` hears no greeting today. One-attribute-add per file.
+- 32.3 — `@media print` block in `global.css` does NOT carry a `font-size: 12px` floor override on `.floor-plan-*` / `.building-elevation-*` classes — phase 31.5 baseline observation. A printout at browser-default scale (1 rem = 16 px) breaks the engineering-register caption scale. The Phase 8.4.3 print stylesheet should adopt a `font-size: 12px !important` floor on those class scopes, then test with `window.print()` → "Save as PDF" against the existing `/properties/mlolongo-warehouse` listing.
