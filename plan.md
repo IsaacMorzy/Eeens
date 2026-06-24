@@ -54,7 +54,7 @@ directly and does NOT spawn the live datalayer. Adding the flag there is inert.
 **6.4 — Post-ship followups** `[SHIPPED]` — blog routes + nav entry deleted; Header wordmark fixed to inline `currentColor` SVG + Footer glyph same; 5 seed listings rewired to 4 inline SVG architectural elevations in `public/properties/`; `.env.example` documents `PUBLIC_TINA_CLIENT_ID` + `TINA_TOKEN` + `TINA_SEARCH_TOKEN`.
 **6.5 — Validate + commit** `[SHIPPED]` — `astro check` clean, `code-reviewer-minimax-m3` approved (after two regression fixes for Tina logo swap path + PropertyList convention-match).
 
-### Phase 7 — Production verification + depth audit  `[ACTIVE]`
+### Phase 7 — Production verification + depth audit  `[SHIPPED]`
 
 **Direction:** the polish phase made the dev experience clean. Now verify the
 production bundle assembles (different exposure than typecheck alone) and run
@@ -708,7 +708,7 @@ the eight files audited (`[...slug].astro`, `blog/[slug].astro`,
 Validated: vitest unchanged (51/51 green), astro check 0/0/2 — no
 component files touched in 18.1 other than the one-line class removal.
 
-### Phase 21 — Plan status sweep  `[ACTIVE]`
+### Phase 21 — Plan status sweep  `[SHIPPED]`
 
 Direction: every commit on `main` after Phase 6 already shipped —
 Phases 8 (8.1–8.5), 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 are

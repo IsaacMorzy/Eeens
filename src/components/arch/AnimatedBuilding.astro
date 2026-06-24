@@ -1,0 +1,240 @@
+---
+/**
+ * AnimatedBuilding — CSS-only 3D building with subtle floating animation.
+ *
+ * Replaces the static SVG engineering-drawing BuildingElevation with a
+ * living, breathing CSS building that reads as a real structure — not a
+ * blueprint. Each building type gets a distinct silhouette, facade detail,
+ * and animation that respects the Eens token palette.
+ *
+ * Animation: gentle 6 s ease-in-out floating cycle (±6 px translateY) +
+ * subtle perspective shift on hover (rotateY ±2°). The ground shadow
+ * contracts on lift. All motion gates on `prefers-reduced-motion: reduce`
+ * via the global.css media query.
+ *
+ * Token discipline:
+ * - Walls: var(--background) surface + 1 px hairline-steel strokes
+ * - Roof: var(--secondary) / var(--muted)
+ * - Windows: var(--card) with var(--foreground) dividers
+ * - Shadow: inset + ground-plane shadow using var(--hairline-steel)
+ * - NO cyan-teal decoration (accent slot budget consumed elsewhere)
+ *
+ * SSR-friendly: inline `<style>` + div layout, no client JS, no hydration.
+ */
+type PropertyType = 'WAREHOUSE' | 'GODOWN' | 'BUSINESS_PARK' | 'APARTMENT';
+
+interface Props {
+	type: PropertyType;
+	sqft?: string | null;
+	parkingBays?: number | null;
+	clearHeight?: string | null;
+	loadLabel?: string | null;
+}
+
+const { type, sqft, parkingBays, clearHeight, loadLabel } = Astro.props as Props;
+
+const LABELS: Record<PropertyType, string> = {
+	WAREHOUSE: 'Warehouse',
+	GODOWN: 'Godown',
+	BUSINESS_PARK: 'Business Park',
+	APARTMENT: 'Apartment Block',
+};
+---
+
+<div class="animated-building relative mx-auto my-12 flex w-full max-w-3xl items-end justify-center pt-8" data-building-type={type}>
+	<div class="building-scene relative flex flex-col items-center" style="perspective: 1200px;">
+		{/* Building group — floats + tilts on hover */}
+		<div class="building-body group relative transition-transform duration-700 ease-out hover:rotate-y-[-2deg] hover:rotate-x-[1deg] animate-float">
+
+			{/* --- WAREHOUSE --- */}
+			{type === 'WAREHOUSE' && (
+				<div class="flex flex-col items-center">
+					{/* Pitched roof */}
+					<div class="warehouse-roof relative z-10 h-16 w-[420px] overflow-hidden" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: linear-gradient(180deg, var(--secondary) 0%, var(--muted) 100%); border-left: 1px solid var(--hairline-steel); border-right: 1px solid var(--hairline-steel);">
+						<div class="absolute inset-x-0 bottom-0 h-px bg-hairline-steel/40"></div>
+					</div>
+					{/* Main facade */}
+					<div class="warehouse-facade relative w-[420px] h-32 bg-background border border-hairline-steel rounded-b-sm flex flex-col">
+						{/* Structural bays — 4 vertical dividers */}
+						{[...Array(3)].map((_, i) => (
+							<div class="absolute top-0 bottom-0 w-px bg-hairline-steel/30" style={`left: ${(i + 1) * 25}%`}></div>
+						))}
+						{/* Loading bay roll-up doors */}
+						{[...Array(3)].map((_, i) => (
+							<div class="absolute bottom-0 w-[72px] h-[72px] border border-hairline-steel/60 rounded-t-sm bg-muted/50" style={`left: ${i * 25 + 7}%;`}>
+								{[...Array(6)].map((_, j) => (
+									<div class="absolute inset-x-1 h-px bg-hairline-steel/30" style={`top: ${(j + 1) * 14}%`}></div>
+								))}
+							</div>
+						))}
+						{/* Truck court hint */}
+						<div class="absolute -bottom-3 inset-x-0 h-3 bg-hairline-steel/10 rounded-b-sm"></div>
+					</div>
+				</div>
+			)}
+
+			{/* --- GODOWN --- */}
+			{type === 'GODOWN' && (
+				<div class="flex flex-col items-center">
+					{/* Flat parapet roof */}
+					<div class="godown-roof relative z-10 h-5 w-[300px] bg-secondary border-t border-x border-hairline-steel rounded-t-sm">
+						<div class="absolute -top-px inset-x-1 h-px bg-hairline-steel/50"></div>
+					</div>
+					{/* Single-storey facade */}
+					<div class="godown-facade relative w-[300px] h-24 bg-background border border-hairline-steel border-t-0 rounded-b-sm flex flex-col">
+						{/* Two shuttered bays */}
+						<div class="absolute bottom-0 left-[8%] w-[38%] h-[70px] border border-hairline-steel/60 rounded-t-sm bg-muted/40">
+							{[...Array(5)].map((_, j) => (
+								<div class="absolute inset-x-1 h-px bg-hairline-steel/30" style={`top: ${(j + 1) * 16}%`}></div>
+							))}
+						</div>
+						<div class="absolute bottom-0 right-[8%] w-[38%] h-[70px] border border-hairline-steel/60 rounded-t-sm bg-muted/40">
+							{[...Array(5)].map((_, j) => (
+								<div class="absolute inset-x-1 h-px bg-hairline-steel/30" style={`top: ${(j + 1) * 16}%`}></div>
+							))}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* --- BUSINESS PARK --- */}
+			{type === 'BUSINESS_PARK' && (
+				<div class="flex flex-col items-center">
+					{/* Flat parapet */}
+					<div class="business-roof relative z-10 h-4 w-[360px] bg-secondary border-t border-x border-hairline-steel rounded-t-sm"></div>
+					{/* Two-storey facade */}
+					<div class="relative w-[360px] h-40 bg-background border border-hairline-steel border-t-0 rounded-b-sm flex flex-col">
+						{/* Floor divider */}
+						<div class="absolute top-1/2 inset-x-0 h-px bg-hairline-steel/40"></div>
+						{/* Upper floor — 5 windows */}
+						{[...Array(5)].map((_, i) => (
+							<div class="absolute top-[8%] w-[48px] h-[36px] border border-hairline-steel/50 rounded-sm bg-card" style={`left: ${i * 19 + 4}%`}>
+								<div class="absolute left-1/2 top-0 bottom-0 w-px bg-hairline-steel/20"></div>
+								<div class="absolute top-1/2 inset-x-1 h-px bg-hairline-steel/20"></div>
+							</div>
+						))}
+						{/* Ground floor — 4 shopfront bays */}
+						{[...Array(4)].map((_, i) => (
+							<div class="absolute bottom-[4%] h-[42px] w-[72px] border border-hairline-steel/60 rounded-t-sm bg-muted/40" style={`left: ${i * 23 + 4}%`}>
+								<div class="absolute inset-x-1 top-[35%] h-px bg-hairline-steel/20"></div>
+							</div>
+						))}
+					</div>
+					{/* Forecourt */}
+					<div class="absolute -bottom-2 inset-x-4 h-2 bg-hairline-steel/10 rounded-b-sm"></div>
+				</div>
+			)}
+
+			{/* --- APARTMENT --- */}
+			{type === 'APARTMENT' && (
+				<div class="flex flex-col items-center">
+					{/* Roof + water tank hint */}
+					<div class="apartment-roof relative z-10 h-4 w-[280px] bg-secondary border-t border-x border-hairline-steel rounded-t-sm">
+						<div class="absolute top-[-12px] left-1/2 -translate-x-1/2 w-8 h-10 border border-hairline-steel/60 rounded-sm bg-muted/50"></div>
+					</div>
+					{/* Three-storey facade */}
+					<div class="relative w-[280px] h-48 bg-background border border-hairline-steel border-t-0 rounded-b-sm flex flex-col">
+						{/* Floor dividers */}
+						<div class="absolute top-[30%] inset-x-0 h-px bg-hairline-steel/40"></div>
+						<div class="absolute top-[62%] inset-x-0 h-px bg-hairline-steel/40"></div>
+					{/* 4 columns × 3 floors = 12 windows + balconies. First window on
+					    ground floor gets .lit-window for the night-glow effect. */}
+					{[...Array(3)].map((_, floor) =>
+						[...Array(4)].map((_, col) => (
+							<div class:list={["absolute w-[44px] h-[34px] border border-hairline-steel/50 rounded-sm bg-card", { "lit-window": floor === 0 && col === 0 }]} style={`top: ${floor * 30 + 4}%; left: ${col * 22 + 4}%`}>
+								<div class="absolute left-1/2 top-0 bottom-0 w-px bg-hairline-steel/20"></div>
+								<div class="absolute top-1/2 inset-x-1 h-px bg-hairline-steel/20"></div>
+								{floor > 0 && (
+									<div class="absolute -bottom-[6px] inset-x-[-3px] h-[6px] bg-hairline-steel/30 rounded-b-sm"></div>
+								)}
+							</div>
+						))
+					)}
+						{/* Ground-floor entrance */}
+						<div class="absolute bottom-[2%] left-1/2 -translate-x-1/2 w-14 h-12 border border-hairline-steel/60 rounded-t-sm bg-muted/30">
+							<div class="absolute inset-2 border border-hairline-steel/40 rounded-t-sm"></div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Ground shadow — contracts on float-up */}
+			<div class="building-shadow mx-auto mt-2 h-3 rounded-full bg-hairline-steel/15 blur-sm animate-shadow" style={`width: ${type === 'WAREHOUSE' ? '380px' : type === 'GODOWN' ? '260px' : type === 'BUSINESS_PARK' ? '320px' : '240px'};`}></div>
+		</div>
+
+		{/* Label strip */}
+		<div class="mt-8 text-center">
+			<span class="font-sans text-[14px] font-medium tracking-tight text-foreground">{LABELS[type]}</span>
+			<div class="mt-1 font-mono text-[12px] uppercase tracking-[0.4px] text-muted-foreground">
+				{sqft ?? ''}
+				{clearHeight && ` · Clear ${clearHeight} m`}
+				{loadLabel && ` · ${loadLabel}`}
+			</div>
+			{type !== 'APARTMENT' && parkingBays && parkingBays > 0 && (
+				<div class="mt-0.5 font-mono text-[12px] text-muted-foreground opacity-80">{parkingBays} parking bays</div>
+			)}
+		</div>
+	</div>
+</div>
+
+<style>
+	/* Floating animation — building bobs gently up and down */
+	@keyframes building-float {
+		0%, 100% { transform: translateY(0) rotateX(0deg); }
+		50%      { transform: translateY(-6px) rotateX(0.5deg); }
+	}
+
+	/* Ground shadow contracts on lift, expands on settle */
+	@keyframes shadow-breathe {
+		0%, 100% { transform: scaleX(1); opacity: 0.15; }
+		50%      { transform: scaleX(0.92); opacity: 0.10; }
+	}
+
+	/* Subtle highlight sweep across the facade — light passes over windows */
+	@keyframes light-sweep {
+		0%, 100% { opacity: 0; }
+		40%      { opacity: 0.06; }
+		60%      { opacity: 0.02; }
+	}
+
+	.building-body {
+		will-change: transform;
+	}
+
+	.building-shadow {
+		will-change: transform, opacity;
+	}
+
+	/* Animation classes — keep the animation properties in CSS classes
+	   so they live alongside their @keyframes definitions, not inline.
+	   The global prefers-reduced-motion media query short-circuits
+	   animation-duration to < 0.01ms on both. */
+	.animate-float {
+		animation: building-float 6s ease-in-out infinite;
+	}
+
+	.animate-shadow {
+		animation: shadow-breathe 6s ease-in-out infinite;
+	}
+
+	/* Light-sweep overlay on the facade — a subtle warm gradient that
+	   moves across the face, suggesting sunlight scanning the structure.
+	   Only on warehouse (widest face) for performance. */
+	.warehouse-facade::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(105deg, transparent 0%, var(--foreground) 50%, transparent 100%);
+		animation: light-sweep 8s ease-in-out infinite;
+		pointer-events: none;
+		border-radius: inherit;
+	}
+
+	/* Apartment night-glow: the first ground-floor window stays lit.
+	   Uses a dedicated class applied to the first window in the template
+	   rather than :nth-child(1 of .bg-card) for cross-browser safety. */
+	.lit-window {
+		background-color: var(--primary-foreground);
+		box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.12);
+	}
+</style>

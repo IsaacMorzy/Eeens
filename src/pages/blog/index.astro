@@ -30,7 +30,7 @@ const blogs: CmsBlog[] = await listBlogs();
 			)}
 			<ul class="divide-y divide-hairline-steel/40 border-y border-hairline-steel/60">
 				{blogs.map((b) => (
-					<li class="reveal-on-scroll py-6">
+					<li class="reveal-on-scroll py-6 transition-all duration-200 ease-out hover:translate-x-1">
 						<a href={`/blog/${b._sys?.filename ?? ''}`} class="group block">
 							<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">
 								{b.pubDate && new Date(b.pubDate).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })}
@@ -45,6 +45,32 @@ const blogs: CmsBlog[] = await listBlogs();
 					</li>
 				))}
 			</ul>
+			<div class="mt-12 text-center">
+				<p class="font-mono text-[13px] text-muted-foreground">
+					{blogs.length} post{blogs.length === 1 ? '' : 's'} published.
+				</p>
+			</div>
+		</div>
+	</Section>
+
+	<Section class="bg-canvas-dark text-ink-dark">
+		<div class="reveal-on-scroll mx-auto max-w-3xl px-6 py-16 text-center">
+			<span class="inline-block text-[13px] font-medium uppercase tracking-[0.4px] text-primary-dark">STAY UPDATED</span>
+			<h2 class="mt-4 font-display text-balance text-[28px] font-semibold tracking-[-0.6px]">
+				New listings and operator notes, straight to your inbox.
+			</h2>
+			<p class="mt-4 max-w-xl mx-auto text-pretty text-base text-ink-dark/75">
+				We publish every new listing here before anywhere else. No newsletter cadence — we post when
+				a unit goes live or when an operational detail is worth documenting.
+			</p>
+			<div class="mt-8">
+				<a
+					href="mailto:hello@eens.co.ke?subject=Subscribe%20to%20blog%20updates"
+					class="inline-flex items-center gap-2 rounded-md bg-primary-dark text-canvas-dark px-6 py-3 text-sm font-medium transition-[background-color] duration-200 ease-out hover:bg-primary-dark/90"
+				>
+					<span>Subscribe by email</span>
+				</a>
+			</div>
 		</div>
 	</Section>
 </Base>

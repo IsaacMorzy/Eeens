@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Three-bedroom apartment exterior in Flame Tree Park Estate, Thika">
+  <defs>
+    <linearGradient id="asky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4e4f0"/>
+      <stop offset="50%" stop-color="#e8f0f6"/>
+      <stop offset="100%" stop-color="#fafaf9"/>
+    </linearGradient>
+    <linearGradient id="aground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8d8c0"/>
+      <stop offset="100%" stop-color="#a8b8a0"/>
+    </linearGradient>
+    <linearGradient id="aroof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d6e85"/>
+      <stop offset="100%" stop-color="#4a5d76"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#asky)"/>
+
+  <g fill="#ffffff" opacity="0.6">
+    <ellipse cx="200" cy="100" rx="60" ry="20"/>
+    <ellipse cx="240" cy="90" rx="40" ry="16"/>
+    <ellipse cx="160" cy="95" rx="35" ry="14"/>
+    <ellipse cx="1000" cy="130" rx="50" ry="18"/>
+    <ellipse cx="1040" cy="120" rx="35" ry="14"/>
+  </g>
+
+  <path d="M0 510 Q300 440 600 490 Q900 450 1280 500 L1280 720 L0 720Z" fill="#c8d8c4" opacity="0.5"/>
+  <path d="M0 540 Q400 480 800 530 Q1100 490 1280 540 L1280 720 L0 720Z" fill="#b0c8a8" opacity="0.4"/>
+
+  <rect x="0" y="500" width="1280" height="220" fill="url(#aground)"/>
+
+  <path d="M600 720 Q600 620 640 560 L780 560 L780 720Z" fill="#d8d8d0" stroke="#c0c0b8" stroke-width="0.5" opacity="0.5"/>
+
+  <g transform="translate(640, 0)">
+    <rect x="-180" y="160" width="360" height="340" fill="#fafaf8" stroke="#5d7290" stroke-width="1.5"/>
+    
+    <rect x="-184" y="156" width="368" height="12" rx="3" fill="url(#aroof)" stroke="#475569" stroke-width="1"/>
+    <line x1="-184" y1="168" x2="184" y2="168" stroke="#475569" stroke-width="1.5"/>
+    
+    <rect x="-40" y="130" width="30" height="26" rx="3" fill="#e0e0da" stroke="#5d7290" stroke-width="1"/>
+    <rect x="-36" y="134" width="22" height="4" fill="#5d7290" opacity="0.3"/>
+    <rect x="30" y="138" width="40" height="18" rx="1" fill="#4a5d76" stroke="#5d7290" stroke-width="0.5" opacity="0.7"/>
+    
+    <line x1="-180" y1="275" x2="180" y2="275" stroke="#5d7290" stroke-width="1" opacity="0.35"/>
+    <line x1="-180" y1="390" x2="180" y2="390" stroke="#5d7290" stroke-width="1" opacity="0.35"/>
+    
+    <!-- Floor 1 windows (4 columns) -->
+    <g>
+      <rect x="-150" y="180" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-124" y1="180" x2="-124" y2="222" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-150" y1="201" x2="-98" y2="201" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      
+      <rect x="-72" y="180" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-46" y1="180" x2="-46" y2="222" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-72" y1="201" x2="-20" y2="201" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      
+      <rect x="6" y="180" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="32" y1="180" x2="32" y2="222" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="6" y1="201" x2="58" y2="201" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      
+      <rect x="84" y="180" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="110" y1="180" x2="110" y2="222" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="84" y1="201" x2="136" y2="201" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+    </g>
+
+    <!-- Floor 2 windows (4 columns) + balconies -->
+    <g>
+      <rect x="-150" y="295" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-124" y1="295" x2="-124" y2="337" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-150" y1="316" x2="-98" y2="316" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="-154" y="339" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="-72" y="295" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-46" y1="295" x2="-46" y2="337" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-72" y1="316" x2="-20" y2="316" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="-76" y="339" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="6" y="295" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="32" y1="295" x2="32" y2="337" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="6" y1="316" x2="58" y2="316" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="2" y="339" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="84" y="295" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="110" y1="295" x2="110" y2="337" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="84" y1="316" x2="136" y2="316" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="80" y="339" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    </g>
+
+    <!-- Floor 3 windows (4 columns) + balconies -->
+    <g>
+      <rect x="-150" y="410" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-124" y1="410" x2="-124" y2="452" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-150" y1="431" x2="-98" y2="431" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="-154" y="454" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="-72" y="410" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="-46" y1="410" x2="-46" y2="452" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="-72" y1="431" x2="-20" y2="431" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="-76" y="454" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="6" y="410" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="32" y1="410" x2="32" y2="452" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="6" y1="431" x2="58" y2="431" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="2" y="454" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+      
+      <rect x="84" y="410" width="52" height="42" rx="2" fill="#e8f0f4" stroke="#5d7290" stroke-width="0.8" opacity="0.85"/>
+      <line x1="110" y1="410" x2="110" y2="452" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <line x1="84" y1="431" x2="136" y2="431" stroke="#5d7290" stroke-width="0.4" opacity="0.3"/>
+      <rect x="80" y="454" width="60" height="6" rx="1" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    </g>
+
+    <!-- Entrance -->
+    <rect x="-25" y="420" width="50" height="80" rx="3" fill="#f0efe9" stroke="#5d7290" stroke-width="1.2"/>
+    <rect x="-25" y="420" width="50" height="28" rx="3" fill="#e8e7e1" stroke="#5d7290" stroke-width="0.8"/>
+    <rect x="-25" y="448" width="50" height="1" fill="#5d7290" opacity="0.3"/>
+    <line x1="0" y1="420" x2="0" y2="500" stroke="#5d7290" stroke-width="0.6" opacity="0.4"/>
+    <rect x="-35" y="410" width="70" height="8" rx="2" fill="#e0dcd4" stroke="#5d7290" stroke-width="0.8"/>
+    
+    <rect x="-60" y="440" width="25" height="16" rx="2" fill="#0e7490" opacity="0.85"/>
+    <text x="-47" y="452" text-anchor="middle" font-size="8" fill="#fafaf9" font-family="sans-serif" font-weight="600">C</text>
+    
+    <rect x="-180" y="156" width="360" height="8" fill="#0F172A" opacity="0.05"/>
+  </g>
+
+  <g transform="translate(80, 490)">
+    <rect x="-3" y="0" width="6" height="45" fill="#7a6040"/>
+    <ellipse cx="0" cy="-10" rx="28" ry="22" fill="#8aad78" opacity="0.7"/>
+    <ellipse cx="-12" cy="-20" rx="22" ry="18" fill="#7a9a6a" opacity="0.6"/>
+    <ellipse cx="14" cy="-18" rx="20" ry="16" fill="#9abe84" opacity="0.5"/>
+  </g>
+  <g transform="translate(1200, 485)">
+    <rect x="-3" y="0" width="6" height="40" fill="#7a6040"/>
+    <ellipse cx="0" cy="-8" rx="24" ry="18" fill="#8aad78" opacity="0.6"/>
+    <ellipse cx="10" cy="-16" rx="18" ry="14" fill="#7a9a6a" opacity="0.5"/>
+  </g>
+  
+  <g fill="#e8a0a0" opacity="0.4">
+    <ellipse cx="440" cy="510" rx="15" ry="8"/>
+    <ellipse cx="455" cy="508" rx="12" ry="7"/>
+    <ellipse cx="835" cy="512" rx="14" ry="7"/>
+    <ellipse cx="848" cy="510" rx="10" ry="6"/>
+  </g>
+
+  <line x1="30" y1="505" x2="500" y2="505" stroke="#c0b8a8" stroke-width="1.5"/>
+  <line x1="780" y1="505" x2="1250" y2="505" stroke="#c0b8a8" stroke-width="1.5"/>
+  <rect x="400" y="490" width="80" height="15" rx="3" fill="#e0dcd4" stroke="#c0b8a8" stroke-width="0.8"/>
+  <rect x="820" y="490" width="80" height="15" rx="3" fill="#e0dcd4" stroke="#c0b8a8" stroke-width="0.8"/>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="640" y="660" text-anchor="middle" font-size="13" fill="#475569" letter-spacing="0.4">3-BEDROOM APARTMENT · 1,450 SQ FT · FLAME TREE PARK ESTATE · THIKA</text>
+    <text x="640" y="682" text-anchor="middle" font-size="12" fill="#94a3b8">Block C · Unit 12 · Strata-managed · Title transfer · Representative illustration</text>
+  </g>
+</svg>

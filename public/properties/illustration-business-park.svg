@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Two-storey business-park building exterior, Baba Dogo, Outering Road">
+  <defs>
+    <linearGradient id="bsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dce8f0"/>
+      <stop offset="100%" stop-color="#f5f7f9"/>
+    </linearGradient>
+    <linearGradient id="bground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcdcd8"/>
+      <stop offset="100%" stop-color="#c8c8c2"/>
+    </linearGradient>
+    <linearGradient id="broof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a5d76"/>
+      <stop offset="100%" stop-color="#3d5068"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#bsky)"/>
+
+  <path d="M0 510 Q250 450 500 490 Q750 460 1000 500 Q1150 470 1280 490 L1280 720 L0 720Z" fill="#dce4e2" opacity="0.5"/>
+  <path d="M0 540 Q350 490 600 530 Q900 500 1280 540 L1280 720 L0 720Z" fill="#d0d8d4" opacity="0.4"/>
+
+  <rect x="0" y="500" width="1280" height="220" fill="url(#bground)"/>
+
+  <rect x="180" y="510" width="920" height="110" rx="4" fill="#828280" opacity="0.2"/>
+  <g stroke="#a0a098" stroke-width="0.5" opacity="0.3">
+    <line x1="200" y1="540" x2="1080" y2="540"/>
+    <line x1="200" y1="570" x2="1080" y2="570"/>
+  </g>
+  
+  <g stroke="#a8a8a0" stroke-width="1" fill="none" opacity="0.35">
+    <rect x="220" y="555" width="48" height="26" rx="2"/>
+    <rect x="290" y="555" width="48" height="26" rx="2"/>
+    <rect x="360" y="555" width="48" height="26" rx="2"/>
+    <rect x="430" y="555" width="48" height="26" rx="2"/>
+  </g>
+
+  <g transform="translate(640, 0)">
+    <rect x="-320" y="180" width="640" height="320" fill="#fafaf8" stroke="#5d7290" stroke-width="1.5"/>
+    
+    <rect x="-324" y="176" width="648" height="12" rx="2" fill="url(#broof)" stroke="#475569" stroke-width="1"/>
+    <line x1="-324" y1="188" x2="324" y2="188" stroke="#475569" stroke-width="1.5"/>
+    
+    <rect x="-280" y="162" width="32" height="14" rx="2" fill="#5d7290" stroke="#475569" stroke-width="0.5"/>
+    <rect x="-230" y="160" width="36" height="16" rx="2" fill="#5d7290" stroke="#475569" stroke-width="0.5"/>
+    <rect x="200" y="163" width="30" height="13" rx="2" fill="#5d7290" stroke="#475569" stroke-width="0.5"/>
+    
+    <line x1="-320" y1="340" x2="320" y2="340" stroke="#5d7290" stroke-width="1.2" opacity="0.4"/>
+    <rect x="-320" y="338" width="640" height="4" fill="#0F172A" opacity="0.04"/>
+    
+    <!-- 8 upper-floor windows -->
+    <g stroke="#5d7290" stroke-width="0.8">
+      <rect x="-290" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="-218" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="-146" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="-74" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="-2" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="70" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="142" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <rect x="214" y="210" width="56" height="48" rx="2" fill="#e8f0f4" opacity="0.8"/>
+      <!-- Window dividers -->
+      <line x1="-262" y1="210" x2="-262" y2="258" opacity="0.3"/>
+      <line x1="-290" y1="232" x2="-234" y2="232" opacity="0.3"/>
+      <line x1="-190" y1="210" x2="-190" y2="258" opacity="0.3"/>
+      <line x1="-218" y1="232" x2="-162" y2="232" opacity="0.3"/>
+      <line x1="-118" y1="210" x2="-118" y2="258" opacity="0.3"/>
+      <line x1="-146" y1="232" x2="-90" y2="232" opacity="0.3"/>
+      <line x1="-46" y1="210" x2="-46" y2="258" opacity="0.3"/>
+      <line x1="-74" y1="232" x2="-18" y2="232" opacity="0.3"/>
+      <line x1="26" y1="210" x2="26" y2="258" opacity="0.3"/>
+      <line x1="-2" y1="232" x2="54" y2="232" opacity="0.3"/>
+      <line x1="98" y1="210" x2="98" y2="258" opacity="0.3"/>
+      <line x1="70" y1="232" x2="126" y2="232" opacity="0.3"/>
+      <line x1="170" y1="210" x2="170" y2="258" opacity="0.3"/>
+      <line x1="142" y1="232" x2="198" y2="232" opacity="0.3"/>
+      <line x1="242" y1="210" x2="242" y2="258" opacity="0.3"/>
+      <line x1="214" y1="232" x2="270" y2="232" opacity="0.3"/>
+    </g>
+    
+    <rect x="-318" y="262" width="636" height="14" fill="#e0e0da" stroke="#c8c8c0" stroke-width="0.5"/>
+    <g stroke="#c8c8c0" stroke-width="0.3" opacity="0.5">
+      <line x1="-310" y1="262" x2="-310" y2="276"/>
+      <line x1="-270" y1="262" x2="-270" y2="276"/>
+      <line x1="-230" y1="262" x2="-230" y2="276"/>
+      <line x1="-190" y1="262" x2="-190" y2="276"/>
+      <line x1="-150" y1="262" x2="-150" y2="276"/>
+      <line x1="-110" y1="262" x2="-110" y2="276"/>
+      <line x1="-70" y1="262" x2="-70" y2="276"/>
+      <line x1="-30" y1="262" x2="-30" y2="276"/>
+      <line x1="10" y1="262" x2="10" y2="276"/>
+      <line x1="50" y1="262" x2="50" y2="276"/>
+      <line x1="90" y1="262" x2="90" y2="276"/>
+      <line x1="130" y1="262" x2="130" y2="276"/>
+      <line x1="170" y1="262" x2="170" y2="276"/>
+      <line x1="210" y1="262" x2="210" y2="276"/>
+      <line x1="250" y1="262" x2="250" y2="276"/>
+      <line x1="290" y1="262" x2="290" y2="276"/>
+    </g>
+    
+    <!-- Ground-floor shopfronts -->
+    <rect x="-280" y="355" width="110" height="70" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1" opacity="0.9"/>
+    <rect x="-145" y="355" width="110" height="70" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1" opacity="0.9"/>
+    <rect x="-10" y="355" width="110" height="70" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1" opacity="0.9"/>
+    <rect x="125" y="355" width="110" height="70" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1" opacity="0.9"/>
+    
+    <g fill="#ffffff" opacity="0.08">
+      <rect x="-275" y="360" width="60" height="20" rx="1"/>
+      <rect x="-140" y="360" width="60" height="20" rx="1"/>
+      <rect x="-5" y="360" width="60" height="20" rx="1"/>
+      <rect x="130" y="360" width="60" height="20" rx="1"/>
+    </g>
+    
+    <rect x="-18" y="435" width="36" height="60" rx="2" fill="#f0efe9" stroke="#5d7290" stroke-width="1"/>
+    <rect x="-18" y="435" width="18" height="60" fill="#e8e7e1" stroke="#5d7290" stroke-width="0.5"/>
+    <line x1="0" y1="435" x2="0" y2="495" stroke="#5d7290" stroke-width="0.8"/>
+    <circle cx="-4" cy="468" r="2.5" fill="#5d7290"/>
+    <circle cx="14" cy="468" r="2.5" fill="#5d7290"/>
+    
+    <!-- Columns -->
+    <rect x="-320" y="350" width="8" height="150" fill="#e8e7e1" stroke="#5d7290" stroke-width="0.5"/>
+    <rect x="-170" y="350" width="6" height="150" fill="#ecebe6" stroke="#5d7290" stroke-width="0.5"/>
+    <rect x="-36" y="350" width="6" height="150" fill="#ecebe6" stroke="#5d7290" stroke-width="0.5"/>
+    <rect x="98" y="350" width="6" height="150" fill="#ecebe6" stroke="#5d7290" stroke-width="0.5"/>
+    <rect x="232" y="350" width="6" height="150" fill="#ecebe6" stroke="#5d7290" stroke-width="0.5"/>
+    <rect x="312" y="350" width="8" height="150" fill="#e8e7e1" stroke="#5d7290" stroke-width="0.5"/>
+    
+    <rect x="-320" y="176" width="640" height="8" fill="#0F172A" opacity="0.05"/>
+  </g>
+
+  <g transform="translate(100, 490)">
+    <rect x="-3" y="0" width="6" height="40" fill="#8B7355"/>
+    <ellipse cx="-15" cy="-8" rx="22" ry="16" fill="#7a9a6a" opacity="0.6"/>
+    <ellipse cx="12" cy="-10" rx="20" ry="15" fill="#8aad78" opacity="0.5"/>
+  </g>
+  <g transform="translate(1180, 495)">
+    <rect x="-2" y="0" width="4" height="35" fill="#8B7355"/>
+    <ellipse cx="0" cy="-6" rx="18" ry="13" fill="#8aad78" opacity="0.5"/>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="640" y="660" text-anchor="middle" font-size="13" fill="#475569" letter-spacing="0.4">TWO-STOREY BUSINESS PARK · 14,500 SQ FT · 300 KVA · BABA DOGO, OUTERING ROAD</text>
+    <text x="640" y="682" text-anchor="middle" font-size="12" fill="#94a3b8">14 parking bays · Title transfer · Representative illustration</text>
+  </g>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Single-storey godown exterior, Syokimau, with shuttered loading bay">
+  <defs>
+    <linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8f0f4"/>
+      <stop offset="100%" stop-color="#fafaf9"/>
+    </linearGradient>
+    <linearGradient id="gground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d8d8d4"/>
+      <stop offset="100%" stop-color="#c4c4be"/>
+    </linearGradient>
+    <linearGradient id="groof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d7290"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#gsky)"/>
+
+  <path d="M0 520 Q300 460 500 500 Q700 470 900 510 Q1100 480 1280 500 L1280 720 L0 720Z" fill="#e0e6e4" opacity="0.5"/>
+  <path d="M0 540 Q400 490 600 530 Q900 500 1280 540 L1280 720 L0 720Z" fill="#d2d8d4" opacity="0.4"/>
+
+  <rect x="0" y="500" width="1280" height="220" fill="url(#gground)"/>
+
+  <rect x="200" y="510" width="880" height="100" rx="3" fill="#7a7a7a" opacity="0.25"/>
+
+  <g transform="translate(640, 0)">
+    <rect x="-260" y="220" width="520" height="280" fill="#fafaf8" stroke="#5d7290" stroke-width="1.5"/>
+    
+    <rect x="-264" y="216" width="528" height="16" rx="3" fill="url(#groof)" stroke="#475569" stroke-width="1"/>
+    <line x1="-264" y1="232" x2="264" y2="232" stroke="#475569" stroke-width="1.5"/>
+    
+    <rect x="-240" y="240" width="160" height="240" fill="none" stroke="#5d7290" stroke-width="0.5" opacity="0.3"/>
+    <rect x="80" y="240" width="160" height="240" fill="none" stroke="#5d7290" stroke-width="0.5" opacity="0.3"/>
+    
+    <!-- Shuttered loading bay (left) with 5 slat lines -->
+    <rect x="-210" y="320" width="130" height="180" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1"/>
+    <line x1="-210" y1="345" x2="-80" y2="345" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="-210" y1="370" x2="-80" y2="370" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="-210" y1="395" x2="-80" y2="395" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="-210" y1="420" x2="-80" y2="420" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="-210" y1="445" x2="-80" y2="445" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    
+    <!-- Shuttered loading bay (right) with 5 slat lines -->
+    <rect x="80" y="320" width="130" height="180" rx="2" fill="#4a5d76" stroke="#3d5068" stroke-width="1"/>
+    <line x1="80" y1="345" x2="210" y2="345" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="80" y1="370" x2="210" y2="370" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="80" y1="395" x2="210" y2="395" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="80" y1="420" x2="210" y2="420" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    <line x1="80" y1="445" x2="210" y2="445" stroke="#5d7290" stroke-width="0.5" opacity="0.5"/>
+    
+    <rect x="-25" y="380" width="50" height="60" rx="2" fill="#f0efe9" stroke="#5d7290" stroke-width="1"/>
+    <rect x="-25" y="380" width="50" height="20" rx="2" fill="#e8e7e1" stroke="#5d7290" stroke-width="0.5"/>
+    <circle cx="12" cy="415" r="3" fill="#5d7290"/>
+    
+    <rect x="-180" y="250" width="40" height="25" rx="2" fill="#e8f4f8" stroke="#5d7290" stroke-width="0.8" opacity="0.7"/>
+    <rect x="140" y="250" width="40" height="25" rx="2" fill="#e8f4f8" stroke="#5d7290" stroke-width="0.8" opacity="0.7"/>
+    <line x1="-160" y1="250" x2="-160" y2="275" stroke="#5d7290" stroke-width="0.5" opacity="0.4"/>
+    <line x1="160" y1="250" x2="160" y2="275" stroke="#5d7290" stroke-width="0.5" opacity="0.4"/>
+    
+    <rect x="-260" y="216" width="520" height="10" fill="#0F172A" opacity="0.05"/>
+  </g>
+  
+  <line x1="200" y1="505" x2="1080" y2="505" stroke="#b0b0a8" stroke-width="1.5"/>
+  <rect x="200" y="495" width="12" height="10" fill="#d0d0c8" stroke="#b0b0a8" stroke-width="0.5"/>
+  <rect x="1068" y="495" width="12" height="10" fill="#d0d0c8" stroke="#b0b0a8" stroke-width="0.5"/>
+
+  <g transform="translate(150, 480)">
+    <rect x="-2" y="0" width="4" height="30" fill="#8B7355"/>
+    <ellipse cx="-10" cy="-5" rx="18" ry="13" fill="#7a9a6a" opacity="0.6"/>
+    <ellipse cx="10" cy="-8" rx="16" ry="12" fill="#8aad78" opacity="0.5"/>
+  </g>
+  <g transform="translate(1140, 485)">
+    <rect x="-2" y="0" width="4" height="25" fill="#8B7355"/>
+    <ellipse cx="0" cy="-4" rx="16" ry="11" fill="#8aad78" opacity="0.5"/>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="640" y="660" text-anchor="middle" font-size="13" fill="#475569" letter-spacing="0.4">SINGLE-STOREY GODOWN · 4,200 SQ FT · 60 KVA · SYOKIMAU KM 11</text>
+    <text x="640" y="682" text-anchor="middle" font-size="12" fill="#94a3b8">Two shuttered loading bays · 3 parking · Representative illustration</text>
+  </g>
+</svg>

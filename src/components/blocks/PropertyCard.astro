@@ -12,7 +12,6 @@
  * PageBlocks inline card and the /properties index listing can render
  * the same component with the same data interface.
  */
-import { Image } from 'astro:assets';
 import { tinaField } from '@tinacms/astro/tina-field';
 import AvailabilityBadge from '../ui/AvailabilityBadge.astro';
 import LocationPin from '../ui/LocationPin.astro';
@@ -59,14 +58,11 @@ const mapHref = data.address || data.zone
 >
 	{data.image?.src && (
 		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
-			<Image
+			<img
 				src={data.image.src}
 				alt={data.image.alt ?? data.title ?? ''}
 				width={1280}
 				height={720}
-				sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
-				format="webp"
-				quality={80}
 				loading="lazy"
 				decoding="async"
 				class="size-full object-cover"

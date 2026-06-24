@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Steel-roofed warehouse on Mombasa Road, Mlolongo, with truck-court access">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8f4f8"/>
+      <stop offset="60%" stop-color="#f0f7fa"/>
+      <stop offset="100%" stop-color="#fafaf9"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4d4d0"/>
+      <stop offset="100%" stop-color="#c8c8c2"/>
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f8f7"/>
+      <stop offset="100%" stop-color="#eeeeeb"/>
+    </linearGradient>
+    <linearGradient id="doorGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d7290"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#sky)"/>
+
+  <path d="M0 520 Q200 440 400 500 Q600 460 800 510 Q1000 450 1280 490 L1280 720 L0 720Z" fill="#e2e8e8" opacity="0.6"/>
+  <path d="M0 540 Q300 480 500 530 Q700 490 900 540 Q1100 500 1280 530 L1280 720 L0 720Z" fill="#d5dcd8" opacity="0.5"/>
+
+  <rect x="0" y="500" width="1280" height="220" fill="url(#ground)"/>
+  <line x1="0" y1="500" x2="1280" y2="500" stroke="#b0b0a8" stroke-width="1"/>
+
+  <rect x="80" y="510" width="1120" height="120" rx="4" fill="#787878" opacity="0.3"/>
+  <line x1="80" y1="530" x2="1200" y2="530" stroke="#909090" stroke-width="0.5" stroke-dasharray="30,20"/>
+
+  <g transform="translate(640, 0)">
+    <rect x="-420" y="200" width="840" height="300" fill="url(#wallGrad)" stroke="#5d7290" stroke-width="1.5"/>
+
+    <!-- 3 structural bay dividers -->
+    <line x1="-210" y1="200" x2="-210" y2="500" stroke="#5d7290" stroke-width="1" opacity="0.5"/>
+    <line x1="0" y1="200" x2="0" y2="500" stroke="#5d7290" stroke-width="1" opacity="0.5"/>
+    <line x1="210" y1="200" x2="210" y2="500" stroke="#5d7290" stroke-width="1" opacity="0.5"/>
+
+    <polygon points="-420,200 0,80 420,200" fill="url(#roofGrad)" stroke="#475569" stroke-width="1.5"/>
+    <line x1="-420" y1="200" x2="420" y2="200" stroke="#475569" stroke-width="2"/>
+    <line x1="-10" y1="80" x2="10" y2="80" stroke="#475569" stroke-width="3"/>
+
+    <!-- Roof corrugation lines -->
+    <line x1="-380" y1="190" x2="-40" y2="90" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-300" y1="205" x2="0" y2="86" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-140" y1="220" x2="60" y2="100" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+    <line x1="140" y1="220" x2="-60" y2="100" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+    <line x1="300" y1="205" x2="0" y2="86" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+    <line x1="380" y1="190" x2="40" y2="90" stroke="#587088" stroke-width="0.5" opacity="0.6"/>
+
+    <!-- Loading bay door 1 -->
+    <rect x="-370" y="330" width="140" height="170" rx="3" fill="url(#doorGrad)" stroke="#3d5068" stroke-width="1"/>
+    <line x1="-370" y1="355" x2="-230" y2="355" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-370" y1="380" x2="-230" y2="380" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-370" y1="405" x2="-230" y2="405" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-370" y1="430" x2="-230" y2="430" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-370" y1="455" x2="-230" y2="455" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-370" y1="480" x2="-230" y2="480" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+
+    <!-- Loading bay door 2 -->
+    <rect x="-70" y="330" width="140" height="170" rx="3" fill="url(#doorGrad)" stroke="#3d5068" stroke-width="1"/>
+    <line x1="-70" y1="355" x2="70" y2="355" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-70" y1="380" x2="70" y2="380" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-70" y1="405" x2="70" y2="405" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-70" y1="430" x2="70" y2="430" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-70" y1="455" x2="70" y2="455" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="-70" y1="480" x2="70" y2="480" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+
+    <!-- Loading bay door 3 -->
+    <rect x="230" y="330" width="140" height="170" rx="3" fill="#3d5570" stroke="#3d5068" stroke-width="1"/>
+    <line x1="230" y1="355" x2="370" y2="355" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="230" y1="380" x2="370" y2="380" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="230" y1="405" x2="370" y2="405" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="230" y1="430" x2="370" y2="430" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="230" y1="455" x2="370" y2="455" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+    <line x1="230" y1="480" x2="370" y2="480" stroke="#5d7290" stroke-width="0.5" opacity="0.6"/>
+
+    <rect x="-390" y="370" width="30" height="50" rx="2" fill="#f0f0eb" stroke="#5d7290" stroke-width="1"/>
+    <circle cx="-369" cy="392" r="2" fill="#5d7290"/>
+
+    <rect x="-420" y="200" width="840" height="16" fill="#0F172A" opacity="0.06"/>
+
+    <rect x="-50" y="110" width="12" height="20" rx="2" fill="#5d7290" stroke="#475569" stroke-width="0.5"/>
+    <rect x="40" y="105" width="12" height="25" rx="2" fill="#5d7290" stroke="#475569" stroke-width="0.5"/>
+  </g>
+
+  <g stroke="#a0a098" stroke-width="1" opacity="0.5">
+    <line x1="240" y1="515" x2="240" y2="625"/>
+    <line x1="540" y1="515" x2="540" y2="625"/>
+    <line x1="740" y1="515" x2="740" y2="625"/>
+    <line x1="1040" y1="515" x2="1040" y2="625"/>
+  </g>
+
+  <g transform="translate(1180, 480)">
+    <rect x="-3" y="0" width="6" height="50" fill="#8B7355"/>
+    <ellipse cx="0" cy="-10" rx="30" ry="20" fill="#7a9a6a" opacity="0.7"/>
+    <ellipse cx="-15" cy="-20" rx="25" ry="18" fill="#8aad78" opacity="0.7"/>
+    <ellipse cx="15" cy="-18" rx="22" ry="16" fill="#6d8e5e" opacity="0.6"/>
+  </g>
+
+  <g transform="translate(100, 470)">
+    <rect x="-2" y="0" width="4" height="35" fill="#8B7355"/>
+    <ellipse cx="0" cy="-8" rx="20" ry="14" fill="#8aad78" opacity="0.6"/>
+    <ellipse cx="-8" cy="-15" rx="16" ry="11" fill="#7a9a6a" opacity="0.5"/>
+  </g>
+
+  <g stroke="#a8a8a0" stroke-width="1" fill="none" opacity="0.4">
+    <rect x="100" y="580" width="50" height="28" rx="2"/>
+    <rect x="170" y="580" width="50" height="28" rx="2"/>
+    <rect x="240" y="580" width="50" height="28" rx="2"/>
+    <rect x="310" y="580" width="50" height="28" rx="2"/>
+    <rect x="380" y="580" width="50" height="28" rx="2"/>
+    <rect x="450" y="580" width="50" height="28" rx="2"/>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="640" y="660" text-anchor="middle" font-size="13" fill="#475569" letter-spacing="0.4">STEEL-ROOFED WAREHOUSE · 9,000 SQ FT · 150 KVA · MOMBASA ROAD KM 14</text>
+    <text x="640" y="682" text-anchor="middle" font-size="12" fill="#94a3b8">Truck-court access · 6 parking bays · Representative illustration</text>
+  </g>
+</svg>

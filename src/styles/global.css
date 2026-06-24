@@ -288,15 +288,6 @@
 .reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(3) { transition-delay: 160ms; }
 .reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(4) { transition-delay: 240ms; }
 
-/* Hero frame shadow — per DESIGN.md § Elevation & Depth table, the only
-   legitimate elevation beyond surface + hairline is the focus-ring tier.
-   This shadow is a structural cue for the IsometricMap frame, kept at
-   0.06 opacity so it doesn't read as SaaS-elevation. Exposed here so it
-   resolves through the same reduced-motion short-circuit above. */
-:root {
-	--shadow-hero-frame: 0 1px 2px 0 rgb(15 23 42 / 0.06);
-}
-
 /* Print stylesheet — supports the "Print / Save as PDF" button on
    /properties/[slug]. Phase 8.4.3 borrows from JLL Industrial's
    spec-sheet PDF export, simplified to native `window.print()` + the

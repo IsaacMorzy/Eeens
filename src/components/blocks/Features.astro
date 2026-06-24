@@ -14,7 +14,7 @@ const items = (data.items ?? []).filter(it => it !== null);
 <Section>
 	<div class="mx-auto max-w-5xl px-6">
 		<div class="reveal-on-scroll text-center">
-			<h2 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-4xl font-semibold tracking-[-0.6px] lg:text-5xl">{data.title}</h2>
+			<h2 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-4xl font-semibold tracking-[-1.0px] lg:text-5xl lg:tracking-[-1.8px]">{data.title}</h2>
 			<p data-tina-field={tinaField(data, 'description')} class="mt-4 text-muted-foreground">{data.description}</p>
 		</div>
 		<Card class="reveal-on-scroll mx-auto mt-8 grid max-w-sm divide-y divide-border overflow-hidden md:mt-16 md:max-w-full md:grid-cols-3 md:divide-x md:divide-y-0">
@@ -24,7 +24,7 @@ const items = (data.items ?? []).filter(it => it !== null);
 						{item.icon && <Icon name={item.icon} class="size-6 text-primary" />}
 					</div>
 					<div class="space-y-3">
-						<h3 data-tina-field={tinaField(item, 'title')} class="font-display text-lg font-medium tracking-[-0.2px]">{item.title}</h3>
+						<h3 data-tina-field={tinaField(item, 'title')} class="font-display text-[20px] font-normal tracking-[-0.2px]">{item.title}</h3>
 						<div data-tina-field={tinaField(item, 'text')} class="text-sm text-muted-foreground">
 							<TinaMarkdown content={item.text} />
 						</div>
