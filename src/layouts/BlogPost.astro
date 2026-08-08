@@ -2,6 +2,8 @@
 import Icon from '../components/ui/Icon.astro';
 import Base from './Base.astro';
 import { listBlogs, type CmsBlog } from '../lib/data';
+import ContextualVisual from '../components/ui/ContextualVisual.astro';
+import { getBlogVisual } from '../lib/contextual-images';
 
 interface Props {
 	title: string;
@@ -13,6 +15,8 @@ interface Props {
 }
 
 const { title, description, heroImage, permalink } = Astro.props;
+const visualSlug = permalink?.split('/').filter(Boolean).pop();
+const contextualVisual = !heroImage ? getBlogVisual(visualSlug) : null;
 
 // Related posts: top 3 from listBlogs by pubDate, excluding the current
 // post (matched by filename via the permalink). the 5-post batch already
@@ -25,7 +29,7 @@ const related: CmsBlog[] = allBlogs
 	.slice(0, 3);
 ---
 
-<Base title={title} description={description} image={heroImage ?? undefined}>
+<Base title={title} description={description} image={heroImage ?? contextualVisual?.src}>
 	<div class="mx-auto max-w-4xl px-6 pt-8">
 		<a
 			href="/blog"
@@ -35,6 +39,12 @@ const related: CmsBlog[] = allBlogs
 			Back to blog
 		</a>
 	</div>
+
+	{contextualVisual && (
+		<div class="mx-auto mt-8 max-w-4xl px-6">
+			<ContextualVisual visual={contextualVisual} priority />
+		</div>
+	)}
 
 	<slot />
 

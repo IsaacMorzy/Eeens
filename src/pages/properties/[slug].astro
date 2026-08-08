@@ -11,6 +11,8 @@ import AnimatedBuilding from '../../components/arch/AnimatedBuilding.astro';
 import FloorPlan from '../../components/arch/FloorPlan.astro';
 import { getConfig, getProperty, listProperties, contactEmail, type PropertyNode } from '../../lib/data';
 import { getIllustrationSrc } from '../../lib/property-filters';
+import { getPropertyVisual } from '../../lib/contextual-images';
+import { getPexelsSource } from '../../lib/pexels-images';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 
 export async function getStaticPaths() {
@@ -41,17 +43,18 @@ const subject = encodeURIComponent(
 );
 const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 
-// Resolve hero image: prefer Tina's heroImage.src, fall back to type-based SVG
+// Resolve hero image: prefer Tina's heroImage.src, fall back to the local Pexels photo.
 const heroSrc = property.heroImage?.src ?? getIllustrationSrc(property.type);
 const heroAlt = property.heroImage?.alt ?? property.title ?? '';
+const heroSource = getPexelsSource(heroSrc);
 ---
 
 <Base
 	title={`${property.title ?? 'Listing'} — Eens Limited`}
 	description={property.address ?? config?.seo?.description ?? ''}
 >
-	<Section class="bg-background pt-12">
-		<div class="mx-auto max-w-6xl px-6">
+	<Section class="bg-background pt-8 md:pt-12">
+		<div class="mx-auto max-w-6xl">
 		<header class="grid gap-8 lg:grid-cols-[2fr_1fr]">
 			<div class="reveal-on-scroll">
 					<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{property.type}</span>
@@ -128,7 +131,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 					{property.leaseTerm && (
 						<div class="mt-1 text-sm">{property.leaseTerm}</div>
 					)}
-					<Button href={viewingHref} variant="default" size="lg" class="mt-3 w-full">
+					<Button href={viewingHref} variant="industrial" size="lg" class="mt-3 w-full">
 						<Icon name="calendar" class="size-4" />
 						<span>Schedule a viewing</span>
 					</Button>
@@ -147,7 +150,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 			{heroSrc && (
 				<div
 					data-tina-field={tinaField(property, 'heroImage')}
-					class="mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"
+					class="relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"
 				>
 					<img
 						src={heroSrc}
@@ -158,6 +161,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 						fetchpriority="high"
 						class="aspect-[16/9] w-full object-cover"
 					/>
+					{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground">Pexels source</a>}
 				</div>
 			)}
 		</div>
@@ -165,7 +169,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 
 	{isIndustrial && property.specSheet && (
 		<Section class="bg-background">
-		<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+		<div class="reveal-on-scroll mx-auto max-w-6xl">
 			<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Spec sheet</h2>
 				<dl class="print-caption mt-6 grid divide-y divide-hairline-steel/40 overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">
 					{property.specSheet.power && (
@@ -207,7 +211,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 	   with a living 3D building that floats gently and responds to hover.
 	   Renders for every listing type. */}
 	<Section class="bg-background">
-		<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+		<div class="reveal-on-scroll mx-auto max-w-6xl">
 			<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Building</h2>
 			<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
 				{property.type === 'APARTMENT' ? 'Three-storey apartment block in Flame Tree Park Estate.' : 'Front view of the listed structure.'}
@@ -227,7 +231,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 	    top-down SVG with hairline walls, mono dimensions, north arrow, scale bar. */}
 	{property.type === 'APARTMENT' && (
 		<Section class="bg-background">
-			<div class="reveal-on-scroll mx-auto max-w-6xl px-6">
+			<div class="reveal-on-scroll mx-auto max-w-6xl">
 				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Floor plan</h2>
 				<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
 					Indicative 3-bed 2-bath strata layout for {property.bedrooms}-bed · {property.bathrooms}-bath at {property.sqft ?? '110–130 sqm'}.
@@ -245,7 +249,7 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 	)}
 
 	<Section class="bg-background">
-		<div class="mx-auto max-w-3xl px-6 prose prose-lg max-w-none">
+		<div class="mx-auto max-w-3xl prose prose-lg max-w-none">
 			<div data-tina-field={tinaField(property, 'body')}>
 				<TinaMarkdown content={property.body} />
 			</div>
@@ -254,19 +258,28 @@ const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 
 	{related.length > 0 && (
 		<Section class="bg-secondary">
-			<div class="mx-auto max-w-7xl px-6">
+			<div class="mx-auto max-w-7xl">
 				<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Related listings</h2>
-				<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{related.map((r) => (
-						<a
-							href={`/properties/${r._sys?.filename ?? ''}`}
-							class="group flex flex-col rounded-xl border border-hairline-steel bg-background p-5 transition-colors hover:border-primary-hover"
-						>
-							<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{r.type}</span>
-							<h3 class="mt-2 font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px]">{r.title}</h3>
-							<div class="mt-2 font-mono text-[13px] text-foreground/80">{r.sqft}</div>
-							<div class="mt-2 text-sm text-muted-foreground">{r.address}</div>
-						</a>
+				<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">							{related.map((r) => (						<div class="group flex flex-col overflow-hidden rounded-xl border border-hairline-steel bg-background transition-colors hover:border-primary-hover">
+							{getPropertyVisual(r.type) && (
+								<>
+									<img
+										src={getPropertyVisual(r.type)?.src}
+										alt={getPropertyVisual(r.type)?.alt ?? r.title ?? ''}
+										width="640"
+										height="360"
+										loading="lazy"
+										class="aspect-video w-full object-cover"
+									/>
+									<a href={getPropertyVisual(r.type)?.sourceUrl} target="_blank" rel="noopener noreferrer" class="px-5 pt-2 font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>
+								</>
+							)}
+							<div class="flex flex-1 flex-col p-5">
+											<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{r.type}</span>
+							<h3 class="mt-2 font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px]"><a href={`/properties/${r._sys?.filename ?? ''}`} class="hover:text-primary-hover">{r.title}</a></h3>
+							<div class="mt-2 font-mono text-[13px] text-foreground/80">{r.sqft}</div>											<div class="mt-2 text-sm text-muted-foreground">{r.address}</div>
+											</div>
+						</div>
 					))}
 				</div>
 			</div>

@@ -4,28 +4,14 @@
  * inlined page logic — page now imports from here.
  */
 import type { PropertyNode } from './data';
-
-// ------------------------------------------------------------------
-// Illustration SVG fallback — maps property type to a type-appropriate
-// vector illustration so property cards / detail pages always render an
-// image even when Tina's image-type field resolution returns null at
-// runtime (the `image` type inside an object type creates a nested type
-// that the local datalayer may not resolve identically to a plain string).
-// ------------------------------------------------------------------
-const ILLUSTRATION_MAP: Record<string, string> = {
-	WAREHOUSE: '/properties/illustration-warehouse.svg',
-	GODOWN: '/properties/illustration-godown.svg',
-	BUSINESS_PARK: '/properties/illustration-business-park.svg',
-	APARTMENT: '/properties/illustration-apartment.svg',
-};
+import { getPropertyVisual } from './contextual-images';
 
 /**
- * Returns the illustration SVG path for a given property type, or null
- * if the type is unrecognized / missing. Callers use this as a fallback
- * when `heroImage.src` is unreachable through Tina's image-type field.
+ * Returns the context-aligned local Pexels photo for a property type.
+ * The legacy export name is retained so existing card callers stay stable.
  */
 export const getIllustrationSrc = (type: string | null | undefined): string | null =>
-	type ? (ILLUSTRATION_MAP[type] ?? null) : null;
+	getPropertyVisual(type)?.src ?? null;
 
 export const TYPE_ORDER = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const;
 export const TYPE_LABEL: Record<string, string> = {

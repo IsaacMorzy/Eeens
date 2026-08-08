@@ -1,0 +1,29 @@
+---
+import type { ContextualVisual } from '../../lib/contextual-images';
+
+interface Props {
+	visual: ContextualVisual;
+	class?: string;
+	loading?: 'eager' | 'lazy';
+	priority?: boolean;
+}
+
+const { visual, class: className, loading = 'lazy', priority = false } = Astro.props;
+---
+
+<figure class:list={['contextual-visual overflow-hidden rounded-xl border border-hairline-steel bg-secondary', className]}>
+	<img
+		src={visual.src}
+		alt={visual.alt}
+		width="1280"
+		height="720"
+		loading={priority ? 'eager' : loading}
+		fetchpriority={priority ? 'high' : undefined}
+		decoding="async"
+		class="aspect-video w-full object-cover"
+	/>
+	<figcaption class="flex items-center justify-between gap-4 border-t border-hairline-steel/40 bg-background px-3 py-2 font-mono text-[12px] text-muted-foreground">
+		<span>{visual.label}</span>
+		<a href={visual.sourceUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 transition-colors hover:text-foreground">Pexels source</a>
+	</figcaption>
+</figure>

@@ -42,6 +42,7 @@
 	--radius-lg: 0.75rem;       /* 12 px — pricing / feature / testimonial cards */
 	--radius-xl: 1rem;          /* 16 px — property imagery tiles */
 	--radius-2xl: 1.5rem;       /* 24 px — oversized CTA banners */
+	--spacing-section: 6rem;    /* 96 px desktop section rhythm */
 
 	/* Color tokens (Tailwind utility surface) — each maps a CSS variable. */
 	--color-background: var(--background);

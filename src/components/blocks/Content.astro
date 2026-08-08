@@ -2,14 +2,23 @@
 import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import Section from '../ui/Section.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
+import ContextualVisual from '../ui/ContextualVisual.astro';
+import { getPageContentVisual } from '../../lib/contextual-images';
 import type { ContentBlock } from '../../lib/data';
 
-interface Props { data: ContentBlock }
+interface Props { data: ContentBlock; slug?: string; index?: number }
 
-const { data } = Astro.props;
+const { data, slug = '', index = 0 } = Astro.props;
+const contextualVisual = getPageContentVisual(slug, index);
 ---
-<Section class="prose prose-lg max-w-none">
-	<div class="reveal-on-scroll mx-auto max-w-3xl" data-tina-field={tinaField(data, 'body')}>
-		<TinaMarkdown content={data.body} />
+<Section>
+	<div class:list={[
+		'reveal-on-scroll mx-auto grid max-w-5xl items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)] md:gap-16',
+		!contextualVisual && 'md:grid-cols-1',
+	]}>
+		<div class="prose prose-lg max-w-none" data-tina-field={tinaField(data, 'body')}>
+			<TinaMarkdown content={data.body} />
+		</div>
+		{contextualVisual && <ContextualVisual visual={contextualVisual} />}
 	</div>
 </Section>

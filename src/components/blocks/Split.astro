@@ -6,12 +6,19 @@ import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import { cn } from '../../lib/cn';
-import type { SplitBlock } from '../../lib/data';
+import { getPageHeroVisual } from '../../lib/contextual-images';
+import ContextualVisual from '../ui/ContextualVisual.astro';
+import type { SplitAction, SplitBlock } from '../../lib/data';
+import { getPexelsSource } from '../../lib/pexels-images';
 
-interface Props { data: SplitBlock }
+interface Props { data: SplitBlock; slug?: string }
 
-const { data } = Astro.props;
-const actions = (data.actions ?? []).filter(a => a !== null);
+const { data, slug = '' } = Astro.props;
+const actions: SplitAction[] = (data.actions ?? []).filter(
+	(a: SplitAction | null | undefined): a is SplitAction => a !== null && a !== undefined,
+);
+const fallbackVisual = getPageHeroVisual(slug);
+const cmsImageSource = getPexelsSource(data.image?.src);
 ---
 <Section>
 	<div class="reveal-on-scroll mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-16">
@@ -24,7 +31,7 @@ const actions = (data.actions ?? []).filter(a => a !== null);
 			)}
 			{actions.length > 0 && (
 				<div class="flex flex-wrap gap-3 pt-2">
-					{actions.map((action) => (
+					{actions.map((action: SplitAction) => (
 						<div data-tina-field={tinaField(action)}>
 							<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
 								{action.icon && <Icon name={action.icon} class="size-4" />}
@@ -35,8 +42,8 @@ const actions = (data.actions ?? []).filter(a => a !== null);
 				</div>
 			)}
 		</div>
-		{data.image?.src && (
-			<div data-tina-field={tinaField(data, 'image')} class="overflow-hidden rounded-xl border border-hairline-steel">
+		{data.image?.src ? (
+			<div data-tina-field={tinaField(data, 'image')} class="relative overflow-hidden rounded-xl border border-hairline-steel">
 				<Image
 					src={data.image.src}
 					alt={data.image.alt ?? ''}
@@ -49,7 +56,10 @@ const actions = (data.actions ?? []).filter(a => a !== null);
 					decoding="async"
 					class="aspect-[4/3] size-full object-cover"
 				/>
+				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground">Pexels source</a>}
 			</div>
-		)}
+		) : fallbackVisual ? (
+			<ContextualVisual visual={fallbackVisual} />
+		) : null}
 	</div>
 </Section>

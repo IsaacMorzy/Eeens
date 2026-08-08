@@ -4,6 +4,7 @@ import { tinaField } from "@tinacms/astro/tina-field";
 import type { CmsConfig } from '../lib/data';
 import IconLink from "./IconLink.astro";
 import ThemeToggle from './ThemeToggle.astro';
+import { contactEmail } from '../lib/data';
 import { isCurrentPath } from '../lib/path';
 
 interface Props {
@@ -20,7 +21,9 @@ const EensWordmark = `data:image/svg+xml;utf8,${encodeURIComponent(
 const { config } = Astro.props;
 const seo = config?.seo ?? null;
 const nav = (config?.nav ?? []).filter(item => item !== null);
+const desktopNav = nav.filter((item) => item.title !== 'Home');
 const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
+const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent('Schedule a viewing')}`;
 ---
 
 <!-- backdrop-blur is functional, not decoration: keeps the sticky header legible over scrolled content. Increased to bg-background/80 for Steelix-inspired slickness — still translucent, but more grounded. -->
@@ -31,15 +34,16 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 			<span>{seo?.title}</span>
 		</a>
 		<div class="hidden items-center gap-6 text-sm xl:flex">
-			{nav.map((item) => (
+			{desktopNav.map((item) => (
 				<a href={item.link} aria-current={isCurrentPath(Astro.url.pathname, item.link) ? "page" : undefined} class="text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground" data-tina-field={tinaField(item, "title")}>{item.title}</a>
 			))}
 		</div>
 		<div class="flex items-center gap-3">
 			<div class="hidden items-center gap-3 lg:flex">
-				{contactLinks.map((link) => (
-					<IconLink title={link.title} link={link.link} icon={link.icon} data-tina-field={tinaField(link, "title")} />
-				))}
+				<a href={viewingHref} class="inline-flex h-10 items-center gap-1.5 rounded-md border border-primary px-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+					<Icon name="calendar" class="size-3.5" />
+					<span>Request a viewing</span>
+				</a>
 				<ThemeToggle />
 			</div>
 		<button
@@ -48,7 +52,7 @@ const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 			aria-label="Toggle navigation menu"
 			aria-controls="mobile-menu-panel"
 			aria-expanded="false"
-			class="inline-flex size-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none xl:hidden"
+			class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-ring/50 focus-visible:ring-[2px] outline-none xl:hidden"
 		>
 		<Icon name="menu-2" class="icon-open size-5" />
 			<Icon name="x" class="icon-close size-5" />

@@ -8,7 +8,7 @@ interface Props { data: CalloutBlock }
 
 const { data } = Astro.props;
 ---
-<Section class="py-6">
+<Section class="py-8 md:py-12">
 	{data.url ? (
 		<a href={data.url} data-tina-field={tinaField(data, 'url')} class="hover:bg-background bg-muted group mx-auto flex w-fit items-center gap-4 rounded-md border p-1 pl-4 transition-[background-color,border-color] duration-200 ease-out">
 			<span data-tina-field={tinaField(data, 'text')} class="text-foreground text-sm">{data.text}</span>

@@ -15,12 +15,15 @@ import Icon from '../ui/Icon.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
 import type { CtaBannerBlock } from '../../lib/data';
 
+const ctaIcon = (label?: string | null) =>
+	label?.toLowerCase().includes('question') || label?.toLowerCase().includes('email') ? 'mail' : 'calendar';
+
 interface Props { data: CtaBannerBlock }
 const { data } = Astro.props;
 ---
 
 <Section class="bg-canvas-dark text-ink-dark">
-	<div class="reveal-on-scroll mx-auto grid max-w-5xl gap-8 px-6 py-16 md:grid-cols-[2fr_1fr] md:items-end md:py-20">
+	<div class="reveal-on-scroll mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-[2fr_1fr] md:items-end">
 		<div class="space-y-4">
 			{data.eyebrow && (
 				<span data-tina-field={tinaField(data, 'eyebrow')} class="inline-block text-[13px] font-medium uppercase tracking-[0.4px] text-primary-dark">
@@ -41,7 +44,7 @@ const { data } = Astro.props;
 		{data.ctaLink && data.ctaLabel && (
 			<div class="md:justify-self-end">
 				<Button href={data.ctaLink} variant="industrial" size="lg">
-					<Icon name="calendar" class="size-4" />
+					<Icon name={ctaIcon(data.ctaLabel)} class="size-4" />
 					<span>{data.ctaLabel}</span>
 				</Button>
 			</div>

@@ -16,9 +16,10 @@ import type { CmsPage } from '../../lib/data';
 
 interface Props {
 	data?: CmsPage | null;
+	slug?: string;
 }
 
-const { data } = Astro.props;
+const { data, slug = '' } = Astro.props;
 const blocks = (data?.blocks ?? []).filter(b => b !== null);
 ---
 
@@ -26,14 +27,14 @@ const blocks = (data?.blocks ?? []).filter(b => b !== null);
 	const rendered = (() => {
 		switch (block.__typename) {
 			case 'PageBlocksCallout': return <Callout data={block} />;
-			case 'PageBlocksContent': return <Content data={block} />;
+			case 'PageBlocksContent': return <Content data={block} slug={slug} index={blocks.slice(0, i).filter((b) => b.__typename === 'PageBlocksContent').length} />;
 			case 'PageBlocksCta': return <Cta data={block} />;
 			case 'PageBlocksCtaBanner': return <CtaBanner data={block} />;
 			case 'PageBlocksFeatures': return <Features data={block} />;
-			case 'PageBlocksHero': return <Hero data={block} />;
+			case 'PageBlocksHero': return <Hero data={block} slug={slug} />;
 			case 'PageBlocksPropertyCard': return <PropertyCard data={block} />;
 			case 'PageBlocksPropertyList': return <PropertyList data={block} />;
-			case 'PageBlocksSplit': return <Split data={block} />;
+			case 'PageBlocksSplit': return <Split data={block} slug={slug} />;
 			case 'PageBlocksStats': return <Stats data={block} />;
 			case 'PageBlocksTestimonial': return <Testimonial data={block} />;
 			case 'PageBlocksVideo': return <Video data={block} />;

@@ -163,6 +163,8 @@ export const contactEmail = (config: CmsConfig | null | undefined): string => {
 };
 
 export type Action = NonNullable<NonNullable<HeroBlock['actions']>[number]>;
+export type CtaAction = NonNullable<NonNullable<CtaBlock['actions']>[number]>;
+export type SplitAction = NonNullable<NonNullable<SplitBlock['actions']>[number]>;
 export type ImageField = NonNullable<HeroBlock['image']>;
 export type FeatureItem = NonNullable<NonNullable<FeaturesBlock['items']>[number]>;
 export type StatItem = NonNullable<NonNullable<StatsBlock['stats']>[number]>;

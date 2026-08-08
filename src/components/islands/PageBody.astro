@@ -4,12 +4,13 @@ import type { CmsPage } from '../../lib/data';
 
 interface Props {
 	data?: CmsPage | null;
+	slug?: string;
 }
 
-const { data } = Astro.props;
+const { data, slug = '' } = Astro.props;
 ---
 
-{data && <Blocks data={data} />}
+{data && <Blocks data={data} slug={slug} />}
 
 <script>
 	// Phase 29 — singleton scroll-reveal observer. Adds `.is-visible` to

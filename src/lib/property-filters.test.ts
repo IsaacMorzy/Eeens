@@ -199,11 +199,11 @@ describe('firstInteger', () => {
 });
 
 describe('getIllustrationSrc', () => {
-	it('returns the expected SVG path for every known property type', () => {
-		expect(getIllustrationSrc('WAREHOUSE')).toBe('/properties/illustration-warehouse.svg');
-		expect(getIllustrationSrc('GODOWN')).toBe('/properties/illustration-godown.svg');
-		expect(getIllustrationSrc('BUSINESS_PARK')).toBe('/properties/illustration-business-park.svg');
-		expect(getIllustrationSrc('APARTMENT')).toBe('/properties/illustration-apartment.svg');
+	it('returns the expected local Pexels path for every known property type', () => {
+		expect(getIllustrationSrc('WAREHOUSE')).toBe('/photography/pexels-photo-9716363.jpeg');
+		expect(getIllustrationSrc('GODOWN')).toBe('/photography/pexels-photo-19634723.jpeg');
+		expect(getIllustrationSrc('BUSINESS_PARK')).toBe('/photography/pexels-photo-19920921.jpeg');
+		expect(getIllustrationSrc('APARTMENT')).toBe('/photography/pexels-photo-34604972.jpeg');
 	});
 
 	it('returns null for null / undefined / empty / unknown types', () => {

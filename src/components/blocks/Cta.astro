@@ -3,19 +3,21 @@ import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
-import type { CtaBlock } from '../../lib/data';
+import type { CtaAction, CtaBlock } from '../../lib/data';
 
 interface Props { data: CtaBlock }
 
 const { data } = Astro.props;
-const actions = (data.actions ?? []).filter(a => a !== null);
+const actions: CtaAction[] = (data.actions ?? []).filter(
+	(a: CtaAction | null | undefined): a is CtaAction => a !== null && a !== undefined,
+);
 ---
 <Section class="relative">
 	<div class="relative text-center">
 		<h2 class="text-balance font-display text-4xl font-semibold tracking-[-1.0px] lg:text-5xl lg:tracking-[-1.8px]" data-tina-field={tinaField(data, 'title')}>{data.title}</h2>
 		<p class="mt-4 text-muted-foreground" data-tina-field={tinaField(data, 'description')}>{data.description}</p>
 	<div class="mt-12 flex flex-wrap justify-center gap-3">
-		{actions.map((action) => (
+		{actions.map((action: CtaAction) => (
 			<div data-tina-field={tinaField(action)}>
 				<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
 					{action.icon && <Icon name={action.icon} class="size-4" />}

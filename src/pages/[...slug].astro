@@ -22,9 +22,9 @@ const config = (await getConfig()).data?.config ?? null;
 
 <Base
 	title={data.seoTitle || config?.seo?.title || 'Eens Limited'}
-	description={config?.seo?.description ?? 'Industrial leasing and premium apartments in Kenya.'}
+	description={config?.seo?.description ?? 'Warehouses, godowns, business parks, and 3-bedroom apartments across Mlolongo, Syokimau, Baba Dogo, and Thika.'}
 >
 	<TinaIsland name="page" wrapper={islands.page.wrapper} params={{ slug }} primary>
-		<PageBody data={data} />
+		<PageBody data={data} slug={slug} />
 	</TinaIsland>
 </Base>

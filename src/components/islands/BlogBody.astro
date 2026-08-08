@@ -5,6 +5,7 @@ import type { CmsBlog } from '../../lib/data';
 import FormattedDate from '../FormattedDate.astro';
 import YouTubeEmbed from '../mdx/YouTubeEmbed.astro';
 import { countWords, readingMinutes as minutesForWordCount } from '../../lib/blog-walker';
+import { getPexelsSource } from '../../lib/pexels-images';
 
 interface Props {
 	data?: CmsBlog | null;
@@ -22,10 +23,11 @@ const readingMinutes = minutesForWordCount(computedBodyWordCount);
 const components = { YouTubeEmbed };
 
 const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
+const heroSource = getPexelsSource(data?.heroImage);
 ---
 
 {
-	data?.heroImage && (
+	data?.heroImage ? (
 		<div
 			data-tina-field={tinaField(data, 'heroImage')}
 			class="mx-auto max-w-4xl px-6"
@@ -39,8 +41,9 @@ const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
 				fetchpriority="high"
 				class="aspect-[16/9] w-full rounded-2xl border border-hairline-steel object-cover"
 			/>
+			{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>}
 		</div>
-	)
+	) : null
 }
 
 <div class="mx-auto max-w-3xl px-6 py-12">
