@@ -5,6 +5,7 @@ export type ContextualVisual = PexelsImage;
 const visuals = PEXELS_IMAGES;
 
 const pageHeroVisuals: Record<string, ContextualVisual> = {
+	home: visuals.warehouse,
 	about: visuals.businessPark,
 	contact: visuals.godown,
 	'lease-terms': visuals.warehouse,

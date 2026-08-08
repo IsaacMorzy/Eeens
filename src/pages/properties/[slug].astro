@@ -7,10 +7,9 @@ import AvailabilityBadge from '../../components/ui/AvailabilityBadge.astro';
 import LocationPin from '../../components/ui/LocationPin.astro';
 import Button from '../../components/ui/Button.astro';
 import Icon from '../../components/ui/Icon.astro';
-import AnimatedBuilding from '../../components/arch/AnimatedBuilding.astro';
-import FloorPlan from '../../components/arch/FloorPlan.astro';
 import { getConfig, getProperty, listProperties, contactEmail, type PropertyNode } from '../../lib/data';
 import { getIllustrationSrc } from '../../lib/property-filters';
+import ContextualVisual from '../../components/ui/ContextualVisual.astro';
 import { getPropertyVisual } from '../../lib/contextual-images';
 import { getPexelsSource } from '../../lib/pexels-images';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
@@ -47,6 +46,7 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 const heroSrc = property.heroImage?.src ?? getIllustrationSrc(property.type);
 const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 const heroSource = getPexelsSource(heroSrc);
+const propertyVisual = getPropertyVisual(property.type);
 ---
 
 <Base
@@ -161,7 +161,7 @@ const heroSource = getPexelsSource(heroSrc);
 						fetchpriority="high"
 						class="aspect-[16/9] w-full object-cover"
 					/>
-					{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground">Pexels source</a>}
+					{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>}
 				</div>
 			)}
 		</div>
@@ -207,44 +207,16 @@ const heroSource = getPexelsSource(heroSrc);
 		</Section>
 	)}
 
-	{/* Phase 37: animated CSS building — replaces the static SVG BuildingElevation
-	   with a living 3D building that floats gently and responds to hover.
-	   Renders for every listing type. */}
-	<Section class="bg-background">
-		<div class="reveal-on-scroll mx-auto max-w-6xl">
-			<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Building</h2>
-			<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
-				{property.type === 'APARTMENT' ? 'Three-storey apartment block in Flame Tree Park Estate.' : 'Front view of the listed structure.'}
-				Indicative representation — surveyor measurements on the spec sheet above are binding.
-			</p>
-		</div>
-		<AnimatedBuilding
-			type={property.type as 'WAREHOUSE' | 'GODOWN' | 'BUSINESS_PARK' | 'APARTMENT'}
-			sqft={property.sqft}
-			parkingBays={property.specSheet?.parking ?? null}
-			clearHeight={property.specSheet?.clearHeight ?? null}
-			loadLabel={property.specSheet?.floorLoading ? `${property.specSheet.floorLoading} kN/m²` : null}
-		/>
-	</Section>
-
-	{/* Phase 31.1: top-down floor plan for APARTMENT listings only. Token-honoring
-	    top-down SVG with hairline walls, mono dimensions, north arrow, scale bar. */}
-	{property.type === 'APARTMENT' && (
+	{propertyVisual && (
 		<Section class="bg-background">
 			<div class="reveal-on-scroll mx-auto max-w-6xl">
-				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Floor plan</h2>
+				<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">Property image</h2>
 				<p class="mt-2 max-w-2xl text-pretty text-sm text-muted-foreground">
-					Indicative 3-bed 2-bath strata layout for {property.bedrooms}-bed · {property.bathrooms}-bath at {property.sqft ?? '110–130 sqm'}.
-					Actual as-built dimensions are in the surveyor's report.
+					A contextual view of the {property.type === 'APARTMENT' ? 'residential block' : 'property type'}.
+					The published address and spec sheet remain the source of truth.
 				</p>
-				<div class="mt-6 w-full overflow-hidden rounded-xl border border-hairline-steel">
-					<FloorPlan
-						sqft={property.sqft}
-						bedrooms={property.bedrooms ?? 3}
-						bathrooms={property.bathrooms ?? 2}
-					/>
-				</div>
 			</div>
+			<ContextualVisual visual={propertyVisual} class="mx-auto mt-6 max-w-6xl" />
 		</Section>
 	)}
 
@@ -271,7 +243,7 @@ const heroSource = getPexelsSource(heroSrc);
 										loading="lazy"
 										class="aspect-video w-full object-cover"
 									/>
-									<a href={getPropertyVisual(r.type)?.sourceUrl} target="_blank" rel="noopener noreferrer" class="px-5 pt-2 font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>
+									<a href={getPropertyVisual(r.type)?.sourceUrl} target="_blank" rel="noopener noreferrer" class="px-5 pt-2 font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>
 								</>
 							)}
 							<div class="flex flex-1 flex-col p-5">

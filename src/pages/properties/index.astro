@@ -292,7 +292,7 @@ const fmt = (n: number): string =>
 								return visual ? (
 									<>
 										<img src={visual.src} alt={visual.alt} width="640" height="360" loading="lazy" class="mb-2 aspect-video w-full rounded-lg border border-hairline-steel/60 object-cover" />
-										<a href={visual.sourceUrl} target="_blank" rel="noopener noreferrer" class="mb-4 inline-block font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>
+										<a href={visual.sourceUrl} target="_blank" rel="noopener noreferrer" class="mb-4 inline-block rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>
 									</>
 								) : null;
 							})()}

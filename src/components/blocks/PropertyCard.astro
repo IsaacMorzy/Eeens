@@ -113,7 +113,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{sourceUrl && (
-			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="self-start font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>
+			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="self-start rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>
 		)}
 		{(data.zone || data.leaseTerm) && (
 			<div class="flex flex-wrap items-center gap-2 pt-1">

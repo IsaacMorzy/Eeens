@@ -24,6 +24,6 @@ const { visual, class: className, loading = 'lazy', priority = false } = Astro.p
 	/>
 	<figcaption class="flex items-center justify-between gap-4 border-t border-hairline-steel/40 bg-background px-3 py-2 font-mono text-[12px] text-muted-foreground">
 		<span>{visual.label}</span>
-		<a href={visual.sourceUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 transition-colors hover:text-foreground">Pexels source</a>
+		<a href={visual.sourceUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>
 	</figcaption>
 </figure>

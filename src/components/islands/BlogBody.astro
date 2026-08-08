@@ -41,7 +41,7 @@ const heroSource = getPexelsSource(data?.heroImage);
 				fetchpriority="high"
 				class="aspect-[16/9] w-full rounded-2xl border border-hairline-steel object-cover"
 			/>
-			{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">Pexels source</a>}
+			{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>}
 		</div>
 	) : null
 }

@@ -172,28 +172,23 @@ The project history in `plan.md` mentions `humanizer`, `ui-designer`, `visual-as
 
 ## Matt Pocock skill bundle
 
-**Upstream:** [mattpocock/skills](https://github.com/mattpocock/skills). The singular `mattpocock/skill` URL in the request is not the active upstream repository.
+**Upstream:** [mattpocock/skills](https://github.com/mattpocock/skills). The singular `mattpocock/skill` URL is not the active upstream repository.
 
-**Installation status:** pending. The requested global install command was attempted, but the Freebuff terminal broker returned a protocol error before the command could run. Retry this from a working terminal:
+**Verification status (2026-08-09):** the upstream repository cloned successfully and exposed 35 skills, but this Freebuff PromptScript runtime rejected global installation with `PromptScript does not support global skill installation`. Do not claim the bundle is globally installed. Two verified local skill files are present under `$HOME/.agents/skills/`: `ask-matt/SKILL.md` and `setup-matt-pocock-skills/SKILL.md`.
+
+In a normal user shell, retry the requested global installation and verify it:
 
 ```bash
 npx skills@latest add mattpocock/skills --global --yes
-```
-
-If the installer does not support `--global`, run `npx skills@latest add --help`, select the global Freebuff-compatible target in its prompt, then verify with:
-
-```bash
 npx skills@latest list
-find "$HOME/.agents/skills" "$HOME/.claude/skills" -maxdepth 2 -name SKILL.md -print 2>/dev/null | sort
+find "$HOME/.agents/skills" "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md -print 2>/dev/null | sort
 ```
 
-Once the global install is verified, invoke the repository setup skill once:
+If global installation remains unsupported, use the verified Freebuff skills and do not add an unverified project-local copy. Run `setup-matt-pocock-skills` only after global installation succeeds and only once per repository; it is prompt-driven and must confirm the issue tracker before writing `docs/agents/*`.
 
-```text
-/setup-matt-pocock-skills
-```
+## Design-polish triage
 
-It configures issue tracking, triage labels, and shared domain-document layout. Do not run it repeatedly after this repository is configured. Do not run it as a substitute for normal website work.
+For a visual or copy pass, read `DESIGN.md`, run `opendesign`, `accessibility-tester`, `no-ai-slop`, and `ai-writing-auditor`, then record evidence in `docs/design-polish-triage.md` before editing. Use existing contextual imagery before diagrams or new dependencies. Treat Pexels assets as contextual stock unless the operator confirms the image is the listed property. Keep literal address, area, price, availability, specifications, and terms separate from image interpretation. Remove decorative diagrams, gradients, blur, and scroll-tied motion when they compete with property evidence. Validate with `git diff --check`, `pnpm exec astro check`, `pnpm test`, and `pnpm build` when route assembly changes.
 
 ### Engineering — user-invoked
 
