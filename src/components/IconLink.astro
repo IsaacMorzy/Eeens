@@ -22,7 +22,7 @@ const safeLink = link ?? '#';
 const iconName = icon?.replace(/^\s*tabler:/i, '').trim() || null;
 ---
 
-<a href={safeLink} target="_blank" aria-label={`Go to ${safeTitle}`} {...rest}>
+<a href={safeLink} target={safeLink.startsWith('http') ? '_blank' : undefined} rel={safeLink.startsWith('http') ? 'noopener noreferrer' : undefined} aria-label={`Go to ${safeTitle}`} {...rest}>
 	<span class="sr-only">{safeTitle}</span>
 	{iconName && <Icon name={iconName} size={32} />}
 </a>

@@ -2,8 +2,9 @@
 /**
  * CTABanner — page block per DESIGN.md § Components > Cards > cta-banner:
  * navy (#0F172A) background, warm-white ink, eyebrow tag, 28 px
- * headline (Plus Jakarta Sans), cyan-teal inverse "Schedule a viewing"
- * button on the right rail.
+ * headline (Plus Jakarta Sans), high-priority action "Schedule a viewing"
+ * button on the right rail. The action is navy on light surfaces and
+ * cyan-teal when the page is in dark mode.
  *
  * Uses `bg-canvas-dark` (the same navy used by the site footer) so
  * visiting this block reads as a closing "engineering-drawing"
@@ -43,7 +44,7 @@ const { data } = Astro.props;
 		</div>
 		{data.ctaLink && data.ctaLabel && (
 			<div class="md:justify-self-end">
-				<Button href={data.ctaLink} variant="industrial" size="lg">
+				<Button href={data.ctaLink} variant="action" size="lg">
 					<Icon name={ctaIcon(data.ctaLabel)} class="size-4" />
 					<span>{data.ctaLabel}</span>
 				</Button>

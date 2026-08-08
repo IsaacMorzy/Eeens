@@ -1,12 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
-import { listBlogs, type CmsBlog } from '../../lib/data';
+import { contactEmail, getConfig, listBlogs, type CmsBlog } from '../../lib/data';
 import ContextualVisual from '../../components/ui/ContextualVisual.astro';
 import { getBlogVisual } from '../../lib/contextual-images';
 import { paginate, pageHref, parsePage } from '../../lib/pagination';
 
 const blogs: CmsBlog[] = await listBlogs();
+const config = (await getConfig()).data?.config ?? null;
+const updatesHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent('Subscribe to listing updates')}`;
 const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astro.url.searchParams.get('page')), 5);
 ---
 
@@ -78,7 +80,7 @@ const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astr
 			</p>
 			<div class="mt-8">
 				<a
-					href="mailto:hello@eens.co.ke?subject=Subscribe%20to%20blog%20updates"
+					href={updatesHref}
 					class="inline-flex items-center gap-2 rounded-md bg-primary-dark text-canvas-dark px-6 py-3 text-sm font-medium transition-[background-color] duration-200 ease-out hover:bg-primary-dark/90"
 				>
 					<span>Email me listing updates</span>

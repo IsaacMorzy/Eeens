@@ -5,12 +5,12 @@ import { cn } from '../../lib/cn';
 
 /**
  * Eens button — 7 variants keyed to DESIGN.md § Components > Buttons:
- *   default     → button-primary   (cyan-teal #0e7490 bg, warm-white text)
+ *   default     → button-primary   (cyan-teal bg, warm-white text)
  *   secondary   → button-secondary (off-white bg, 1 px hairline border, navy ink)
  *   ghost       → button-tertiary  (no bg, navy ink)
- *   inverse     → button-inverse   (navy bg, cyan-300 text — for use inside dark sections)
- *   industrial  → button-industrial (amber #f59e0b bg, navy text — scheduling CTAs only)
- *   destructive → error states only (#EF4444 bg, white text)
+ *   inverse     → button-inverse   (navy bg, cyan-teal text — for dark sections)
+ *   action      → button-action    (navy on light surfaces, cyan-teal in dark mode)
+ *   destructive → error states only, white text
  *   link        → inline text link (no chrome)
  *
  * Disabled opacity is 38 % (NOT 50 %) per DESIGN.md § Accessibility.
@@ -26,9 +26,9 @@ const button = tv({
 	variants: {
 		variant: {
 			default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
-			// Industrial-energy amber accent — reserved for "Schedule a viewing"
-			// primary conversion CTAs. Steelix-inspired; one per page maximum.
-			industrial: 'bg-amber text-amber-foreground hover:bg-amber-hover',
+			// High-priority conversion action. Navy on light surfaces; cyan-teal
+			// on dark surfaces so the hierarchy stays inside the Eens palette.
+			action: 'bg-action text-action-foreground hover:bg-action-hover dark:bg-action-dark dark:text-action-foreground dark:hover:bg-action-hover',
 			// Off-white card surface, hairline-steel 1 px border, navy ink.
 			// Hover swaps the border to primary-hover so the CTA reads as a click affordance.
 			secondary: 'border border-hairline-steel bg-background text-foreground hover:border-primary-hover hover:text-primary-hover',

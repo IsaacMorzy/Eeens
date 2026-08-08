@@ -41,9 +41,6 @@ const blocks = (data?.blocks ?? []).filter(b => b !== null);
 		}
 	})();
 	return (
-		<>
-			<div data-tina-field={tinaField(block)}>{rendered}</div>
-			{i < blocks.length - 1 && <div class="mx-auto my-2 h-px w-24 bg-border/60" aria-hidden="true" />}
-		</>
+		<div data-tina-field={tinaField(block)}>{rendered}</div>
 	);
 })}

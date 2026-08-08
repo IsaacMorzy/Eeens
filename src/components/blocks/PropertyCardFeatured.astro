@@ -3,21 +3,16 @@
  * PropertyCardFeatured — surface-2-light (#F5F5F4) variant of PropertyCard.
  * Per DESIGN.md § Components > Cards > property-card-featured: bg is
  * surface-2-light, otherwise same structure, with availability badge
- * at the top-right (always mounted; defaults to ForRent if the parent
- * didn't pass one — featured listings are operational, not "Upcoming").
+ * at the top-right when the listing has a published availability value.
  */
 import PropertyCard, { type PropertyCardData } from './PropertyCard.astro';
 
 interface Props { data: PropertyCardData; fallbackImageSrc?: string | null }
 
 const { data, fallbackImageSrc = null } = Astro.props;
-// Single source of truth for the badge — the inner PropertyCard owns the
-// rendering. Featured cards always show one, so default missing data to
-// ForRent rather than no-badge.
-const normalized: PropertyCardData = {
-	...data,
-	availability: data.availability ?? 'ForRent',
-};
+// The inner PropertyCard owns badge rendering. Never infer availability:
+// a missing value is a missing fact, not a ForRent claim.
+const normalized: PropertyCardData = { ...data };
 ---
 
 <PropertyCard data={normalized} featured={true} fallbackImageSrc={fallbackImageSrc} />

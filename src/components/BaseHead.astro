@@ -27,11 +27,33 @@ const { title, description, image = '/photography/pexels-photo-9716363.jpeg' } =
 		}
 		function apply() {
 			document.documentElement.classList.toggle('dark', isDark());
+			document.documentElement.classList.add('js');
+		}
+		function reveal() {
+			const elements = document.querySelectorAll('.reveal-on-scroll');
+			if (!elements.length) return;
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || typeof IntersectionObserver === 'undefined') {
+				elements.forEach((element) => element.classList.add('is-visible'));
+				return;
+			}
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return;
+					entry.target.classList.add('is-visible');
+					observer.unobserve(entry.target);
+				});
+			}, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+			elements.forEach((element) => {
+				if (!element.classList.contains('is-visible')) observer.observe(element);
+			});
 		}
 		apply();
+		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reveal, { once: true });
+		else reveal();
 		// ClientRouter swaps in the SSR'd <html> (no .dark) on navigation,
-		// so re-apply the persisted theme after each swap, before paint.
+		// so re-apply the persisted theme and bind new page reveals.
 		document.addEventListener('astro:after-swap', apply);
+		document.addEventListener('astro:page-load', reveal);
 	})();
 </script>
 

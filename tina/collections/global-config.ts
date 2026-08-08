@@ -85,7 +85,7 @@ export const GlobalConfigCollection: Collection = {
       name: "nav",
       label: "Navigation Menu",
       description:
-        "Links shown in the header navigation. Reorder, add, or remove items below. The Site Name shown to the left of these links is set in Site Identity & SEO above.",
+        "Short header links for the Eens Business Park site. Keep each link tied to a live route or real contact action.",
       type: "object",
       list: true,
       ui: {
@@ -99,14 +99,14 @@ export const GlobalConfigCollection: Collection = {
         {
           name: "title",
           label: "Link Label",
-          description: "The text shown in the nav for this link.",
+          description: "The short label shown in the header, such as Listings or Leasing.",
           type: "string",
           required: true
         },
         {
           name: "link",
           label: "Link URL",
-          description: "Where this nav item points (e.g. /about or https://example.com).",
+          description: "A live internal route or a real contact URL. Keep this aligned with the public Eens Business Park sitemap.",
           type: "string",
           required: true
 

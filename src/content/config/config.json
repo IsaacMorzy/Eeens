@@ -1,7 +1,7 @@
 {
   "seo": {
-    "title": "Eens Limited",
-    "description": "Warehouses, godowns, business parks, and 3-bedroom apartments across Mlolongo, Syokimau, Baba Dogo, and Thika. Addresses, areas, prices, and terms published.",
+    "title": "Eens Business Park",
+    "description": "Industrial units and 3-bedroom apartments across Mlolongo, Syokimau, Baba Dogo, and Thika. Addresses, areas, prices, specifications, and terms published.",
     "siteOwner": "Eens Limited",
     "logo": "/eens-wordmark.svg",
     "phone": "+254 700 000 000",
@@ -10,31 +10,19 @@
   },
   "nav": [
     {
-      "title": "Home",
-      "link": "/"
-    },
-    {
-      "title": "Properties",
+      "title": "Listings",
       "link": "/properties"
     },
     {
-      "title": "Locations",
+      "title": "Visiting",
       "link": "/locations"
     },
     {
-      "title": "Lease terms",
+      "title": "Leasing",
       "link": "/lease-terms"
     },
     {
-      "title": "Blog",
-      "link": "/blog"
-    },
-    {
-      "title": "About",
-      "link": "/about"
-    },
-    {
-      "title": "Contact",
+      "title": "Tenant contact",
       "link": "/contact"
     }
   ],

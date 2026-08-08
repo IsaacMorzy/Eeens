@@ -41,15 +41,15 @@ colors:
   primary-dark:                             # dark-mode ladder-up
     hex: "#67e8f9"
     oklch: "0.86 0.11 235"
-  accent-amber:                             # industrial energy accent, reserved for primary scheduling CTAs
-    hex: "#f59e0b"
-    oklch: "0.80 0.16 85"
-  accent-amber-hover:                       # pressed/hovered amber
-    hex: "#d97706"
-    oklch: "0.67 0.15 75"
-  accent-amber-dark:                        # dark-mode ladder-up for amber
-    hex: "#fbbf24"
-    oklch: "0.88 0.14 90"
+  action-primary:                           # high-priority action on light surfaces
+    hex: "#0F172A"
+    oklch: "0.20 0.04 265"
+  action-primary-hover:                     # slate hover state
+    hex: "#1E293B"
+    oklch: "0.27 0.04 265"
+  action-primary-dark:                      # high-priority action in dark mode
+    hex: "#67e8f9"
+    oklch: "0.86 0.11 235"
   ink-light:                                # navy appears as ink on light surfaces
     hex: "#0F172A"
     oklch: "0.20 0.04 265"
@@ -107,7 +107,7 @@ components:
     - button-secondary
     - button-tertiary
     - button-inverse
-    - button-industrial              # NEW: amber accent for scheduling CTAs (Steelix-inspired)
+    - button-action                  # high-priority action; navy light / cyan-teal dark
     - pricing-tab-default
     - pricing-tab-selected
     - pricing-card
@@ -250,7 +250,8 @@ Light is the default canvas — Kenya is bright, listings photograph best on war
 
 ### Brand & Accent
 
-- **Primary accent** `#0e7490` (cyan-teal, Tailwind cyan-700) — the single chromatic color. Used exclusively for: brand mark, primary CTA, link emphasis, focus ring, eyebrow tags. NEVER as a decorative section background. NEVER as a card fill.
+- **Primary accent** `#0e7490` (cyan-teal, Tailwind cyan-700) — the single chromatic accent. Used for: brand mark, ordinary primary actions, link emphasis, focus ring, and eyebrow tags. NEVER as a decorative section background. NEVER as a card fill.
+- **High-priority action pair** — navy `#0F172A` with warm-white text on light surfaces; cyan-teal `#67e8f9` with navy text in dark mode. This is the `button-action` treatment for scheduling and other section-primary conversions.
 - **Primary hover** `#155e75` (cyan-800) — pressed/active state, slightly darker.
 - **Primary focus** `#0e7490` — same hue, applied at 50% opacity as a 2px ring around form fields and focused buttons.
 - **Primary dark** `#67e8f9` (cyan-300) — lightened for dark-mode usage so it stays legible against the navy `#0F172A` background.
@@ -369,7 +370,7 @@ The navy `#0F172A` does double duty — in dark mode it's the canvas; in light m
 - **button-secondary** — Off-white `#FFFFFF` background, 1px `#5d7290` hairline border, navy `#0F172A` text, 8px/14px padding, 8px radius. Hover → `--primary-hover` border.
 - **button-tertiary** — No background, navy `#0F172A` text. On dark surfaces swap to cyan-teal `#67e8f9` text.
 - **button-inverse** — Navy `#0F172A` background, cyan-teal `#67e8f9` text. Used inside dark sections.
-- **button-industrial** — (NEW, Steelix-inspired) Amber `#f59e0b` background, navy `#0F172A` text, 8px/14px padding, 8px radius. Hover → `#d97706`. Reserved exclusively for "Schedule a viewing" primary conversion CTAs. Only one industrial button per page. NEVER used for navigation, secondary actions, or decorative purposes. In dark mode: amber `#fbbf24` bg, navy `#0F172A` text for contrast.
+- **button-action** — high-priority conversion action for "Schedule a viewing". Navy `#0F172A` background with warm-white `#FAFAF9` text on light surfaces; hover → slate `#1E293B`. In dark mode it becomes cyan-teal `#67e8f9` with navy text. Use once per section and never for navigation, secondary actions, or decoration.
 
 ### Cards
 
@@ -379,7 +380,7 @@ The navy `#0F172A` does double duty — in dark mode it's the canvas; in light m
 - **feature-card** — kept, same spec as property-card but without imagery.
 - **testimonial-card** — kept with 32px padding, navy ink, optional owner-avatar at 32px radius-full circle.
 - **customer-logo-tile** — repurposed as **location-chip**: 16px wide, 4px radius, navy ink on `surface-1-light`, displays a tenant or zone name in 12px caption (e.g. "Mlolongo", "Syokimau", "Baba Dogo", "Thika").
-- **cta-banner** — kept, navy `#0F172A` background, warm-white `#FAFAF9` ink, headline (28px) + cyan-teal `button-primary` "Schedule a viewing".
+- **cta-banner** — kept, navy `#0F172A` background, warm-white `#FAFAF9` ink, headline (28px) + `button-action` "Schedule a viewing". The action is cyan-teal with navy text on this dark surface.
 - **changelog-row** — kept, used for "Latest listings" updates list.
 
 ### Inputs & Forms
@@ -393,7 +394,7 @@ The navy `#0F172A` does double duty — in dark mode it's the canvas; in light m
 ### Navigation & Footer
 
 - **top-nav** — `surface-1-light` background (light mode) or `canvas-dark` (dark mode), 1px `hairline` bottom rule, 56px height, navy ink, sticky on scroll.
-- **footer** — `canvas-dark` always (it reads as the closing "dark blueprint" page, even on the light site), `#FAFAF9` muted ink, dense link grid, cyan-teal "Schedule viewing" CTA at top-right.
+- **footer** — `canvas-dark` always (it reads as the closing "dark blueprint" page, even on the light site), `#FAFAF9` muted ink, dense link grid, cyan-teal `button-action` "Schedule viewing" CTA at top-right.
 
 ## Iconography
 
@@ -430,8 +431,8 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 
 ### Do
 
-- Reserve cyan-teal `#0e7490` for: brand mark, focus ring, link emphasis, eyebrow, secondary CTAs.
-- Reserve amber `#f59e0b` for: primary "Schedule a viewing" CTAs only. One per page maximum.
+- Reserve cyan-teal `#0e7490` for: brand mark, ordinary primary actions, focus ring, link emphasis, eyebrow, and secondary CTAs. Use the navy/cyan-teal action pair for the one high-priority conversion action.
+- Reserve the navy/cyan-teal action pair for: primary "Schedule a viewing" CTAs only. One per section maximum.
 - Always show property sq-ft in JetBrains Mono.
 - Always lead a property card with a 16:9 photograph and a 12px cyan-teal eyebrow tag.
 - Always include the literal address on every property detail screen.
@@ -440,9 +441,9 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 ### Don't
 
 - Don't ship a marketing page that feels like a SaaS dashboard.
-- Don't use cyan-teal or amber as a section background or full-card fill.
-- Don't introduce a third chromatic color beyond cyan-teal + amber.
-- Don't use amber for navigation, secondary buttons, links, or eyebrow tags.
+- Don't use cyan-teal as a section background or full-card fill.
+- Don't introduce a third chromatic accent beyond cyan-teal and the existing navy structural ink.
+- Don't use the navy/cyan-teal action pair for navigation, secondary buttons, links, or eyebrow tags.
 - Don't add atmospheric gradients or spotlight cards.
 - Don't pill-round CTAs.
 - Don't use stock-couple photography.
@@ -501,7 +502,7 @@ Voice should invoke a structural blueprint. Trust is earned by stating facts pla
 ## Confidence Audit (99%)
 
 1. **Light vs dark handling** — RESOLVED via `eens-tokens.root.background: oklch(0.98 0.005 85)` (light default) and `eens-tokens.dark.background: oklch(0.20 0.04 265)` (dark swap). The warm off-white is primary, navy is the structural ink + dark canvas. See § Overview.
-2. **Cyan-teal usage boundaries** — RESOLVED via the explicit list in § "Do's and Don'ts" — accent is reserved for brand mark, primary CTA, focus ring, link emphasis, eyebrow, ONE secondary CTA per property-card. Forbidden as decorative background.
+2. **Cyan-teal usage boundaries** — RESOLVED via the explicit list in § "Do's and Don'ts" — accent is reserved for brand mark, ordinary actions, focus ring, link emphasis, eyebrow, and ONE secondary CTA per property-card. High-priority actions use the navy/cyan-teal surface pair. Forbidden as a decorative background.
 3. **Dark-mode cyan laddering** — RESOLVED via `colors.primary-dark: #67e8f9` and `eens-tokens.dark.primary: oklch(0.86 0.11 235)` so the accent stays legible against navy.
 4. **Eyebrow style** — RESOLVED in § Typography: cyan-teal, 13px, weight 500, +0.4px tracking, uppercase for taxonomy.
 5. **Display tracking** — RESOLVED in § Typography hierarchy table: -3.0px @ 80px → -1.0px @ 40px → 0 @ body.

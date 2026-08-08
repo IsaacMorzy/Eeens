@@ -1568,7 +1568,9 @@ warm-white ink, and "Schedule a viewing" CTA.
 
 ---
 
-### Phase 39 — Steelix-inspired industrial polish + amber accent for CTAs `[SHIPPED]` (commit `e39dd2e`)
+### Phase 39 — Steelix-inspired industrial polish + amber accent for CTAs `[SHIPPED — HISTORICAL]` (commit `e39dd2e`)
+
+> Historical note: this phase documents the former amber treatment. The current design contract replaces it with the tokenized `button-action` navy/cyan-teal hierarchy in DESIGN.md.
 
 **Direction:** the Steelix factory-industrial WordPress theme uses a high-visibility
 industrial amber/orange accent for primary CTAs against deep navy structural forms.
