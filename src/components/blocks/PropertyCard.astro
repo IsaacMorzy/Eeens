@@ -1,6 +1,6 @@
 ---
 /**
- * PropertyCard — VISUAL per DESIGN.md § Components > Cards > property-card.
+ * PropertyCard - visual card per DESIGN.md § Components > Cards > property-card.
  * surface-1-light (bg-background) + 1 px hairline border + rounded-xl.
  * 16:9 hero, 12 px cyan-teal eyebrow (type uppercase), 22 px card-title
  * (Plus Jakarta Sans, medium), 16 px address, mono sq-ft annotation,
@@ -9,7 +9,7 @@
  * cyan-teal-into-hairline "View property" CTA at the bottom rail.
  *
  * Data shape is deliberately flat (no `__typename`) so that BOTH the
- * PageBlocks inline card and the /properties index listing can render
+ * PageBlocks inline card and category directory listings can render
  * the same component with the same data interface.
  */
 import { tinaField } from '@tinacms/astro/tina-field';
@@ -19,6 +19,7 @@ import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import type { Availability } from '../ui/AvailabilityBadge.astro';
 import { getPexelsSource } from '../../lib/pexels-images';
+import { directoryHrefForType } from '../../lib/property-directories';
 
 export interface PropertyCardData {
 	type?: string | null;
@@ -44,7 +45,7 @@ interface Props {
 
 const { data, featured = false, fallbackImageSrc = null, ...rest } = Astro.props as Props & Record<string, unknown>;
 
-const viewHref = data.href ?? (data.ref ? `/properties/${data.ref}` : null);
+const viewHref = data.href ?? directoryHrefForType(data.type, data.ref);
 const viewLabel = data.viewLabel ?? 'View property';
 const mapHref = data.address || data.zone
 	? `https://www.google.com/maps/search/${encodeURIComponent((data.address ?? data.zone) as string)}`
@@ -58,7 +59,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 
 <article
 	class:list={[
-		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover hover:shadow-sm',
+		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover hover:shadow-sm',
 		featured ? 'bg-secondary' : 'bg-background',
 	]}
 	{...rest}
@@ -71,21 +72,21 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 				height={720}
 				loading="lazy"
 				decoding="async"
-				class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+				class="size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
 			/>
-			{data.availability && (
-				<div class="absolute right-3 top-3">
-					<AvailabilityBadge availability={data.availability} />
-				</div>
-			)}
 
 		</div>
 	)}
-	<div class="flex flex-1 flex-col gap-3 p-4">
-		{data.type && (
-			<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">
-				{data.type}
-			</span>
+	<div class="flex flex-1 flex-col gap-3 p-5">
+		{(data.type || data.availability) && (
+			<div class="flex flex-wrap items-center justify-between gap-2">
+				{data.type && (
+					<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">
+						{data.type}
+					</span>
+				)}
+				{data.availability && <AvailabilityBadge availability={data.availability} />}
+			</div>
 		)}
 		{data.title && (
 			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
@@ -98,7 +99,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</p>
 		)}
 		{data.sqft && (
-			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono text-[13px] text-foreground/80">
+			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
 				{data.sqft}
 			</div>
 		)}
@@ -113,7 +114,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{sourceUrl && (
-			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="self-start rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>
+			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center self-start rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>
 		)}
 		{(data.zone || data.leaseTerm) && (
 			<div class="flex flex-wrap items-center gap-2 pt-1">
@@ -130,7 +131,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{viewHref && (
-			<div class="mt-2 flex items-center justify-end">
+			<div class="mt-auto flex items-center justify-end pt-2">
 				<Button href={viewHref} variant="secondary" size="sm">
 					<span>{viewLabel}</span>
 					<Icon name="arrow-up-right" class="size-3.5" />

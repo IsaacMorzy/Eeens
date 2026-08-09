@@ -1,5 +1,5 @@
 /**
- * Per-collection data loaders + the data shapes they return.
+ * Per-collection data loaders and the data shapes they return.
  *
  * Loaders call the generated Tina client and pipe the result through
  * `requestWithMetadata()` so the editor overlay flows in when the page
@@ -125,26 +125,18 @@ export type CmsConfigContactLink = NonNullable<NonNullable<CmsConfig['contactLin
 export type CmsConfigSeo = NonNullable<CmsConfig['seo']>;
 
 /**
- * Runtime fallbacks for the `seo.{phone,email,office}` triple. The
- * values MUST stay byte-identical to the `ui.defaultValue` blocks on
- * each field in `tina/collections/global-config.ts` so the runtime
- * fallback and the CMS-layer default agree. When Tina regen picks up
- * the schema on a clean dev box, the generated `CmsConfigSeo` will
- * carry the same three field shapes natively and the helpers below
- * drop to a no-op branch.
+ * Runtime fallbacks for the contact fields. The values MUST stay
+ * byte-identical to the `ui.defaultValue` blocks on each field in
+ * `tina/collections/global-config.ts` so runtime and CMS defaults agree.
  */
 export const CONTACT_DEFAULTS = {
-	phone: '+254 700 000 000',
 	email: 'hello@eens.co.ke',
 	office: 'Mlolongo, Mombasa Road, KM 14',
 };
 
 /**
- * Runtime overlay on Tina's generated `CmsConfigSeo` for the
- * Phase-19 contact triple. Lifts the cast out of the three call sites
- * — every widening happens once, here. Delete this block (and the
- * cast inside `contactEmail`) once `pnpm run build:local` regenerates
- * the client and the new fields appear in the generated `CmsConfigSeo`.
+ * Runtime overlay on Tina's generated `CmsConfigSeo` for contact fields.
+ * Delete this cast once local Tina generation is part of the normal build.
  */
 type CmsConfigSeoExtended = CmsConfigSeo & {
 	phone?: string | null;
@@ -154,8 +146,8 @@ type CmsConfigSeoExtended = CmsConfigSeo & {
 
 /**
  * Single source of truth. Every transactional mailto link on the site
- * (Footer, /properties/[slug], 404) MUST resolve through this helper.
- * Falls back to CONTACT_DEFAULTS.email on stale Tina generated types.
+ * (Footer, category detail pages, 404) MUST resolve through this helper.
+ * Falls back to CONTACT_DEFAULTS.email when local Tina data is absent.
  */
 export const contactEmail = (config: CmsConfig | null | undefined): string => {
 	const seo = config?.seo as CmsConfigSeoExtended | undefined;

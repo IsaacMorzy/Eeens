@@ -5,20 +5,33 @@ import Icon from './ui/Icon.astro';
 	data-theme-toggle
 	type="button"
 	aria-label="Toggle color theme"
-	class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+	aria-pressed="false"
+	class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.98] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
 >
 	<Icon name="sun" class="hidden size-5 dark:block" />
 	<Icon name="moon" class="block size-5 dark:hidden" />
 </button>
 <script is:inline>
-	// Delegate from document so the handler survives DOM swaps from
-	// Astro's ClientRouter and Tina's visual-editor re-renders.
-	if (!window.__themeToggleBound) {
-		window.__themeToggleBound = true;
-		document.addEventListener('click', (e) => {
-			if (!e.target.closest('[data-theme-toggle]')) return;
-			const isDark = document.documentElement.classList.toggle('dark');
-			localStorage.setItem('theme', isDark ? 'dark' : 'light');
-		});
-	}
+	(() => {
+		// Delegate from document so the handler survives DOM swaps from
+		// Astro's ClientRouter and Tina's visual-editor re-renders.
+		const syncPressedState = () => {
+			const isDark = document.documentElement.classList.contains('dark');
+			document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => {
+				toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+			});
+		};
+		syncPressedState();
+		if (!window.__themeToggleBound) {
+			window.__themeToggleBound = true;
+			document.addEventListener('click', (e) => {
+				if (!e.target.closest('[data-theme-toggle]')) return;
+				const isDark = document.documentElement.classList.toggle('dark');
+				document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => {
+					toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+				});
+				localStorage.setItem('theme', isDark ? 'dark' : 'light');
+			});
+		}
+	})();
 </script>

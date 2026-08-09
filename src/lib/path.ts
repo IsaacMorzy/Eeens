@@ -5,12 +5,12 @@
  * - Root `/` is an exact-match only (no prefix fallback — `startsWith('/' + '/')`
  *   would always be true and would mark every page as "home").
  * - Any other href matches when pathname === href OR pathname starts with
- *   `href + '/'`, so `/properties/mlolongo-warehouse` correctly marks the
- *   `/properties` nav link as the current section.
+ *   `href + '/'`, so `/warehouses/mlolongo-warehouse` correctly marks the
+ *   `/warehouses` nav link as the current section.
  * - Caller contract: hrefs MUST be pre-normalized — no trailing slash. A
- *   `<a href="/properties/">` link silently returns false even on the
- *   `/properties` page because `'/properties/...'.startsWith('/properties//')`
- *   is false. Header + Footer are responsible for the canonical `/properties`
+ *   `<a href="/warehouses/">` link silently returns false even on the
+ *   `/warehouses` page because `'/warehouses/...'.startsWith('/warehouses//')`
+ *   is false. Header + Footer are responsible for canonical category paths
  *   shape; isCurrentPath does not auto-strip.
  * - Defensive guards: empty href returns false; TypeScript forbids `undefined`
  *   at compile-time, so a runtime pathname guard is not needed.

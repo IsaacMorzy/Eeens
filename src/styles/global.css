@@ -310,7 +310,8 @@
 .reveal-on-scroll-stagger > .reveal-on-scroll:nth-child(4) { transition-delay: 240ms; }
 
 /* Print stylesheet — supports the "Print / Save as PDF" button on
-   /properties/[slug]. Phase 8.4.3 borrows from JLL Industrial's
+   category detail pages. The native print flow borrows from JLL Industrial's
+
    spec-sheet PDF export, simplified to native `window.print()` + the
    visitor saving the result as PDF from the browser dialog.
    Design rationale keeps the printed page on-brand: white canvas,
@@ -352,7 +353,7 @@
 
 	/* Print font-size floor — force every label downstream of the three
 	   caption-token surfaces (the two ArchPhase SVG drawings + the
-	   property spec sheet `<dl>` on /properties/[slug]) to the DESIGN.md
+	   property spec sheet `<dl>` on category detail pages) to the DESIGN.md
 	   documented 12 px caption token. !important overrides the inline
 	   Tailwind `text-[nnpx]` utilities so the visitor’s "Save as PDF"
 	   output reads at the engineering-drawing scale, not at the
@@ -366,9 +367,33 @@
 	}
 }
 
+/* Keep a quiet edge around photographs so media does not disappear into
+   adjacent surfaces. The outline follows the theme without adding a shadow. */
+.image-outline {
+	outline: 1px solid rgb(0 0 0 / 0.1);
+	outline-offset: -1px;
+}
+
+.dark .image-outline {
+	outline-color: rgb(255 255 255 / 0.1);
+}
+
 /* Prose (blog body) follows the theme tokens so it inverts in dark mode and
    keeps the cyan-teal tint, rather than the plugin's default zero-chroma grays.
    Unlayered so it overrides the typography plugin's layered variables. */
+.full-bleed-media {
+	width: calc(100% + 3rem);
+	margin-left: -1.5rem;
+}
+
+@media (min-width: 1024px) {
+	.full-bleed-media {
+		width: calc(100% + 5rem);
+		margin-left: -2.5rem;
+	}
+}
+
+
 .prose {
 	--tw-prose-body: var(--foreground);
 	--tw-prose-headings: var(--foreground);

@@ -1,5 +1,5 @@
 /**
- * Pure helpers + constants extracted from the /properties index page so they
+ * Pure helpers + constants extracted from the all-listings directory so they
  * can be unit-tested without the Astro frontmatter. Same semantics as the
  * inlined page logic — page now imports from here.
  */
@@ -13,8 +13,9 @@ import { getPropertyVisual } from './contextual-images';
 export const getIllustrationSrc = (type: string | null | undefined): string | null =>
 	getPropertyVisual(type)?.src ?? null;
 
-export const TYPE_ORDER = ['WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const;
+export const TYPE_ORDER = ['SHOP', 'WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const;
 export const TYPE_LABEL: Record<string, string> = {
+	SHOP: 'Shop units',
 	WAREHOUSE: 'Warehouses',
 	GODOWN: 'Godowns',
 	BUSINESS_PARK: 'Business parks',
@@ -84,13 +85,14 @@ export const zonesInUse = (
 	).sort();
 
 /**
- * Composable URL builder for the filter chip rail. Preserves sibling
+ * Composable URL builder for a category filter rail. Preserves sibling
  * params when a new chip is clicked; `null` overrides delete the
- * existing key. Returns bare `/properties` when no params survive.
+ * existing key.
  */
 export const linkWith = (
 	filters: PropertyFilters,
 	overrides: Record<string, string | null>,
+	pathname = '/warehouses',
 ): string => {
 	const next = new URLSearchParams();
 	if (filters.minSqft !== null) next.set('minSqft', String(filters.minSqft));
@@ -101,5 +103,5 @@ export const linkWith = (
 		else next.set(k, v);
 	}
 	const qs = next.toString();
-	return qs ? `/properties?${qs}` : '/properties';
+	return qs ? `${pathname}?${qs}` : pathname;
 };

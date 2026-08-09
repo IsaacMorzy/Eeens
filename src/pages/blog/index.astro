@@ -13,7 +13,7 @@ const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astr
 ---
 
 <Base
-	title="Blog — Eens Limited"
+	title="Blog - Eens Limited"
 	description="Notes from the operator's desk. Industrial leasing, residential sale, and the operational details behind both."
 >
 	<Section class="bg-background">
@@ -39,7 +39,7 @@ const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astr
 			)}
 			<ul class="divide-y divide-hairline-steel/40 border-y border-hairline-steel/60">
 				{visibleBlogs.map((b) => (
-					<li class="reveal-on-scroll py-6 transition-all duration-200 ease-out hover:translate-x-1">
+					<li class="reveal-on-scroll py-6 transition-transform duration-200 ease-out hover:translate-x-1">
 						<a href={`/blog/${b._sys?.filename ?? ''}`} class="group block">
 							<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">
 								{b.pubDate && new Date(b.pubDate).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })}
@@ -56,13 +56,13 @@ const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astr
 			</ul>
 			<div class="mt-10 flex flex-col items-center gap-4 text-center">
 				<p class="font-mono text-[13px] text-muted-foreground">
-					{pagination.from}–{pagination.to} of {blogs.length} post{blogs.length === 1 ? '' : 's'}.
+					{pagination.from}-{pagination.to} of {blogs.length} post{blogs.length === 1 ? '' : 's'}.
 				</p>
 				{pagination.totalPages > 1 && (
 					<nav aria-label="Blog pagination" class="flex items-center gap-3">
-						{pagination.page > 1 && <a href={pageHref('/blog', {}, pagination.page - 1)} class="inline-flex h-10 items-center rounded-md border border-hairline-steel px-4 text-sm text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Previous</a>}
+						{pagination.page > 1 && <a href={pageHref('/blog', {}, pagination.page - 1)} class="inline-flex min-h-10 items-center rounded-md border border-hairline-steel px-4 text-sm text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Previous</a>}
 						<span class="font-mono text-[13px] text-muted-foreground">Page {pagination.page} of {pagination.totalPages}</span>
-						{pagination.page < pagination.totalPages && <a href={pageHref('/blog', {}, pagination.page + 1)} class="inline-flex h-10 items-center rounded-md border border-hairline-steel px-4 text-sm text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Next</a>}
+						{pagination.page < pagination.totalPages && <a href={pageHref('/blog', {}, pagination.page + 1)} class="inline-flex min-h-10 items-center rounded-md border border-hairline-steel px-4 text-sm text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Next</a>}
 					</nav>
 				)}
 			</div>
@@ -81,7 +81,7 @@ const { items: visibleBlogs, meta: pagination } = paginate(blogs, parsePage(Astr
 			<div class="mt-8">
 				<a
 					href={updatesHref}
-					class="inline-flex items-center gap-2 rounded-md bg-primary-dark text-canvas-dark px-6 py-3 text-sm font-medium transition-[background-color] duration-200 ease-out hover:bg-primary-dark/90"
+					class="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary-dark px-6 py-3 text-sm font-medium text-canvas-dark transition-[background-color] duration-200 ease-out hover:bg-primary-dark/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70"
 				>
 					<span>Email me listing updates</span>
 				</a>

@@ -13,4 +13,4 @@ interface Props {
 const { name, class: className, size } = Astro.props;
 const iconName = name ? `tabler:${name}` : null;
 ---
-{iconName && <Iconify name={iconName} class={className ?? 'size-5'} size={size} />}
+{iconName && <Iconify name={iconName} class={className ?? 'size-5'} size={size} aria-hidden="true" />}

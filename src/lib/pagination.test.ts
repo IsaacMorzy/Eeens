@@ -42,11 +42,11 @@ describe('paginate', () => {
 
 describe('pageHref', () => {
 	it('preserves filters and omits the first-page parameter', () => {
-		expect(pageHref('/properties', { minSqft: '9000', minKva: null, zone: 'Mlolongo' }, 1)).toBe(
-			'/properties?minSqft=9000&zone=Mlolongo',
+		expect(pageHref('/warehouses', { minSqft: '9000', minKva: null, zone: 'Mlolongo' }, 1)).toBe(
+			'/warehouses?minSqft=9000&zone=Mlolongo',
 		);
-		expect(pageHref('/properties', { minSqft: '9000', minKva: null, zone: 'Mlolongo' }, 2)).toBe(
-			'/properties?minSqft=9000&zone=Mlolongo&page=2',
+		expect(pageHref('/warehouses', { minSqft: '9000', minKva: null, zone: 'Mlolongo' }, 2)).toBe(
+			'/warehouses?minSqft=9000&zone=Mlolongo&page=2',
 		);
 	});
 });

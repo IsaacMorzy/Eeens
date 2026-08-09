@@ -13,7 +13,7 @@ export const GlobalConfigCollection: Collection = {
       name: "seo",
       label: "Site Identity & SEO",
       description:
-        "Site-wide identity. These values appear on every page — the Site Name is shown in the header navigation and used as the default browser title; the Description is the default for search results and social shares. The Phone, Email, and Office fields are the single source of truth for transactional mailto / tel links rendered in Footer.astro, /properties/[slug].astro, and 404.astro.",
+        "Site-wide identity. These values appear on every page. The Site Name is shown in the header navigation and used as the default browser title; the Description is the default for search results and social shares. The Email and Office fields are the single source of truth for contact links and appointment requests.",
       type: "object",
       fields: [
         {
@@ -22,7 +22,7 @@ export const GlobalConfigCollection: Collection = {
           type: "string",
           required: true,
           description:
-            "Shown in the header navigation on every page. Lives in Global Config because it's the same site-wide — each page sets its own browser title via the Meta Title field on the page, and this Site Name is used as the fallback if a page is ever missing one.",
+            "Shown in the header navigation on every page. Lives in Global Config because it is the same site-wide. Each page sets its own browser title through the Meta Title field.",
         },
         {
           name: "description",
@@ -49,21 +49,11 @@ export const GlobalConfigCollection: Collection = {
           description: 'Shown next to the Site Name in the header navigation.',
         },
         {
-          name: 'phone',
-          label: 'Phone (single source of truth)',
-          type: 'string',
-          required: true,
-          description: "Used by Footer, /properties/[slug], and 404 to construct `tel:` links and as the canonical contact phone.",
-          ui: {
-            defaultValue: '+254 700 000 000'
-          }
-        },
-        {
           name: 'email',
           label: 'Email (single source of truth)',
           type: 'string',
           required: true,
-          description: "Primary inbox. Used by Footer Schedule-a-viewing CTA, /properties/[slug] Schedule-a-viewing, and 404 fallback copy.",
+          description: "Primary inbox used by viewing requests, document requests, and fallback contact copy.",
           ui: {
             defaultValue: 'hello@eens.co.ke'
           }

@@ -17,6 +17,7 @@ import type { Template } from 'tinacms';
 import type { Action } from '../../lib/data';
 
 const TYPE_OPTIONS = [
+	{ label: 'Shop', value: 'SHOP' },
 	{ label: 'Warehouse', value: 'WAREHOUSE' },
 	{ label: 'Godown', value: 'GODOWN' },
 	{ label: 'Apartment', value: 'APARTMENT' },
@@ -74,7 +75,7 @@ export const propertyCardBlockSchema: Template = {
 				{ name: 'alt', label: 'Alt text', type: 'string' },
 			],
 		},
-		{ name: 'ref', label: 'Linked listing slug (optional)', type: 'string', description: 'If set, the CTA links to /properties/{ref}.' },
+		{ name: 'ref', label: 'Linked listing slug (optional)', type: 'string', description: 'If set, the CTA links to the type-specific category detail route.' },
 		{ name: 'href', label: 'Custom link (overrides ref)', type: 'string' },
 		{ name: 'viewLabel', label: 'CTA label', type: 'string' },
 	],
@@ -126,7 +127,7 @@ export const propertyListBlockSchema: Template = {
 			name: 'actions',
 			list: true,
 			ui: {
-				defaultItem: { label: 'View all listings', type: 'button', link: '/properties' },
+				defaultItem: { label: 'Browse warehouses', type: 'button', link: '/warehouses' },
 				itemProps: (item: Action) => ({ label: item?.label ?? '' }),
 			},
 			fields: [

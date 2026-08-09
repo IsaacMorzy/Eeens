@@ -1,8 +1,8 @@
 /**
  * Property collection — dedicated MDX store of every listing operated
- * by Eens Limited. Each entry mounts at `/properties/{filename}` via
- * `tina/collections/page.ts`'s router, and is enumerated by the
- * `PropertyList` page block and the `/properties` index/detail pages.
+ * by Eens Limited. Each entry mounts at its type-specific category route
+ * via `tina/collections/page.ts`'s router, and is enumerated by the
+ * `PropertyList` page block and the category index/detail pages.
  *
  * Schema rationale (DESIGN.md § Confidence Audit + plan.md):
  *   - `type`  drives the 12 px cyan-teal eyebrow + the variant of the
@@ -18,7 +18,22 @@
  */
 import type { Collection } from 'tinacms';
 
+// Property type is required for the public URL. Fail fast on malformed or
+// legacy records so Tina never recreates the deleted generic `/properties` route.
+const categoryPath = (type: string | undefined): string => {
+	const path = {
+		SHOP: 'shops',
+		WAREHOUSE: 'warehouses',
+		GODOWN: 'godowns',
+		BUSINESS_PARK: 'business-parks',
+		APARTMENT: 'apartments',
+	}[type ?? ''];
+	if (!path) throw new Error(`Unsupported property type: ${type ?? 'missing'}`);
+	return path;
+};
+
 const TYPE_OPTIONS = [
+	{ label: 'Shop', value: 'SHOP' },
 	{ label: 'Warehouse', value: 'WAREHOUSE' },
 	{ label: 'Godown', value: 'GODOWN' },
 	{ label: 'Apartment', value: 'APARTMENT' },
@@ -44,7 +59,7 @@ export const PropertyCollection: Collection = {
 	path: 'src/content/property',
 	format: 'mdx',
 	ui: {
-		router: ({ document }) => `/properties/${document._sys.filename}`,
+		router: ({ document }) => `/${categoryPath(document.type)}/${document._sys.filename}`,
 		itemProps: (item) => ({ label: item?.title ?? 'Untitled listing' }),
 	},
 	fields: [

@@ -4,14 +4,13 @@
     "description": "Industrial units and 3-bedroom apartments across Mlolongo, Syokimau, Baba Dogo, and Thika. Addresses, areas, prices, specifications, and terms published.",
     "siteOwner": "Eens Limited",
     "logo": "/eens-wordmark.svg",
-    "phone": "+254 700 000 000",
     "email": "hello@eens.co.ke",
     "office": "Mlolongo, Mombasa Road, KM 14"
   },
   "nav": [
     {
       "title": "Listings",
-      "link": "/properties"
+      "link": "/locations"
     },
     {
       "title": "Visiting",
@@ -27,11 +26,6 @@
     }
   ],
   "contactLinks": [
-    {
-      "title": "Phone",
-      "link": "tel:+254700000000",
-      "icon": "tabler:phone"
-    },
     {
       "title": "Email",
       "link": "mailto:hello@eens.co.ke",

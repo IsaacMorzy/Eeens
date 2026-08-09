@@ -2,15 +2,21 @@
 import Base from '../layouts/Base.astro';
 import TinaIsland from '@tinacms/astro/TinaIsland.astro';
 import PageBody from '../components/islands/PageBody.astro';
-import { getConfig, getPage, listPages } from '../lib/data';
+import { getConfig, getPage, listPages, listProperties } from '../lib/data';
+import { stableStringify } from '../lib/cache-key';
 import { islands } from '../lib/islands';
 
 export async function getStaticPaths() {
 	const pages = await listPages();
+	const properties = await listProperties();
+	const config = await getConfig();
 	return pages
-		.map((node) => node._sys.filename)
-		.filter((slug) => slug !== 'home')
-		.map((slug) => ({ params: { slug } }));
+		.filter((node) => node._sys.filename !== 'home')
+		.map((node) => ({
+			params: { slug: node._sys.filename },
+			// The Tina page node contains the blocks rendered by this route.
+			cacheKey: stableStringify({ page: node, pages, properties, config: config.data?.config }),
+		}));
 }
 
 const slug = (Astro.params.slug ?? '').toString();

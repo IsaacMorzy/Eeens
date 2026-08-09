@@ -1,10 +1,4 @@
 ---
-/**
- * Hero — the shared page opener. The split composition makes the site read
- * like a property register rather than a generic centered marketing page:
- * visual evidence on the left, the operator's facts and next action on the
- * right. The proof rail repeats only claims that are true across the site.
- */
 import { Image } from 'astro:assets';
 import { tinaField } from '@tinacms/astro/tina-field';
 import Section from '../ui/Section.astro';
@@ -33,81 +27,79 @@ const heroLabels: Record<string, string> = {
 	'lease-terms': 'TERMS OF TRADE',
 };
 const heroLabel = heroLabels[slug] ?? 'EENS LIMITED';
-const showProofRail = slug === '' || slug === 'home' || slug === 'locations';
+const showProofRail = slug === '' || slug === 'home';
 ---
 
 <Section class="relative overflow-hidden">
-	<div class="reveal-on-scroll-stagger mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
-		<div class="reveal-on-scroll order-2 lg:order-1">
-			{data.image?.src ? (
-				<div data-tina-field={tinaField(data, 'image')} class="relative aspect-video w-full overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
-					<Image
-						src={data.image.src}
-						alt={data.image.alt ?? ''}
-						width={1280}
-						height={720}
-						sizes="(min-width: 1024px) 55vw, 100vw"
-						format="webp"
-						quality={80}
-						fetchpriority="high"
-						loading="eager"
-						decoding="async"
-						class="aspect-video size-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
-					/>
-					{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>}
-				</div>
-			) : contextualVisual ? (
-				<ContextualVisual visual={contextualVisual} priority />
-			) : null}
-			<p class="mt-3 font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">
-				{slug === '' || slug === 'home' ? 'Mlolongo · Syokimau · Baba Dogo · Thika' : 'Published by Eens Limited · Kenya'}
+	<div class="reveal-on-scroll-stagger mx-auto max-w-7xl text-left">
+		<div class="max-w-3xl">
+		<p class="reveal-on-scroll font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{heroLabel}</p>
+		{data.headline && (
+			<h1
+				data-tina-field={tinaField(data, 'headline')}
+				class="reveal-on-scroll mt-4 max-w-[16ch] text-balance font-display text-4xl font-semibold leading-[1.06] tracking-[-1.8px] md:text-6xl md:tracking-[-2.4px]"
+			>
+				{data.headline}
+			</h1>
+		)}
+		{data.tagline && (
+			<p
+				data-tina-field={tinaField(data, 'tagline')}
+				class="reveal-on-scroll mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground"
+			>
+				{data.tagline}
 			</p>
+		)}
+		{actions.length > 0 && (
+			<div class="reveal-on-scroll mt-8 flex flex-col items-start gap-2 sm:flex-row">
+				{actions.map((action: Action) => (
+					<div data-tina-field={tinaField(action)}>
+						<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
+							{action.icon && <Icon name={action.icon} class="size-4" />}
+							<span class="text-nowrap">{action.label}</span>
+						</Button>
+					</div>
+				))}
+			</div>
+		)}
+		{showProofRail && <div class="reveal-on-scroll mt-10 grid max-w-2xl grid-cols-3 border-y border-hairline-steel/60 py-4 text-left">
+			<div class="pr-3">
+				<div class="font-mono text-[13px] text-foreground">Address</div>
+				<div class="mt-1 text-xs text-muted-foreground">published</div>
+			</div>
+			<div class="border-l border-hairline-steel/60 px-3">
+				<div class="font-mono text-[13px] text-foreground">Area</div>
+				<div class="mt-1 text-xs text-muted-foreground">in sq ft</div>
+			</div>
+			<div class="border-l border-hairline-steel/60 pl-3">
+				<div class="font-mono text-[13px] text-foreground">Terms</div>
+				<div class="mt-1 text-xs text-muted-foreground">before contact</div>
+			</div>
+		</div>}
 		</div>
 
-		<div class="order-1 text-center lg:order-2 lg:text-left">
-			<p class="reveal-on-scroll font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{heroLabel}</p>
-			{data.headline && (
-				<h1
-					data-tina-field={tinaField(data, 'headline')}
-					class="reveal-on-scroll mt-4 text-balance font-display text-4xl font-semibold leading-[1.05] tracking-[-1.8px] md:text-6xl lg:text-[5rem]"
-				>
-					{data.headline}
-				</h1>
-			)}
-			{data.tagline && (
-				<p
-					data-tina-field={tinaField(data, 'tagline')}
-					class="reveal-on-scroll mx-auto mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground lg:mx-0"
-				>
-					{data.tagline}
-				</p>
-			)}
-			{actions.length > 0 && (
-				<div class="reveal-on-scroll mt-8 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start">
-					{actions.map((action: Action) => (
-						<div data-tina-field={tinaField(action)}>
-							<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
-								{action.icon && <Icon name={action.icon} class="size-4" />}
-								<span class="text-nowrap">{action.label}</span>
-							</Button>
-						</div>
-					))}
-				</div>
-			)}
-			{showProofRail && <div class="reveal-on-scroll mt-10 grid grid-cols-3 border-y border-hairline-steel/60 py-4 text-left">
-				<div class="pr-3">
-					<div class="font-mono text-[13px] text-foreground">Address</div>
-					<div class="mt-1 text-xs text-muted-foreground">published</div>
-				</div>
-				<div class="border-l border-hairline-steel/60 px-3">
-					<div class="font-mono text-[13px] text-foreground">Area</div>
-					<div class="mt-1 text-xs text-muted-foreground">in sq ft</div>
-				</div>
-				<div class="border-l border-hairline-steel/60 pl-3">
-					<div class="font-mono text-[13px] text-foreground">Terms</div>
-					<div class="mt-1 text-xs text-muted-foreground">before contact</div>
-				</div>
-			</div>}
+	{data.image?.src ? (
+		<div data-tina-field={tinaField(data, 'image')} class="full-bleed-media relative mt-12 overflow-hidden rounded-xl border border-hairline-steel bg-secondary lg:mt-16">
+			<Image
+				src={data.image.src}
+				alt={data.image.alt ?? ''}
+				width={1920}
+				height={1080}
+				sizes="100vw"
+				format="webp"
+				quality={80}
+				fetchpriority="high"
+				loading="eager"
+				decoding="async"
+				class="image-outline aspect-[21/9] size-full object-cover transition-transform duration-500 ease-out motion-safe:hover:scale-[1.02]"
+			/>
+			{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
 		</div>
+	) : contextualVisual ? (
+		<div class="relative mt-12">
+			<ContextualVisual visual={contextualVisual} priority />
+		</div>
+	) : null}
+	{contextualVisual && !data.image?.src && <p class="mx-auto mt-3 max-w-7xl font-mono text-xs text-muted-foreground">Contextual image. The published listing facts remain the source of truth.</p>}
 	</div>
 </Section>

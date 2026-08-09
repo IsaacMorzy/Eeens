@@ -1,0 +1,91 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
+import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
+import { contactEmail, getConfig, listProperties, type PropertyNode } from '../../lib/data';
+import {
+	DIRECTORY_DEFINITIONS,
+	filterDirectoryProperties,
+	type DirectoryKey,
+} from '../../lib/property-directories';
+import { getIllustrationSrc } from '../../lib/property-filters';
+
+export function getStaticPaths() {
+	return (Object.keys(DIRECTORY_DEFINITIONS) as DirectoryKey[]).map((category) => ({
+		params: { category },
+		props: { category },
+	}));
+}
+
+const category = Astro.props.category as DirectoryKey;
+const definition = DIRECTORY_DEFINITIONS[category];
+const properties: PropertyNode[] = await listProperties();
+const listings = filterDirectoryProperties(properties, category);
+const config = (await getConfig()).data?.config ?? null;
+const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent(`Ask about ${definition.label}`)}`;
+---
+
+<Base title={`${definition.label} | Eens Business Park`} description={definition.description}>
+	<Section class="bg-background">
+		<div class="mx-auto max-w-5xl">
+			<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{definition.label}</span>
+			<h1 class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-6xl md:tracking-[-1.8px]">
+				{definition.title}
+			</h1>
+			<p class="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">{definition.description}</p>
+			<div class="mt-6 flex flex-wrap items-center gap-3">
+				<a href="/locations" class="inline-flex min-h-10 items-center rounded-md border border-hairline-steel px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Browse locations</a>
+				<span class="font-mono text-[13px] text-muted-foreground">{listings.length} published listing{listings.length === 1 ? '' : 's'}</span>
+			</div>
+		</div>
+	</Section>
+
+	<Section class="bg-background pt-0">
+		<div class="mx-auto max-w-7xl">
+			{listings.length > 0 ? (
+				<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					{listings.map((property) => (
+						<PropertyCardFeatured
+							data={{
+								type: property.type ?? null,
+								title: property.title ?? null,
+								availability: (property.availability as Availability | undefined) ?? null,
+								address: property.address ?? null,
+								sqft: property.sqft ?? null,
+								price: property.price ?? null,
+								zone: property.zone ?? null,
+								leaseTerm: property.leaseTerm ?? null,
+								image: property.heroImage ?? null,
+								ref: property._sys?.filename ?? null,
+								viewLabel: 'View listing',
+							}}
+							fallbackImageSrc={getIllustrationSrc(property.type)}
+						/>
+					))}
+				</div>
+			) : (
+				<div class="max-w-2xl rounded-xl border border-hairline-steel bg-secondary p-8">
+					<h2 class="font-display text-2xl font-medium tracking-[-0.4px]">{definition.emptyTitle}</h2>
+					<p class="mt-3 text-muted-foreground">{definition.emptyDescription}</p>
+					<div class="mt-6 flex flex-wrap gap-3">
+						<Button href={viewingHref} size="lg">Ask about availability</Button>
+						<Button href="/locations" variant="secondary" size="lg">Browse locations</Button>
+					</div>
+				</div>
+			)}
+		</div>
+	</Section>
+
+	<Section class="bg-secondary">
+		<div class="mx-auto flex max-w-5xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+			<div>
+				<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">Next step</span>
+				<h2 class="mt-2 font-display text-3xl font-semibold tracking-[-0.6px]">Arrange a viewing.</h2>
+				<p class="mt-3 max-w-xl text-muted-foreground">Send the listing reference or tell us which category and zone you are considering.</p>
+			</div>
+			<Button href={viewingHref} size="lg">Arrange a viewing</Button>
+		</div>
+	</Section>
+</Base>

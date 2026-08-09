@@ -13,6 +13,12 @@ export default defineConfig({
 	site: process.env.SITE_URL || `https://${process.env.VERCEL_URL}`,
 	output: 'static',
 	adapter: vercel(),
+	// Astro 7.2: this site has no session state, so keep the session runtime
+	// out of adapter output and reuse unchanged prerendered pages.
+	session: false,
+	experimental: {
+		incrementalBuild: true,
+	},
 	redirects: { '/home': '/' },
 	integrations: [mdx(), sitemap(), icon(), tina()],
 	build: {
@@ -24,7 +30,7 @@ export default defineConfig({
 	// Tina Cloud rewrites CMS image src to assets.tina.io; let Astro
 	// fetch those URLs at build time so <Image> can transcode + resize them.
 	image: {
-		// Astro 6 responsive images: auto-emit srcset so the browser picks a
+		// Responsive images: auto-emit srcset so the browser picks a
 		// variant matched to the rendered box + DPR, not the full intrinsic size.
 		layout: 'constrained',
 		remotePatterns: [{ protocol: 'https', hostname: 'assets.tina.io' }],

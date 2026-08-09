@@ -14,7 +14,6 @@ export const splitBlockSchema: Template = {
 				{ name: 'alt', label: 'Alt Text', type: 'string' },
 			],
 		},
-		{ type: 'boolean', label: 'Image on left', name: 'reverse' },
 		{
 			type: 'object', label: 'Actions', name: 'actions', list: true,
 			ui: { defaultItem: { label: 'Learn more', type: 'button', link: '/' }, itemProps: (i: Action) => ({ label: i.label ?? '' }) },
