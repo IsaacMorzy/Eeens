@@ -1,0 +1,29 @@
+---
+import Section from '../ui/Section.astro';
+import YouTubeFacade from '../ui/YouTubeFacade.astro';
+import { parsePropertyVideos } from '../../lib/video';
+import type { PropertyNode } from '../../lib/data';
+
+interface Props {
+	videos: NonNullable<PropertyNode['videos']>;
+}
+
+const videos = parsePropertyVideos(Astro.props.videos);
+---
+{videos.length > 0 && (
+	<Section class="bg-background">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Property videos</h2>
+			<div class="mt-6 grid gap-6 md:grid-cols-2">
+				{videos.map((video) => (
+					<figure class="overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+						<div class="relative aspect-video">
+							<YouTubeFacade id={video.id} />
+						</div>
+						{video.title && <figcaption class="border-t border-hairline-steel px-4 py-3 text-sm text-muted-foreground">{video.title}</figcaption>}
+					</figure>
+				))}
+			</div>
+		</div>
+	</Section>
+)}

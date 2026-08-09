@@ -14,6 +14,7 @@
 import type { TinaRichTextContent } from '@tinacms/astro';
 import { requestWithMetadata } from '@tinacms/astro/data';
 import client from '../../tina/__generated__/client';
+import { isPublicProperty } from './property-visibility';
 
 /**
  * Hand-typed property shape used for the new `property` collection.
@@ -33,6 +34,24 @@ export interface PropertyNode {
 	title?: string | null;
 	type?: string | null;
 	availability?: string | null;
+	occupancyState?: 'available' | 'reserved' | 'occupied' | 'unpublished' | string | null;
+	floorSection?: string | null;
+	frontage?: string | null;
+	deposit?: string | null;
+	serviceCharge?: string | null;
+	permittedUse?: string | null;
+	viewingStatus?: string | null;
+	lastReviewedDate?: string | null;
+	reviewer?: string | null;
+	imageProvenance?: {
+		source?: string | null;
+		permission?: string | null;
+		reviewer?: string | null;
+		width?: number | null;
+		height?: number | null;
+		mappedUnitReference?: string | null;
+	} | null;
+	videos?: Array<{ title?: string | null; url?: string | null }> | null;
 	address?: string | null;
 	sqft?: string | null;
 	price?: { ksh?: string | null; perSqft?: string | null } | null;
@@ -92,7 +111,7 @@ export async function listProperties(): Promise<PropertyNode[]> {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(edge: { node?: PropertyNode } | null | undefined): PropertyNode[] => (edge?.node ? [edge.node] : []),
 	);
-	return edges.sort((a, b) => {
+	return edges.filter(isPublicProperty).sort((a, b) => {
 		const ad = a.publishedDate ? new Date(a.publishedDate).valueOf() : 0;
 		const bd = b.publishedDate ? new Date(b.publishedDate).valueOf() : 0;
 		return bd - ad;
