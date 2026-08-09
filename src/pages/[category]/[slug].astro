@@ -5,17 +5,19 @@ import Button from '../../components/ui/Button.astro';
 import Icon from '../../components/ui/Icon.astro';
 import AvailabilityBadge from '../../components/ui/AvailabilityBadge.astro';
 import LocationPin from '../../components/ui/LocationPin.astro';
+import PropertyVideos from '../../components/blocks/PropertyVideos.astro';
 import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
 import { contactEmail, getConfig, getProperty, listProperties, type PropertyNode } from '../../lib/data';
 import { stableStringify } from '../../lib/cache-key';
 import { getIllustrationSrc } from '../../lib/property-filters';
+import { isPublicProperty } from '../../lib/property-visibility';
 import { DIRECTORY_DEFINITIONS, type DirectoryKey } from '../../lib/property-directories';
 import { getPexelsSource } from '../../lib/pexels-images';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 
 export async function getStaticPaths() {
-	const properties = await listProperties();
+	const properties = (await listProperties()).filter(isPublicProperty);
 	const config = await getConfig();
 	return (Object.keys(DIRECTORY_DEFINITIONS) as DirectoryKey[]).flatMap((category) => {
 		const type = DIRECTORY_DEFINITIONS[category].type;
@@ -95,6 +97,8 @@ const isApartment = property.type === 'APARTMENT';
 	</Section>
 
 	{property.specSheet && !isApartment && <Section class="bg-background"><div class="mx-auto max-w-6xl"><h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Published specifications</h2><dl class="mt-6 grid overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">{property.specSheet.power && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Power</dt><dd class="font-mono text-sm">{property.specSheet.power} kVA</dd></div>}{property.specSheet.water && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Water</dt><dd class="font-mono text-sm">{property.specSheet.water} m³/day</dd></div>}{property.specSheet.parking !== null && property.specSheet.parking !== undefined && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Parking bays</dt><dd class="font-mono text-sm">{property.specSheet.parking}</dd></div>}{property.specSheet.floorLoading && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Floor loading</dt><dd class="font-mono text-sm">{property.specSheet.floorLoading} kN/m²</dd></div>}{property.specSheet.clearHeight && <div class="flex items-baseline justify-between gap-3 p-4"><dt class="text-sm text-muted-foreground">Clear height</dt><dd class="font-mono text-sm">{property.specSheet.clearHeight} m</dd></div>}</dl></div></Section>}
+
+	{property.videos && <PropertyVideos videos={property.videos} />}
 
 	<Section class="bg-background"><div class="mx-auto max-w-3xl prose prose-lg max-w-none"><div data-tina-field={tinaField(property as Record<string, unknown>, 'body')}><TinaMarkdown content={property.body} /></div></div></Section>
 
