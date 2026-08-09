@@ -38,7 +38,7 @@ if (!slug || !definition) return new Response('Not Found', { status: 404 });
 
 const { data: result } = await getProperty(slug);
 const property = result?.property as PropertyNode | null | undefined;
-if (!property || property.type !== definition.type) return new Response('Not Found', { status: 404 });
+if (!property || !isPublicProperty(property) || property.type !== definition.type) return new Response('Not Found', { status: 404 });
 
 const config = (await getConfig()).data?.config ?? null;
 const properties = await listProperties();
