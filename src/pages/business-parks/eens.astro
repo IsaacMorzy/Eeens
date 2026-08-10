@@ -8,18 +8,21 @@ import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { getPropertyVisual } from '../../lib/contextual-images';
 import { getIllustrationSrc } from '../../lib/property-filters';
 import { listProperties, type PropertyNode } from '../../lib/data';
+import { filterParkProperties } from '../../lib/property-directories';
 
 const visual = getPropertyVisual('BUSINESS_PARK');
 const officialSource = 'https://eens.co.ke/property/warehouse-baba-dogo/warehouse-along-mombasa-road/eens-business-park/';
 const referenceListing = 'https://finlay.co.ke/listings/eens-business-park-syokimau';
 
 const properties: PropertyNode[] = await listProperties();
-const shopUnits = properties.filter((property) => property.type === 'SHOP');
-const warehouses = properties.filter((property) => property.type === 'WAREHOUSE');
-const godowns = properties.filter((property) => property.type === 'GODOWN');
+const parkProperties = filterParkProperties(properties);
+const shopUnits = parkProperties.filter((property) => property.type === 'SHOP');
+const parkFeatures = [...new Set(parkProperties.flatMap((property) => property.features ?? []))];
+const parkAmenities = [...new Set(parkProperties.flatMap((property) => property.amenities ?? []))];
+const warehouses = properties.filter((property) => property.type === 'WAREHOUSE' && property.development !== 'Eens Business Park');
+const godowns = properties.filter((property) => property.type === 'GODOWN' && property.development !== 'Eens Business Park');
 const warehouseZones = [...new Set(warehouses.map((property) => property.zone).filter(Boolean))].join(', ');
 const godownZones = [...new Set(godowns.map((property) => property.zone).filter(Boolean))].join(', ');
-
 const cardProps = (property: PropertyNode) => ({
 	type: property.type ?? null,
 	title: property.title ?? null,
@@ -78,6 +81,18 @@ const cardProps = (property: PropertyNode) => ({
 					</div>
 				</div>
 			</div>
+		</div>
+	</Section>
+
+	<Section class="bg-background">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Published building features.</h2>
+			{parkFeatures.length || parkAmenities.length ? (
+				<div class="mt-6 grid gap-4 sm:grid-cols-2">
+					{parkFeatures.length > 0 && <div class="rounded-xl border border-hairline-steel bg-secondary p-5"><h3 class="font-display text-xl font-medium">Features</h3><ul class="mt-3 space-y-2 text-sm text-muted-foreground">{parkFeatures.map((feature) => <li>{feature}</li>)}</ul></div>}
+					{parkAmenities.length > 0 && <div class="rounded-xl border border-hairline-steel bg-secondary p-5"><h3 class="font-display text-xl font-medium">Amenities</h3><ul class="mt-3 space-y-2 text-sm text-muted-foreground">{parkAmenities.map((amenity) => <li>{amenity}</li>)}</ul></div>}
+				</div>
+			) : <p class="mt-3 max-w-2xl text-sm text-muted-foreground">Building features and amenities are not published yet. They will appear here after operator review.</p>}
 		</div>
 	</Section>
 
