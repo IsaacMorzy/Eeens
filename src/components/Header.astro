@@ -142,7 +142,7 @@ const menuGroups: MenuGroup[] = [
 			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
 			<div class="space-y-1">
 				{menuGroups.map((group) => (
-					<details class="border-b border-border/60 last:border-b-0">
+					<details class="group border-b border-border/60 last:border-b-0">
 						<summary class="flex min-h-12 cursor-pointer list-none items-center justify-between py-3 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
 							<span>{group.label}</span>
 							<Icon name="chevron-down" class="size-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />

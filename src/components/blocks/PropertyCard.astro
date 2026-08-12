@@ -26,6 +26,7 @@ export interface PropertyCardData {
 	title?: string | null;
 	availability?: Availability | null;
 	address?: string | null;
+	development?: string | null;
 	sqft?: string | null;
 	price?: { ksh?: string | null; perSqft?: string | null } | null;
 	zone?: string | null;
@@ -112,6 +113,12 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			<p data-tina-field={tinaField(data as { address?: unknown }, 'address')} class="text-sm text-muted-foreground">
 				{data.address}
 			</p>
+		)}
+		{data.development && (
+			<div data-tina-field={tinaField(data as { development?: unknown }, 'development')} class="flex items-center gap-2 font-mono text-[12px] text-muted-foreground">
+				<Icon name="building-community" aria-hidden="true" class="size-3.5 shrink-0 text-primary" />
+				<span>{data.development}</span>
+			</div>
 		)}
 		{data.sqft && (
 			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
