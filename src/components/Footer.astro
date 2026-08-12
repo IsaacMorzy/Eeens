@@ -35,8 +35,8 @@ const spaceLinks = [
 	{ title: 'Locations', href: '/locations' },
 ];
 const directoryLinks = [
+	{ title: 'Eens Business Park', href: '/business-parks/eens' },
 	{ title: 'Tenant profiles', href: '/contact' },
-	{ title: 'Locations', href: '/locations' },
 	{ title: 'About Eens', href: '/about' },
 ];
 const informationLinks = [
@@ -53,6 +53,7 @@ const informationLinks = [
 		<div class="grid gap-12 lg:grid-cols-[1fr_2fr]">
 			<!-- Identity block: glyph + wordmark + tagline + CTA -->
 			<div>
+				<p class="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.5px] text-primary-dark">EENS PROPERTY REGISTER</p>
 				<div class="flex items-center gap-3">
 					<img src={EensGlyph} alt="" aria-hidden="true" class="size-7" />
 					<span class="font-display text-2xl font-semibold tracking-[-0.6px] text-ink-dark">
@@ -60,12 +61,17 @@ const informationLinks = [
 					</span>
 				</div>
 				<p class="mt-5 max-w-md text-pretty font-mono text-[13px] leading-relaxed text-ink-dark/80">
-					Space to trade, store, and live across Mlolongo, Syokimau, Baba Dogo, and Thika.
+					Published industrial and residential listings across Mlolongo, Syokimau, Baba Dogo, and Thika.
 				</p>
 				<p class="mt-3 max-w-md text-pretty text-sm text-ink-dark/60">
 					Listings show the address, area, price or rate, availability, and terms. Viewings are by appointment.
 				</p>
-				<div class="mt-6">
+				<a href="/business-parks/eens" class="mt-6 block max-w-md rounded-lg border border-primary-dark/40 bg-canvas-dark/60 p-4 transition-[border-color,transform] duration-200 hover:-translate-y-px hover:border-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+					<span class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary-dark">Featured location</span>
+					<span class="mt-1 block font-display text-lg font-medium text-ink-dark">Eens Business Park, Syokimau</span>
+					<span class="mt-1 block text-sm text-ink-dark/60">Open the park overview and published shop register.</span>
+				</a>
+				<div class="mt-4">
 					<Button href={viewingHref} variant="inverse" size="lg">
 						<Icon name="calendar" class="size-4" />
 						<span>Schedule a viewing</span>
@@ -74,18 +80,14 @@ const informationLinks = [
 			</div>
 
 			<!-- Link grid: 3 columns at lg, stacked at sm -->
-			<div class="grid gap-10 sm:grid-cols-2">
-				<section aria-label="Find space">
+			<div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+				<section aria-label="Property types">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
-						Find space
+						Property types
 					</h3>
 					<ul class="mt-4 space-y-2 text-sm">
 				{spaceLinks.map((l) => (
-					<li>
-						<a
-							href={l.href}
-							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70"
-						>
+					<li>						<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
 									{l.title}
 								</a>
 							</li>
@@ -103,7 +105,7 @@ const informationLinks = [
 						<a
 							href={l.href}
 							aria-current={isCurrentPath(Astro.url.pathname, l.href) ? "page" : undefined}
-							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark aria-[current=page]:text-ink-dark"
+							class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70"
 						>
 									{l.title}
 								</a>
@@ -119,7 +121,7 @@ const informationLinks = [
 					<ul class="mt-4 space-y-2 text-sm">
 						{informationLinks.map((l) => (
 							<li>
-								<a href={l.href} class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+								<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
 									{l.title}
 								</a>
 							</li>
