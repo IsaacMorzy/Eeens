@@ -32,6 +32,9 @@ export interface PropertyNode {
 	_sys?: { filename?: string | null } | null;
 	title?: string | null;
 	type?: string | null;
+	development?: string | null;
+	features?: string[] | null;
+	amenities?: string[] | null;
 	availability?: string | null;
 	address?: string | null;
 	sqft?: string | null;

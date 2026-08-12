@@ -81,6 +81,9 @@ export const PropertyCollection: Collection = {
 			description: 'Include the zone + road + kilometer mark. e.g. "Mlolongo, Mombasa Road, KM 14".',
 		},
 		{ name: 'zone', label: 'Zone', type: 'string', options: ZONE_OPTIONS, required: true },
+		{ name: 'development', label: 'Named development / building', type: 'string', description: 'Set only when the listing is confirmed as part of a named development or building.' },
+		{ name: 'features', label: 'Building features', type: 'string', list: true, description: 'Verified building or development features only. Leave empty until reviewed.' },
+		{ name: 'amenities', label: 'Building amenities', type: 'string', list: true, description: 'Verified amenities only. Leave empty until reviewed.' },
 		{
 			name: 'sqft',
 			label: 'Square footage',

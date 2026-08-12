@@ -87,3 +87,9 @@ export const filterDirectoryProperties = (
 	const definition = DIRECTORY_DEFINITIONS[key];
 	return properties.filter((property) => property.type === definition.type);
 };
+
+export const filterParkProperties = (properties: readonly PropertyNode[]): PropertyNode[] =>
+	properties.filter((property) => property.development === 'Eens Business Park');
+
+export const filterZoneProperties = (properties: readonly PropertyNode[], zone: string): PropertyNode[] =>
+	properties.filter((property) => property.zone === zone);
