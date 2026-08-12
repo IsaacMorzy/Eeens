@@ -1,11 +1,18 @@
 ---
 import BlogPost from '../../layouts/BlogPost.astro';
 import BlogBody from '../../components/islands/BlogBody.astro';
-import { getBlog, listBlogs } from '../../lib/data';
+import { getBlog, getConfig, listBlogs } from '../../lib/data';
+import { stableStringify } from '../../lib/cache-key';
 
 export async function getStaticPaths() {
 	const blogs = await listBlogs();
-	return blogs.map((b) => ({ params: { slug: b._sys?.filename ?? '' } }));
+	const config = await getConfig();
+	return blogs.map((b) => ({
+		params: { slug: b._sys?.filename ?? '' },
+		// Tina's generated client does not expose Astro's optional digest;
+		// the rendered node is the route's data dependency.
+		cacheKey: stableStringify({ blog: b, blogs, config: config.data?.config }),
+	}));
 }
 
 const { slug } = Astro.params;
@@ -15,7 +22,7 @@ const blog = result?.blog;
 if (!blog) return new Response('Not Found', { status: 404 });
 // pubDate is required for chronological ordering on /blog. Treat a
 // missing pubDate as 404 rather than rendering a page with the wrong
-// date — Tina's blog schema doesn't enforce required=true.
+// Date fields remain optional in Tina so older posts can still render.
 if (!blog.pubDate) return new Response('Not Found', { status: 404 });
 ---
 

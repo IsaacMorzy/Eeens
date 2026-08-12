@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import Icon from '../../components/ui/Icon.astro';
+import AvailabilityBadge from '../../components/ui/AvailabilityBadge.astro';
+import LocationPin from '../../components/ui/LocationPin.astro';
+import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
+import { tinaField } from '@tinacms/astro/tina-field';
+import { contactEmail, getConfig, getProperty, listProperties, type PropertyNode } from '../../lib/data';
+import { stableStringify } from '../../lib/cache-key';
+import { getIllustrationSrc } from '../../lib/property-filters';
+import { DIRECTORY_DEFINITIONS, type DirectoryKey } from '../../lib/property-directories';
+import { getPexelsSource } from '../../lib/pexels-images';
+import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
+
+export async function getStaticPaths() {
+	const properties = await listProperties();
+	const config = await getConfig();
+	return (Object.keys(DIRECTORY_DEFINITIONS) as DirectoryKey[]).flatMap((category) => {
+		const type = DIRECTORY_DEFINITIONS[category].type;
+		return properties
+			.filter((property) => property.type === type && property._sys?.filename)
+			.map((property) => ({
+				params: { category, slug: property._sys?.filename ?? '' },
+				props: { category },
+				cacheKey: stableStringify({ category, property, properties, config: config.data?.config }),
+			}));
+	});
+}
+
+const category = Astro.props.category as DirectoryKey;
+const definition = DIRECTORY_DEFINITIONS[category];
+const slug = Astro.params.slug;
+if (!slug || !definition) return new Response('Not Found', { status: 404 });
+
+const { data: result } = await getProperty(slug);
+const property = result?.property as PropertyNode | null | undefined;
+if (!property || property.type !== definition.type) return new Response('Not Found', { status: 404 });
+
+const config = (await getConfig()).data?.config ?? null;
+const properties = await listProperties();
+const related = properties
+	.filter((item) => item.type === property.type && item._sys?.filename !== slug)
+	.slice(0, 3);
+const heroSrc = property.heroImage?.src ?? getIllustrationSrc(property.type);
+const heroAlt = property.heroImage?.alt ?? property.title ?? '';
+const heroSource = getPexelsSource(heroSrc);
+const mapHref = `https://www.google.com/maps/search/${encodeURIComponent(property.address ?? property.zone ?? '')}`;
+const subject = encodeURIComponent(`Schedule a viewing - ${property.reference ?? property.title ?? 'listing'}`);
+const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
+const availability = property.availability as Availability | undefined;
+const isApartment = property.type === 'APARTMENT';
+---
+
+<Base
+	title={`${property.title ?? definition.label} | Eens Business Park`}
+	description={property.address ?? definition.description}
+>
+	<Section class="bg-background pt-8 md:pt-12">
+		<div class="mx-auto max-w-6xl">
+			<nav aria-label="Breadcrumb" class="mb-8 flex flex-wrap items-center gap-2 font-mono text-[12px] text-muted-foreground">
+				<a href={`/${category}`} class="min-h-10 inline-flex items-center hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">{definition.label}</a>
+				<span aria-hidden="true">/</span>
+				<span aria-current="page" class="text-foreground">{property.reference ?? property.title}</span>
+			</nav>
+
+			<div class="grid gap-8 lg:grid-cols-[2fr_1fr]">
+				<div>
+					<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{definition.label}</span>
+					<h1 data-tina-field={tinaField(property as Record<string, unknown>, 'title')} class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-5xl md:tracking-[-1.4px]">{property.title}</h1>
+					<div class="mt-5 flex flex-wrap items-center gap-3">
+						{property.sqft && <span data-tina-field={tinaField(property as Record<string, unknown>, 'sqft')} class="font-mono text-[13px] text-foreground/80">{property.sqft}</span>}
+						{property.zone && <LocationPin zone={property.zone} mapHref={mapHref} />}
+						{availability && <AvailabilityBadge availability={availability} />}
+						{property.reference && <span class="font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">{property.reference}</span>}
+					</div>
+					{property.address && <p data-tina-field={tinaField(property as Record<string, unknown>, 'address')} class="mt-5 max-w-2xl text-pretty text-base text-muted-foreground">{property.address}</p>}
+					{property.address && <a href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(property.address)}`} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="map" class="size-4" /><span>View area map</span><Icon name="external-link" class="size-3.5 opacity-70" /></a>}
+					{(property.bedrooms || property.bathrooms) && <div class="mt-5 flex flex-wrap gap-2 font-mono text-[13px] text-foreground/80">{property.bedrooms && <span>{property.bedrooms} bedrooms</span>}{property.bedrooms && property.bathrooms && <span aria-hidden="true">·</span>}{property.bathrooms && <span>{property.bathrooms} bathrooms</span>}</div>}
+				</div>
+
+				<aside class="flex flex-col gap-3 self-start rounded-xl border border-hairline-steel bg-background p-5">
+					<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">{isApartment ? 'Sale price' : 'Lease'}</div>
+					{property.price?.ksh && <div class="font-display text-2xl font-semibold leading-tight tracking-[-0.4px]">KSH {property.price.ksh}</div>}
+					{property.price?.perSqft && <div class="font-mono text-[13px] text-muted-foreground">KSH {property.price.perSqft} / sq ft</div>}
+					{property.leaseTerm && <div class="mt-1 text-sm">{property.leaseTerm}</div>}
+					<Button href={viewingHref} variant="action" size="lg" class="mt-3 w-full"><Icon name="calendar" class="size-4" /><span>Schedule a viewing</span></Button>
+					
+				</aside>
+			</div>
+
+			{heroSrc && <div class="relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><img src={heroSrc} alt={heroAlt} width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[21/9] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
+		</div>
+	</Section>
+
+	{property.specSheet && !isApartment && <Section class="bg-background"><div class="mx-auto max-w-6xl"><h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Published specifications</h2><dl class="mt-6 grid overflow-hidden rounded-xl border border-hairline-steel sm:grid-cols-2 lg:grid-cols-3 sm:divide-x sm:divide-y-0">{property.specSheet.power && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Power</dt><dd class="font-mono text-sm">{property.specSheet.power} kVA</dd></div>}{property.specSheet.water && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Water</dt><dd class="font-mono text-sm">{property.specSheet.water} m³/day</dd></div>}{property.specSheet.parking !== null && property.specSheet.parking !== undefined && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Parking bays</dt><dd class="font-mono text-sm">{property.specSheet.parking}</dd></div>}{property.specSheet.floorLoading && <div class="flex items-baseline justify-between gap-3 border-b border-hairline-steel/40 p-4"><dt class="text-sm text-muted-foreground">Floor loading</dt><dd class="font-mono text-sm">{property.specSheet.floorLoading} kN/m²</dd></div>}{property.specSheet.clearHeight && <div class="flex items-baseline justify-between gap-3 p-4"><dt class="text-sm text-muted-foreground">Clear height</dt><dd class="font-mono text-sm">{property.specSheet.clearHeight} m</dd></div>}</dl></div></Section>}
+
+	<Section class="bg-background"><div class="mx-auto max-w-3xl prose prose-lg max-w-none"><div data-tina-field={tinaField(property as Record<string, unknown>, 'body')}><TinaMarkdown content={property.body} /></div></div></Section>
+
+	{related.length > 0 && <Section class="bg-secondary"><div class="mx-auto max-w-7xl"><div class="flex flex-wrap items-end justify-between gap-4"><div><span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">More in {definition.label}</span><h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.4px]">Related listings</h2></div><a href={`/${category}`} class="inline-flex min-h-10 items-center text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Browse all</a></div><div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <article class="rounded-xl border border-hairline-steel bg-background p-5"><span class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">{item.zone}</span><h3 class="mt-2 font-display text-xl font-medium"><a href={`/${category}/${item._sys?.filename ?? ''}`} class="hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">{item.title}</a></h3><p class="mt-2 font-mono text-[13px] text-muted-foreground">{item.sqft}</p><p class="mt-2 text-sm text-muted-foreground">{item.price?.ksh ? `KSH ${item.price.ksh}` : 'Price on listing'}</p></article>)}</div></div></Section>}
+</Base>

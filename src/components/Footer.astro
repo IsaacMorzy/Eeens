@@ -27,22 +27,23 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${viewingSubject}`;
 const today = new Date();
 const sinceYear = 2018;
 
-// Hard-coded factual link grid. The four zones + the page-level links that
-// an operator or apartment buyer needs from the footer. The public footer
-// stays stable while the header owns the operational mega-menu.
-const zoneLinks = [
-	{ title: 'Mlolongo', href: '/properties?zone=Mlolongo' },
-	{ title: 'Syokimau', href: '/properties?zone=Syokimau' },
-	{ title: 'Baba Dogo', href: '/properties?zone=Baba%20Dogo' },
-	{ title: 'Thika', href: '/properties?zone=Thika' },
+const spaceLinks = [
+	{ title: 'Shop units', href: '/shops' },
+	{ title: 'Warehouses', href: '/warehouses' },
+	{ title: 'Godowns', href: '/godowns' },
+	{ title: 'Apartments', href: '/apartments' },
+	{ title: 'Locations', href: '/locations' },
 ];
-const pageLinks = [
-	{ title: 'Listings', href: '/properties' },
-	{ title: 'Visiting', href: '/locations' },
-	{ title: 'Leasing', href: '/lease-terms' },
-	{ title: 'Tenant contact', href: '/contact' },
+const directoryLinks = [
+	{ title: 'Eens Business Park', href: '/business-parks/eens' },
+	{ title: 'Tenant profiles', href: '/contact' },
+	{ title: 'Locations', href: '/locations' },
 	{ title: 'About Eens', href: '/about' },
+];
+const informationLinks = [
+	{ title: 'Lease terms', href: '/lease-terms' },
 	{ title: 'Journal', href: '/blog' },
+	{ title: 'Contact Eens', href: '/contact' },
 ];
 ---
 
@@ -50,7 +51,7 @@ const pageLinks = [
 	class="relative overflow-hidden border-t border-canvas-dark bg-canvas-dark text-ink-dark"
 >
 	<div class="relative mx-auto max-w-6xl px-6 pt-section pb-12">
-		<div class="grid gap-12 lg:grid-cols-[1.4fr_1fr]">
+		<div class="grid gap-12 lg:grid-cols-[1fr_2fr]">
 			<!-- Identity block: glyph + wordmark + tagline + CTA -->
 			<div>
 				<div class="flex items-center gap-3">
@@ -60,7 +61,7 @@ const pageLinks = [
 					</span>
 				</div>
 				<p class="mt-5 max-w-md text-pretty font-mono text-[13px] leading-relaxed text-ink-dark/80">
-					Industrial units and 3-bedroom apartments in Mlolongo, Syokimau, Baba Dogo, and Thika.
+					Space to trade, store, and live across Mlolongo, Syokimau, Baba Dogo, and Thika.
 				</p>
 				<p class="mt-3 max-w-md text-pretty text-sm text-ink-dark/60">
 					Listings show the address, area, price or rate, availability, and terms. Viewings are by appointment.
@@ -74,16 +75,17 @@ const pageLinks = [
 			</div>
 
 			<!-- Link grid: 3 columns at lg, stacked at sm -->
-			<div class="grid gap-10 sm:grid-cols-3">
-				<section aria-label="Zones">
+			<div class="grid gap-10 sm:grid-cols-2">
+				<section aria-label="Find space">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
-						Zones
+						Find space
 					</h3>
-					<ul class="mt-4 space-y-2 text-sm">				{zoneLinks.map((l) => (
+					<ul class="mt-4 space-y-2 text-sm">
+				{spaceLinks.map((l) => (
 					<li>
 						<a
 							href={l.href}
-							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark"
+							class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70"
 						>
 									{l.title}
 								</a>
@@ -92,11 +94,12 @@ const pageLinks = [
 					</ul>
 				</section>
 
-				<section aria-label="Pages">
+				<section aria-label="Park directory">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
-						Pages
+						Park directory
 					</h3>
-					<ul class="mt-4 space-y-2 text-sm">				{pageLinks.map((l) => (
+					<ul class="mt-4 space-y-2 text-sm">
+				{directoryLinks.map((l) => (
 					<li>
 						<a
 							href={l.href}
@@ -110,24 +113,29 @@ const pageLinks = [
 					</ul>
 				</section>
 
-				<section aria-label="Contact">
+				<section aria-label="Information">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
-						Contact
+						Information
 					</h3>
+					<ul class="mt-4 space-y-2 text-sm">
+						{informationLinks.map((l) => (
+							<li>
+								<a href={l.href} class="text-ink-dark/80 transition-colors duration-200 ease-out hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+									{l.title}
+								</a>
+							</li>
+						))}							</ul>
+				</section>
+
+				<section aria-label="Contact">
+					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">Contact</h3>
 					<ul class="mt-4 space-y-2 text-sm">
 						{contactLinks.map((link) => (
 							<li>
-								<IconLink
-									title={link.title}
-									link={link.link}
-									icon={link.icon}
-									data-tina-field={tinaField(link, 'title')}
-								/>
+								<IconLink title={link.title} link={link.link} icon={link.icon} data-tina-field={tinaField(link, 'title')} />
 							</li>
 						))}
-						<li class="font-mono text-[13px] text-ink-dark/60">
-							Replies within one business day.
-						</li>
+						<li class="font-mono text-[13px] text-ink-dark/60">Replies within one business day.</li>
 					</ul>
 				</section>
 			</div>
@@ -143,7 +151,7 @@ const pageLinks = [
 				<span data-tina-field={seo ? tinaField(seo, 'siteOwner') : undefined}>{seo?.siteOwner}</span>
 				. Operating since {sinceYear}.
 			</p>
-			<span class="font-mono text-[13px] text-ink-dark/60">Mlolongo · Syokimau · Baba Dogo · Thika</span>
+			<span class="font-mono text-[13px] text-ink-dark/60">Mlolongo / Syokimau / Baba Dogo / Thika</span>
 		</div>
 	</div>
 </footer>

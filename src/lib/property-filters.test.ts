@@ -60,8 +60,8 @@ describe('parseKva', () => {
 });
 
 describe('TYPE_ORDER + TYPE_LABEL + tiers', () => {
-	it('TYPE_ORDER is industrial-first and residential-last', () => {
-		expect(TYPE_ORDER[0]).toBe('WAREHOUSE');
+	it('TYPE_ORDER puts shop units first and apartments last', () => {
+		expect(TYPE_ORDER[0]).toBe('SHOP');
 		expect(TYPE_ORDER[TYPE_ORDER.length - 1]).toBe('APARTMENT');
 	});
 
@@ -153,15 +153,15 @@ describe('linkWith (chip URL composer)', () => {
 	const base: PropertyFilters = { minSqft: 9000, minKva: null, zone: 'Mlolongo' };
 
 	it('preserves sibling params when overriding one to null (delete)', () => {
-		expect(linkWith(base, { minSqft: null })).toBe('/properties?zone=Mlolongo');
+		expect(linkWith(base, { minSqft: null })).toBe('/warehouses?zone=Mlolongo');
 	});
 
 	it('preserves sibling params when overriding to a new value', () => {
-		expect(linkWith(base, { zone: 'Thika' })).toBe('/properties?minSqft=9000&zone=Thika');
+		expect(linkWith(base, { zone: 'Thika' })).toBe('/warehouses?minSqft=9000&zone=Thika');
 	});
 
-	it('returns bare /properties when all filters cleared', () => {
-		expect(linkWith({ minSqft: null, minKva: null, zone: null }, {})).toBe('/properties');
+	it('returns the bare category path when all filters are cleared', () => {
+		expect(linkWith({ minSqft: null, minKva: null, zone: null }, {})).toBe('/warehouses');
 	});
 
 	it('adds a new param without dropping siblings', () => {
@@ -170,7 +170,7 @@ describe('linkWith (chip URL composer)', () => {
 		// in `toString()`, so the override lands after the base keys it didn't
 		// replace.
 		expect(linkWith(base, { minKva: '200' })).toBe(
-			'/properties?minSqft=9000&zone=Mlolongo&minKva=200',
+			'/warehouses?minSqft=9000&zone=Mlolongo&minKva=200',
 		);
 	});
 });

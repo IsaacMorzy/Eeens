@@ -50,6 +50,7 @@ export const getZoneVisual = (zone: string | null | undefined): ContextualVisual
 };
 
 export const getPropertyVisual = (type: string | null | undefined): ContextualVisual | null => {
+	if (type === 'SHOP') return visuals.businessPark;
 	if (type === 'WAREHOUSE') return visuals.warehouse;
 	if (type === 'GODOWN') return visuals.godown;
 	if (type === 'BUSINESS_PARK') return visuals.businessPark;

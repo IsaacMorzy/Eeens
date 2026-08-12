@@ -12,7 +12,7 @@ describe('isCurrentPath', () => {
 	});
 
 	it('returns false when pathname is non-root against the root href', () => {
-		expect(isCurrentPath('/properties', '/')).toBe(false);
+		expect(isCurrentPath('/warehouses', '/')).toBe(false);
 	});
 
 	it('returns false when pathname is a deep descendant against the root href', () => {
@@ -25,10 +25,10 @@ describe('isCurrentPath', () => {
 
 	// Non-root href matches when pathname === href OR pathname starts with
 	// `href + '/'`. The second clause is what makes
-	// `/properties/mlolongo-warehouse` highlight the `/properties` nav link.
+	// `/warehouses/mlolongo-warehouse` highlights the `/warehouses` nav link.
 
-	it('returns true on exact match for /properties', () => {
-		expect(isCurrentPath('/properties', '/properties')).toBe(true);
+	it('returns true on exact match for /warehouses', () => {
+		expect(isCurrentPath('/warehouses', '/warehouses')).toBe(true);
 	});
 
 	it('returns true on exact match for /blog', () => {
@@ -39,40 +39,40 @@ describe('isCurrentPath', () => {
 		expect(isCurrentPath('/about', '/about')).toBe(true);
 	});
 
-	it('returns true when pathname is a sub-path of /properties', () => {
-		expect(isCurrentPath('/properties/mlolongo-warehouse', '/properties')).toBe(true);
+	it('returns true when pathname is a sub-path of /warehouses', () => {
+		expect(isCurrentPath('/warehouses/mlolongo-warehouse', '/warehouses')).toBe(true);
 	});
 
 	it('returns true when pathname is a sub-path of /blog', () => {
 		expect(isCurrentPath('/blog/mombasa-road-corridor', '/blog')).toBe(true);
 	});
 
-	// Trailing-slash trap: a href like `/properties/` would, if the function
+	// Trailing-slash trap: a href like `/warehouses/` would, if the function
 	// compared literally, never match anything (no pathname starts with the
 	// double slash). But our implementation's startsWith uses `href + '/'`,
-	// so a `/properties/` href would compound to `/properties//` — false.
+	// so a `/warehouses/` href would compound to `/warehouses//` — false.
 	// Locks down the canonical shape of the prefix clause.
 
 	it('returns false when href carries a trailing slash', () => {
-		expect(isCurrentPath('/properties/mlolongo-warehouse', '/properties/')).toBe(false);
+		expect(isCurrentPath('/warehouses/mlolongo-warehouse', '/warehouses/')).toBe(false);
 	});
 
 	// Negative guards.
 
 	it('returns false when pathname is not under the href', () => {
-		expect(isCurrentPath('/contact', '/properties')).toBe(false);
+		expect(isCurrentPath('/contact', '/warehouses')).toBe(false);
 	});
 
 	it('returns false when two distinct sections share a prefix', () => {
-		expect(isCurrentPath('/properties', '/blog')).toBe(false);
+		expect(isCurrentPath('/warehouses', '/blog')).toBe(false);
 	});
 
-	// Strict prefix guard: `/propertysomething` is NOT under `/properties`
+	// Strict prefix guard: `/warehouse-something` is NOT under `/warehouses`
 	// (no slash boundary). Catches the bug where `pathname.startsWith(href)`
 	// (without the trailing `/`) would falsely match.
 
 	it('returns false when pathname shares a prefix without a slash boundary', () => {
-		expect(isCurrentPath('/propertysomething', '/properties')).toBe(false);
+		expect(isCurrentPath('/warehouse-something', '/warehouses')).toBe(false);
 	});
 
 	// Defensive empty-href guard. An empty href would otherwise drive into
@@ -83,6 +83,6 @@ describe('isCurrentPath', () => {
 	});
 
 	it('returns false when href is empty against sub-path pathname', () => {
-		expect(isCurrentPath('/properties', '')).toBe(false);
+		expect(isCurrentPath('/warehouses', '')).toBe(false);
 	});
 });

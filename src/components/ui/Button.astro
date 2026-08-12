@@ -22,7 +22,7 @@ import { cn } from '../../lib/cn';
  * default / secondary / inverse / destructive to match the spec exactly.
  */
 const button = tv({
-	base: 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color] disabled:pointer-events-none disabled:opacity-[0.38] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[2px] shrink-0',
+	base: 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color,transform] motion-safe:active:scale-[0.98] disabled:pointer-events-none disabled:opacity-[0.38] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[2px] shrink-0',
 	variants: {
 		variant: {
 			default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
@@ -35,13 +35,13 @@ const button = tv({
 			// Tertiary — no chrome. On `dark` surfaces the .dark cascade swaps text-primary to text-primary-dark via @layer base.
 			ghost: 'text-foreground hover:bg-accent hover:text-accent-foreground',
 			// Inverse — for use inside the navy footer or hero overlays.
-			inverse: 'bg-canvas-dark text-primary-dark hover:bg-canvas-dark/95',
+			inverse: 'border border-primary-dark/60 bg-canvas-dark text-primary-dark hover:border-primary-dark hover:bg-canvas-dark/95',
 			destructive: 'bg-destructive text-white hover:bg-destructive/90',
 			link: 'text-primary underline-offset-4 hover:underline',
 		},
 		size: {
 			default: 'h-10 px-4',                                                  /* 40 px — desktop tap target */
-			sm: 'h-9 rounded-md gap-1.5 px-3',
+			sm: 'h-10 rounded-md gap-1.5 px-3',
 			lg: 'h-11 rounded-md px-6',                                            /* 44 px — touch tap target */
 			icon: 'size-10',                                                       /* 40 px square */
 		},

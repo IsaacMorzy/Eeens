@@ -19,7 +19,7 @@ const stats: StatItem[] = (data.stats ?? []).filter(
 		<div class="reveal-on-scroll grid divide-y divide-border *:text-center md:grid-cols-3 md:divide-x md:divide-y-0">
 			{stats.map((stat: StatItem) => (
 				<div data-tina-field={tinaField(stat)} class="space-y-4 py-4">
-					<div data-tina-field={tinaField(stat, 'stat')} class="font-display text-5xl font-semibold tracking-[-1px]">{stat.stat}</div>
+					<div data-tina-field={tinaField(stat, 'stat')} class="font-display tabular-nums text-5xl font-semibold tracking-[-1px]">{stat.stat}</div>
 					<p data-tina-field={tinaField(stat, 'type')} class="text-muted-foreground">{stat.type}</p>
 				</div>
 			))}

@@ -5,61 +5,62 @@ import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
-import { cn } from '../../lib/cn';
 import { getPageHeroVisual } from '../../lib/contextual-images';
 import ContextualVisual from '../ui/ContextualVisual.astro';
 import type { SplitAction, SplitBlock } from '../../lib/data';
 import { getPexelsSource } from '../../lib/pexels-images';
 
-interface Props { data: SplitBlock; slug?: string }
+interface Props { data: SplitBlock; slug?: string; headingLevel?: 'h1' | 'h2' }
 
-const { data, slug = '' } = Astro.props;
+const { data, slug = '', headingLevel = 'h2' } = Astro.props;
 const actions: SplitAction[] = (data.actions ?? []).filter(
 	(a: SplitAction | null | undefined): a is SplitAction => a !== null && a !== undefined,
 );
 const fallbackVisual = getPageHeroVisual(slug);
 const cmsImageSource = getPexelsSource(data.image?.src);
 ---
-<Section>
-	<div class="reveal-on-scroll mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-16">
-		<div class={cn('space-y-6', data.reverse && 'md:order-2')}>
-			{data.title && <h2 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-3xl font-semibold tracking-[-0.6px] lg:text-4xl lg:tracking-[-1.0px]">{data.title}</h2>}
-			{data.body && (
-				<div data-tina-field={tinaField(data, 'body')} class="prose prose-lg max-w-none text-muted-foreground">
-					<TinaMarkdown content={data.body} />
-				</div>
-			)}
-			{actions.length > 0 && (
-				<div class="flex flex-wrap gap-3 pt-2">
-					{actions.map((action: SplitAction) => (
-						<div data-tina-field={tinaField(action)}>
-							<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
-								{action.icon && <Icon name={action.icon} class="size-4" />}
-								<span class="text-nowrap">{action.label}</span>
-							</Button>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
-		{data.image?.src ? (
-			<div data-tina-field={tinaField(data, 'image')} class="relative overflow-hidden rounded-xl border border-hairline-steel">
-				<Image
-					src={data.image.src}
-					alt={data.image.alt ?? ''}
-					width={1280}
-					height={960}
-					sizes="(min-width: 768px) 600px, 100vw"
-					format="webp"
-					quality={80}
-					loading="lazy"
-					decoding="async"
-					class="aspect-[4/3] size-full object-cover"
-				/>
-				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>}
+
+<Section class="overflow-hidden">
+	<div class="reveal-on-scroll mx-auto max-w-3xl">
+		{data.title && (headingLevel === 'h1' ? <h1 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-4xl font-semibold tracking-[-1.0px] md:text-5xl md:tracking-[-1.4px]">{data.title}</h1> : <h2 data-tina-field={tinaField(data, 'title')} class="text-balance font-display text-3xl font-semibold tracking-[-0.6px] lg:text-4xl lg:tracking-[-1.0px]">{data.title}</h2>)}
+		{data.body && (
+			<div data-tina-field={tinaField(data, 'body')} class="mt-5 prose prose-lg max-w-none text-muted-foreground">
+				<TinaMarkdown content={data.body} />
 			</div>
-		) : fallbackVisual ? (
-			<ContextualVisual visual={fallbackVisual} />
-		) : null}
+		)}
+		{actions.length > 0 && (
+			<div class="mt-6 flex flex-wrap gap-3">
+				{actions.map((action: SplitAction) => (
+					<div data-tina-field={tinaField(action)}>
+						<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
+							{action.icon && <Icon name={action.icon} class="size-4" />}
+							<span class="text-nowrap">{action.label}</span>
+						</Button>
+					</div>
+				))}
+			</div>
+		)}
 	</div>
+	{data.image?.src ? (
+		<div data-tina-field={tinaField(data, 'image')} class="full-bleed-media relative mt-10 overflow-hidden rounded-xl border border-hairline-steel">
+			<Image
+				src={data.image.src}
+				alt={data.image.alt ?? ''}
+				width={1920}
+				height={1080}
+				sizes="100vw"
+				format="webp"
+				quality={80}
+				loading="lazy"
+				decoding="async"
+				class="image-outline aspect-[21/9] size-full object-cover"
+			/>
+			{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
+		</div>
+	) : fallbackVisual ? (
+		<div class="relative mt-10">
+			<ContextualVisual visual={fallbackVisual} />
+		</div>
+	) : null}
+	{fallbackVisual && !data.image?.src && <p class="mx-auto mt-3 max-w-7xl font-mono text-xs text-muted-foreground">Contextual image. The published facts remain the source of truth.</p>}
 </Section>

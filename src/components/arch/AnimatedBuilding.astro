@@ -21,7 +21,7 @@
  *
  * SSR-friendly: inline `<style>` + div layout, no client JS, no hydration.
  */
-type PropertyType = 'WAREHOUSE' | 'GODOWN' | 'BUSINESS_PARK' | 'APARTMENT';
+type PropertyType = 'SHOP' | 'WAREHOUSE' | 'GODOWN' | 'BUSINESS_PARK' | 'APARTMENT';
 
 interface Props {
 	type: PropertyType;
@@ -34,6 +34,7 @@ interface Props {
 const { type, sqft, parkingBays, clearHeight, loadLabel } = Astro.props as Props;
 
 const LABELS: Record<PropertyType, string> = {
+	SHOP: 'Shop unit',
 	WAREHOUSE: 'Warehouse',
 	GODOWN: 'Godown',
 	BUSINESS_PARK: 'Business Park',
@@ -45,6 +46,20 @@ const LABELS: Record<PropertyType, string> = {
 	<div class="building-scene relative flex flex-col items-center" style="perspective: 1200px;">
 		{/* Building group — floats + tilts on hover */}
 		<div class="building-body group relative transition-transform duration-700 ease-out hover:rotate-y-[-2deg] hover:rotate-x-[1deg] animate-float">
+
+			{/* --- SHOP --- */}
+			{type === 'SHOP' && (
+				<div class="flex flex-col items-center">
+					<div class="business-roof relative z-10 h-4 w-[320px] bg-secondary border-t border-x border-hairline-steel rounded-t-sm"></div>
+					<div class="relative flex h-32 w-[320px] flex-col rounded-b-sm border border-t-0 border-hairline-steel bg-background">
+						{[...Array(3)].map((_, i) => (
+							<div class="absolute bottom-[5%] h-[72px] w-[82px] rounded-t-sm border border-hairline-steel/60 bg-muted/40" style={`left: ${i * 30 + 4}%`}>
+								<div class="absolute inset-x-1 top-[35%] h-px bg-hairline-steel/20"></div>
+							</div>
+						))}
+					</div>
+				</div>
+			)}
 
 			{/* --- WAREHOUSE --- */}
 			{type === 'WAREHOUSE' && (
@@ -159,7 +174,7 @@ const LABELS: Record<PropertyType, string> = {
 			)}
 
 			{/* Ground shadow — contracts on float-up */}
-			<div class="building-shadow mx-auto mt-2 h-3 rounded-full bg-hairline-steel/15 blur-sm animate-shadow" style={`width: ${type === 'WAREHOUSE' ? '380px' : type === 'GODOWN' ? '260px' : type === 'BUSINESS_PARK' ? '320px' : '240px'};`}></div>
+			<div class="building-shadow mx-auto mt-2 h-3 rounded-full bg-hairline-steel/15 blur-sm animate-shadow" style={`width: ${type === 'SHOP' ? '280px' : type === 'WAREHOUSE' ? '380px' : type === 'GODOWN' ? '260px' : type === 'BUSINESS_PARK' ? '320px' : '240px'};`}></div>
 		</div>
 
 		{/* Label strip */}

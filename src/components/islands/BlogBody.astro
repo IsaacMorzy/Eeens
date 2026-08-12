@@ -12,36 +12,27 @@ interface Props {
 }
 
 const { data } = Astro.props;
-
-// Reading-time annotation — computation lives in src/lib/blog-walker.ts so
-// it's unit-tested independently of the Astro frontmatter.
 const computedBodyWordCount = countWords(data?.body);
 const readingMinutes = minutesForWordCount(computedBodyWordCount);
-
-// Custom MDX components available inside the rich-text body. Key matches
-// the template `name` in tina/collections/blog.ts (`YouTubeEmbed`).
 const components = { YouTubeEmbed };
-
 const headlineId = `blog-${data?._sys?.filename ?? 'post'}`;
 const heroSource = getPexelsSource(data?.heroImage);
 ---
 
 {
 	data?.heroImage ? (
-		<div
-			data-tina-field={tinaField(data, 'heroImage')}
-			class="mx-auto max-w-4xl px-6"
-		>
+		<div data-tina-field={tinaField(data, 'heroImage')} class="relative mx-auto mt-8 w-full max-w-7xl px-6 lg:px-10">
 			<img
-				width={1020}
-				height={510}
+				width={1920}
+				height={820}
 				src={data.heroImage}
-				alt=""
+				alt={data.title ?? 'Eens journal article'}
 				loading="eager"
 				fetchpriority="high"
-				class="aspect-[16/9] w-full rounded-2xl border border-hairline-steel object-cover"
+				decoding="async"
+				class="image-outline aspect-[21/9] w-full rounded-xl border border-hairline-steel object-cover"
 			/>
-			{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Pexels source</a>}
+			{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
 		</div>
 	) : null
 }
@@ -51,51 +42,14 @@ const heroSource = getPexelsSource(data?.heroImage);
 		<header class="mb-8">
 			{(data.pubDate || readingMinutes) && (
 				<div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-muted-foreground">
-					{data.pubDate && (
-						<span data-tina-field={tinaField(data, 'pubDate')}>
-							<FormattedDate date={new Date(data.pubDate)} />
-							{data.updatedDate && (
-								<span
-									data-tina-field={tinaField(data, 'updatedDate')}
-									class="italic"
-								>
-									{' '}
-									· Updated <FormattedDate date={new Date(data.updatedDate)} />
-								</span>
-							)}
-						</span>
-					)}
-					{(data.pubDate && readingMinutes) && (
-						<span aria-hidden="true" class="text-hairline-steel/60">·</span>
-					)}
-					{readingMinutes && (
-						<span class="font-mono">{readingMinutes} min read</span>
-					)}
+					{data.pubDate && <span data-tina-field={tinaField(data, 'pubDate')}><FormattedDate date={new Date(data.pubDate)} />{data.updatedDate && <span data-tina-field={tinaField(data, 'updatedDate')} class="italic">{' '}Updated <FormattedDate date={new Date(data.updatedDate)} /></span>}</span>}
+					{data.pubDate && readingMinutes && <span aria-hidden="true" class="text-hairline-steel/60">·</span>}
+					{readingMinutes && <span class="font-mono tabular-nums">{readingMinutes} min read</span>}
 				</div>
 			)}
-		<h1
-			id={headlineId}
-			data-tina-field={tinaField(data, 'title')}
-			class="reveal-on-scroll font-display text-balance text-4xl font-semibold tracking-[-1.0px] md:text-6xl md:tracking-[-1.8px]"
-		>
-				{data.title}
-			</h1>
-			{data.description && (
-				<p class="mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
-					{data.description}
-				</p>
-			)}
+			<h1 id={headlineId} data-tina-field={tinaField(data, 'title')} class="reveal-on-scroll font-display text-balance text-4xl font-semibold tracking-[-1.0px] md:text-6xl md:tracking-[-1.8px]">{data.title}</h1>
+			{data.description && <p class="mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">{data.description}</p>}
 		</header>
 	)}
-
-	{
-		data && (
-			<div
-				data-tina-field={tinaField(data, 'body')}
-				class="prose prose-lg max-w-none prose-headings:font-display prose-headings:tracking-[-0.4px] prose-a:text-primary prose-a:no-underline hover:prose-a:text-primary-hover"
-			>
-				<TinaMarkdown content={data.body} components={components} />
-			</div>
-		)
-	}
+	{data && <div data-tina-field={tinaField(data, 'body')} class="prose prose-lg max-w-none prose-headings:font-display prose-headings:tracking-[-0.4px] prose-a:text-primary prose-a:no-underline hover:prose-a:text-primary-hover"><TinaMarkdown content={data.body} components={components} /></div>}
 </div>

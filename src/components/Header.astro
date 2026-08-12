@@ -30,7 +30,6 @@ const { config } = Astro.props;
 const seo = config?.seo ?? null;
 const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent('Schedule a viewing')}`;
-const documentsHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent('Eens property documents')}`;
 const configuredNav = (config?.nav ?? []).filter((item) => item !== null);
 const groupHref = (group: MenuGroup): string =>
 	configuredNav.find((item) => item.title === group.label)?.link ?? group.href;
@@ -39,52 +38,49 @@ const groupHref = (group: MenuGroup): string =>
 // This is an operational directory, not a list of fictional tenant systems.
 const menuGroups: MenuGroup[] = [
 	{
-		label: 'Listings',
-		href: '/properties',
-		linkLabel: 'View listings',
-		intro: 'Published units and apartments.',
-		items: [
-			{ label: 'All listings', href: '/properties', detail: 'Browse published properties', icon: 'building-warehouse' },
-			{ label: 'Mlolongo', href: '/properties?zone=Mlolongo', detail: 'Warehouses and godowns' },
-			{ label: 'Syokimau', href: '/properties?zone=Syokimau', detail: 'Godowns and light industrial' },
-			{ label: 'Baba Dogo', href: '/properties?zone=Baba%20Dogo', detail: 'Business park units' },
-			{ label: 'Thika', href: '/properties?zone=Thika', detail: '3-bedroom apartments' },
-		],
-	},
-	{
-		label: 'Visiting',
+		label: 'Explore',
 		href: '/locations',
-		linkLabel: 'Visit a property',
-		intro: 'Locations, office details, and viewing requests.',
+		linkLabel: 'Browse locations',
+		intro: 'Find a published space across the Eens portfolio.',
 		items: [
-			{ label: 'Locations', href: '/locations', detail: 'Mlolongo, Syokimau, Baba Dogo, Thika', icon: 'map-pin' },
-			{ label: 'Request a viewing', href: viewingHref, detail: 'Email a listing reference', icon: 'calendar' },
-			{ label: 'Contact Eens', href: '/contact', detail: 'Office address, hours, and phone', icon: 'phone' },
-			{ label: 'About Eens', href: '/about', detail: 'How listings are published', icon: 'file-text' },
+			{ label: 'Shop units', href: '/shops', detail: 'Available retail and commercial spaces', icon: 'building-warehouse' },
+			{ label: 'Warehouses', href: '/warehouses', detail: 'Published industrial specifications', icon: 'building-warehouse' },
+			{ label: 'Godowns', href: '/godowns', detail: 'Storage and distribution space', icon: 'building-warehouse' },
+			{ label: 'Apartments', href: '/apartments', detail: 'Published prices and sale terms', icon: 'building-warehouse' },
+			{ label: 'Locations', href: '/locations', detail: 'Browse the operating zones' },
 		],
 	},
 	{
-		label: 'Leasing',
-		href: '/lease-terms',
-		linkLabel: 'View lease terms',
-		intro: 'Industrial units, specifications, and lease terms.',
+		label: 'Browse the park',
+		href: '/locations',
+		linkLabel: 'View locations',
+		intro: 'Understand where the portfolio operates.',
 		items: [
-			{ label: 'Warehouse and godown units', href: '/properties', detail: 'Browse industrial listings', icon: 'building-warehouse' },
-			{ label: 'Spec sheets', href: '/blog/reading-warehouse-spec-sheets', detail: 'Power, water, loading, height', icon: 'ruler' },
-			{ label: 'Lease terms', href: '/lease-terms', detail: 'Term, deposit, and invoicing', icon: 'file-text' },
-			{ label: 'Leasing journal', href: '/blog', detail: 'Location and leasing notes', icon: 'book-2' },
+			{ label: 'Eens Business Park', href: '/business-parks/eens', detail: 'Named park overview in Syokimau', icon: 'building-community' },
+			{ label: 'Tenant profiles', href: '/contact', detail: 'Ask about verified businesses at Eens', icon: 'file-text' },
+			{ label: 'Browse by location', href: '/locations', detail: 'Mlolongo, Syokimau, Baba Dogo, Thika', icon: 'map-pin' },
+			{ label: 'About Eens', href: '/about', detail: 'How the portfolio is published', icon: 'file-text' },
 		],
 	},
 	{
-		label: 'Tenant contact',
-		href: '/contact',
-		linkLabel: 'Contact Eens',
-		intro: 'Lease questions and document requests.',
+		label: 'Visit',
+		href: '/locations',
+		linkLabel: 'Arrange a viewing',
+		intro: 'Take the next step with a listing reference.',
 		items: [
-			{ label: 'Lease questions', href: '/lease-terms', detail: 'Read the published terms', icon: 'file-text' },
-			{ label: 'Send documents', href: documentsHref, detail: 'Email the Eens office', icon: 'mail' },
-			{ label: 'Request a viewing', href: viewingHref, detail: 'Send a listing reference', icon: 'calendar' },
-			{ label: 'Contact Eens', href: '/contact', detail: 'Phone, email, and office', icon: 'phone' },
+			{ label: 'Arrange a viewing', href: viewingHref, detail: 'Email the Eens office', icon: 'calendar' },
+			{ label: 'Lease terms', href: '/lease-terms', detail: 'Published lease and sale terms', icon: 'file-text' },
+			{ label: 'Contact Eens', href: '/contact', detail: 'Office details and questions', icon: 'phone' },
+		],
+	},
+	{
+		label: 'Journal',
+		href: '/blog',
+		linkLabel: 'Read the journal',
+		intro: 'Practical notes on locations, specifications, and leasing.',
+		items: [
+			{ label: 'Property notes', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
+			{ label: 'Warehouse specifications', href: '/blog/reading-warehouse-spec-sheets', detail: 'How to read a spec sheet', icon: 'ruler' },
 		],
 	},
 ];
@@ -93,7 +89,7 @@ const menuGroups: MenuGroup[] = [
 <header class="fixed top-0 z-20 w-full border-b border-hairline-steel/60 bg-background">
 	<nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3" aria-label="Primary navigation">
 		<a href="/" class="flex min-w-max items-center gap-3 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, 'title') : undefined}>
-			<img src={seo?.logo ?? '/eens-wordmark.svg'} alt="Eens" width="120" height="28" class="h-7 w-auto" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
+			<img src={seo?.logo ?? '/eens-wordmark.svg'} alt="Eens" width="120" height="28" decoding="async" class="h-7 w-auto" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
 		</a>
 
 		<div class="hidden items-center gap-1 xl:flex">
@@ -134,7 +130,7 @@ const menuGroups: MenuGroup[] = [
 				<span>Schedule a viewing</span>
 			</a>
 			<div class="hidden lg:block"><ThemeToggle /></div>
-			<button id="mobile-menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu-panel" aria-expanded="false" class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 xl:hidden">
+			<button id="mobile-menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu-panel" aria-expanded="false" class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.98] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 xl:hidden">
 				<Icon name="menu-2" class="icon-open size-5" />
 				<Icon name="x" class="icon-close size-5" />
 			</button>
