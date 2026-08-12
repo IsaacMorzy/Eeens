@@ -30,18 +30,18 @@ const related: CmsBlog[] = allBlogs
 ---
 
 <Base title={title} description={description} image={heroImage ?? contextualVisual?.src}>
-	<div class="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
+	<div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
 		<a
 			href="/blog"
 			class="inline-flex min-h-10 items-center gap-1.5 rounded-sm px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
 		>
 			<Icon name="arrow-left" size={16} />
-			Back to blog
+			Back to news
 		</a>
 	</div>
 
 	{contextualVisual && (
-		<div class="mx-auto mt-8 w-full max-w-7xl px-6 lg:px-10">
+		<div class="mx-auto mt-8 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
 			<ContextualVisual visual={contextualVisual} priority />
 		</div>
 	)}
@@ -53,13 +53,13 @@ const related: CmsBlog[] = allBlogs
 			<aside class="mx-auto mt-24 max-w-3xl border-t border-hairline-steel/60 px-6 pt-10">
 				<header class="mb-6 flex items-baseline justify-between">
 					<h2 class="font-display text-xl font-semibold tracking-[-0.4px]">
-						Other posts
+						Other news
 					</h2>
 					<a
 						href="/blog"
 						class="inline-flex min-h-10 items-center font-mono text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
 					>
-						All posts
+						All news
 					</a>
 				</header>
 				<ul class="divide-y divide-hairline-steel/40">
