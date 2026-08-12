@@ -26,6 +26,7 @@ export interface PropertyCardData {
 	title?: string | null;
 	availability?: Availability | null;
 	address?: string | null;
+	development?: string | null;
 	sqft?: string | null;
 	price?: { ksh?: string | null; perSqft?: string | null } | null;
 	zone?: string | null;
@@ -64,19 +65,32 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 	]}
 	{...rest}
 >		{resolvedImageSrc && (
-		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
-			<img
-				src={resolvedImageSrc}
-				alt={resolvedImageAlt}
-				width={1280}
-				height={720}
-				loading="lazy"
-				decoding="async"
-				class="size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
-			/>
-
-		</div>
-	)}
+			<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
+				{viewHref ? (
+					<a href={viewHref} aria-label={`View ${data.title ?? 'property'}`} class="block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50">
+						<img
+							src={resolvedImageSrc}
+							alt={resolvedImageAlt}
+							width={1280}
+							height={720}
+							loading="lazy"
+							decoding="async"
+							class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+						/>
+					</a>
+				) : (
+					<img
+						src={resolvedImageSrc}
+						alt={resolvedImageAlt}
+						width={1280}
+						height={720}
+						loading="lazy"
+						decoding="async"
+						class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+					/>
+				)}
+			</div>
+		)}
 	<div class="flex flex-1 flex-col gap-3 p-5">
 		{(data.type || data.availability) && (
 			<div class="flex flex-wrap items-center justify-between gap-2">
@@ -90,13 +104,21 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 		)}
 		{data.title && (
 			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
-				{data.title}
+				{viewHref ? (
+					<a href={viewHref} class="transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">{data.title}</a>
+				) : data.title}
 			</h3>
 		)}
 		{data.address && (
 			<p data-tina-field={tinaField(data as { address?: unknown }, 'address')} class="text-sm text-muted-foreground">
 				{data.address}
 			</p>
+		)}
+		{data.development && (
+			<div data-tina-field={tinaField(data as { development?: unknown }, 'development')} class="flex items-center gap-2 font-mono text-[12px] text-muted-foreground">
+				<Icon name="building-community" aria-hidden="true" class="size-3.5 shrink-0 text-primary" />
+				<span>{data.development}</span>
+			</div>
 		)}
 		{data.sqft && (
 			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
