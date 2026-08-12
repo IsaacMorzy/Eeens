@@ -34,8 +34,6 @@ export interface PropertyNode {
 	title?: string | null;
 	type?: string | null;
 	development?: string | null;
-	features?: string[] | null;
-	amenities?: string[] | null;
 	availability?: string | null;
 	occupancyState?: 'available' | 'reserved' | 'occupied' | 'unpublished' | string | null;
 	floorSection?: string | null;
