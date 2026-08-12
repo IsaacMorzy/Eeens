@@ -95,12 +95,12 @@ const menuGroups: MenuGroup[] = [
 		<div class="hidden items-center gap-1 xl:flex">
 			{menuGroups.map((group) => (
 				<details class="group relative">
-					<summary class="flex min-h-10 cursor-pointer list-none items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
+					<summary class="flex min-h-10 cursor-pointer list-none items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground group-open:bg-accent group-open:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
 						<span>{group.label}</span>
 						<Icon name="chevron-down" class="size-3.5 transition-transform duration-200 group-open:rotate-180" />
 					</summary>
-					<div class="absolute right-0 top-[calc(100%+0.65rem)] w-[min(46rem,calc(100vw-3rem))] rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground">
-						<div class="border-b border-hairline-steel/60 px-3 pb-3 pt-2">
+					<div class="absolute right-0 top-[calc(100%+0.65rem)] z-30 max-h-[min(34rem,calc(100vh-7rem))] w-[min(48rem,calc(100vw-3rem))] overflow-y-auto overscroll-contain rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
+						<div class="border-b border-hairline-steel/60 border-t-2 border-t-primary px-3 pb-3 pt-3">
 							<p class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">{group.label}</p>
 							<p class="mt-1 max-w-xl text-sm text-muted-foreground">{group.intro}</p>
 							<a href={groupHref(group)} class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
@@ -110,7 +110,7 @@ const menuGroups: MenuGroup[] = [
 						</div>
 						<div class="grid gap-1 p-2 sm:grid-cols-2">
 							{group.items.map((item) => (
-								<a href={item.href} class="group/item flex min-h-14 items-start gap-3 rounded-lg p-3 transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50" aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined}>
+								<a href={item.href} class:list={["group/item flex min-h-14 items-start gap-3 rounded-lg border border-transparent p-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-hairline-steel/60 hover:bg-secondary aria-[current=page]:border-primary/60 aria-[current=page]:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", item.href === '/business-parks/eens' && 'bg-secondary/60']} aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined}>
 									{item.icon && <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-hairline-steel/60 text-primary"><Icon name={item.icon} class="size-4" /></span>}
 									<span class:list={['min-w-0', !item.icon && 'pl-1']}>
 										<span class="block text-sm font-medium text-foreground group-hover/item:text-primary-hover">{item.label}</span>
@@ -137,14 +137,15 @@ const menuGroups: MenuGroup[] = [
 		</div>
 	</nav>
 
-	<div id="mobile-menu-panel" hidden class="border-t border-hairline-steel/60 bg-background xl:hidden">
+	<div id="mobile-menu-panel" hidden class="border-t-2 border-primary bg-background xl:hidden">
 		<div class="mx-auto flex max-w-7xl flex-col px-6 py-4">
+			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
 			<div class="space-y-1">
 				{menuGroups.map((group) => (
 					<details class="border-b border-border/60 last:border-b-0">
 						<summary class="flex min-h-12 cursor-pointer list-none items-center justify-between py-3 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
 							<span>{group.label}</span>
-							<Icon name="chevron-down" class="size-4 text-muted-foreground" />
+							<Icon name="chevron-down" class="size-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
 						</summary>
 						<div class="pb-3">
 							<a href={groupHref(group)} class="mb-1 flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-primary transition-colors hover:bg-accent hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
@@ -217,8 +218,10 @@ const menuGroups: MenuGroup[] = [
 		}, true);
 		document.addEventListener('keydown', (event) => {
 			if (event.key !== 'Escape') return;
+			const openSummary = document.querySelector('header details[open] > summary');
 			setOpen(false);
 			document.querySelectorAll('header details[open]').forEach((menu) => menu.removeAttribute('open'));
+			if (openSummary instanceof HTMLElement) openSummary.focus();
 		});
 	}
 </script>
