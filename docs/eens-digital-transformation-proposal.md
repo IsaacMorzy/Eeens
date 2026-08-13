@@ -1,0 +1,997 @@
+# Eens Limited
+## Digital Property Operations, Demand Capture, and Revenue Systems Proposal
+
+**Prepared by:** Nimbuz Tech
+**Client:** Eens Limited
+**Public property register:** eens.co.ke
+**Operational site:** eensbpark.ke
+**Date:** 13 August 2026
+**Proposal period:** Six-month implementation and growth programme
+
+## Executive note
+
+Eens already has the beginnings of a strong operating system. Its public website is a fast, factual property register. Its internal site runs ERP backend with CRM, utility and rental billing, a communication layer, and a permission-controlled assistant layer. The opportunity is not to replace these systems. It is to connect them around one business truth:
+
+> **Every published property, enquiry, viewing, lease, meter reading, invoice, payment, and follow-up should be traceable to the same property and customer record.**
+
+This proposal turns that foundation into a measured growth and property-operations system. It connects digital marketing to verified inventory, captures demand into CRM, moves qualified prospects into service requests and contracts, automates recurring rent and utility billing, and gives managers useful reporting without weakening permissions or financial controls.
+
+The recommended engagement is continuous rather than campaign-only: daily operational work keeps records, enquiries, channels, and site health current; weekly sprints deliver one agreed improvement; and monthly reporting connects activity to qualified demand, leases, collections, and occupancy.
+
+The proposal is deliberately evidence-led. It separates what is present in the current installation from what must be configured, integrated, tested, or built. This protects Eens from publishing unavailable units, promising an unconfigured payment channel, or measuring marketing activity without being able to link it to occupancy and revenue.
+
+---
+
+# Part I — Executive proposal
+
+## 1. The business case
+
+Eens operates across two connected markets:
+
+- **Industrial and commercial occupation:** godowns, warehouses, business-park space, retail units, logistics space, and related services across Mlolongo, Syokimau, Baba Dogo, and the wider Mombasa Road corridor.
+- **Residential property:** apartments and residential opportunities in Thika and other approved locations.
+
+These markets need different messages, but they share the same commercial questions:
+
+1. What space is available, where is it, and what are the verified terms?
+2. Who is asking, what do they need, and when do they need it?
+3. Which enquiry became a viewing, an offer, a contract, and collected revenue?
+4. Which property, campaign, location, or content topic is producing useful demand?
+5. Which leases, meters, invoices, payments, renewals, and service issues need attention?
+
+The current proposal answers these questions by joining the public register, CRM, rental and utility operations, finance, communication, automation, analytics, and AI-assisted decision support into a staged system.
+
+### Expected business effects
+
+| Business area | Improvement Eens should gain |
+|---|---|
+| Occupancy | Faster response to demand, fewer stale listings, clearer viewing and follow-up queues |
+| Leasing | A consistent path from lead to unit selection, service request, deposit, contract, and invoice |
+| Billing | Recurring rent, utility consumption, adjustments, and receivables handled from linked records |
+| Marketing | Campaigns measured by qualified enquiries, viewings, offers, contracts, and revenue—not impressions alone |
+| Customer service | Conversations attached to the relevant lead, customer, property, contract, invoice, or issue |
+| Management | One set of operational reports for availability, tenancy, consumption, receivables, and pipeline |
+| Decision-making | Permission-aware assistant queries and summaries with an audit trail |
+| Trust | Public pages show verified facts, explicit availability, clear identifiers, and a reliable next action |
+
+---
+
+## 2. Current-state assessment
+
+### 2.1 Verified live stack
+
+The `eensbpark.ke` site was checked against the live Bench installation on 13 August 2026.
+
+| Layer | Verified state | Role in the proposed system |
+|---|---|---|
+| ERP backend platform | Installed and running | Authentication, roles, DocTypes, permissions, APIs, background jobs, workflows, files, notifications, and web application foundation |
+| ERP backend finance | Installed and running | Customers, items, sales orders, sales invoices, payments, accounts, assets, stock, reports, and accounting controls |
+| CRM | Installed and running | Lead, deal, channel, status, territory, tasks, calls, notes, communication history, SLAs, and ERP backend handoff |
+| Utility & Rental Billing 0.0.1 | Installed and running | Property hierarchy, service requests, contracts, deposits, recurring rent, meters, tariffs, adjustments, and utility reporting |
+| Assistant layer | Installed and running | Permission-scoped assistant access, MCP connection, prompts, skills, reporting, analysis, dashboards, file extraction, and audit logs |
+| Internal and multichannel communication layer | Installed and running | Internal chat, record-linked topics, multimedia messages, support routing, channel profiles, templates, notifications, and webhooks |
+| `eens_app` | Installed; no custom DocTypes or active business hooks | ERP backend app shell for Eens-specific extensions; ready for the integration layer described in this proposal |
+| frontend | Content present in `eens_app/frontend` | Static public site, property content, editorial workflow, SEO metadata, category routes, detail pages, and PWA shell |
+| Vercel/static build path | frontend output is configured for the ERP backend public directory | Public pages can be built separately from the ERP while sharing approved data through a controlled integration |
+
+### 2.2 What is already present on the public website
+
+The frontend currently provides:
+
+- Property collections with type, availability, address, zone, area, price, lease terms, links, images, videos, occupancy state, review metadata, and industrial specifications.
+- Canonical category directories for shops, warehouses, godowns, business parks, and apartments.
+- Listing detail pages with address, availability, price, area, map links, viewing actions, and specification tables.
+- Pages for locations, leasing terms, contact, the operating overview, and a practical journal.
+- Canonical URLs, Open Graph and Twitter metadata, sitemap integration, manifest, service-worker registration, and offline fallback behaviour.
+- A factual editorial voice that treats address, size, price, specification, and terms as the primary trust signals.
+
+### 2.3 Important current gaps
+
+The following are not evidenced as live integrations in the checked installation and site configuration:
+
+- No verified API synchronisation between ERP backend property records and frontend property records.
+- No public lead-capture endpoint that creates a CRM Lead or Utility Service Request.
+- No M-Pesa Daraja or bank-transfer integration in the checked Eens, Utility Billing, CRM, or core app.
+- No Kestra workflow installation in the Bench; Kestra is therefore proposed as a separately deployed orchestration service, not described as already deployed.
+- No public analytics tag, conversion event schema, or campaign-attribution pipeline in the frontend inspection.
+- No evidence that channel credentials or public web support have been configured, even though the communication layer supports those flows.
+- No Eens-specific Assistant Core tools or skills are registered yet; the app is installed and supports the required extension hooks.
+- The original ERP backend app shell has no Eens-specific business DocTypes, scheduled tasks, or integration hooks.
+
+These gaps do not weaken the opportunity. They define the work that turns the installed platform into an operating system.
+
+---
+
+## 3. Proposed operating architecture
+
+```text
+                         DEMAND GENERATION
+  Organic search | Google Business Profiles | Social | Paid campaigns
+                              | UTM + consent
+                              v
+                 EENS PUBLIC PROPERTY REGISTER
+             frontend + verified listing content
+        category pages | property pages | guides | viewing actions
+                              |
+                 lead form / chat / phone / email links
+                              v
+                   ORCHESTRATION AND ROUTING
+                 Kestra workflows + webhook gateway
+          deduplication | validation | attribution | alerts
+                              |
+                              v
+                      ERP BACKEND CORE
+     CRM Lead -> CRM Deal -> Utility Service Request -> Contract
+        -> Sales Order / Deposit -> Auto Repeat -> Invoice
+        -> Meter Reading -> Tariff -> Invoice -> Payment Entry
+                              |
+        +---------------------+----------------------+
+        |                                            |
+        v                                            v
+ COMMUNICATION LAYER                         ASSISTANT LAYER
+ internal topics | customer channels           permission-aware AI
+ templates | record links                    reports | analysis
+ receipts | reminders                          prompts | skills | audit
+        |                                            |
+        +---------------------+----------------------+
+                              v
+                        MANAGEMENT SIGNALS
+    occupancy | pipeline | channel attribution | collections | usage
+                 service levels | renewals | content demand
+```
+
+### Design principle: two systems of record, one controlled contract
+
+The public site and the ERP should not both become uncontrolled masters of property availability.
+
+- **ERP backend becomes the operational record** for units, occupancy, customers, contracts, billing, payments, and internal status.
+- **frontend remains the publishing and editorial record** for approved public copy, images, specification presentation, SEO titles, guides, and page composition.
+- A small integration contract publishes only approved fields from the operational record into the public content workflow. It does not expose private tenant, financial, or identity data.
+- Until that synchronisation is built and accepted, the public register remains a manually reviewed publishing surface. No proposal language should imply that it is already live-synchronised.
+
+---
+
+## 4. Operating foundation
+
+### 4.1 ERP backend: the application and data foundation
+
+ERP backend provides the metadata-driven model beneath the operational system. A DocType defines a record type, fields, relationships, permissions, views, and lifecycle behaviour. The framework supplies authentication, role-based access, database APIs, REST access, background jobs, webhooks, workflow hooks, files, notifications, and the Desk interface.
+
+For Eens, this means the integration layer can use stable business records rather than a collection of disconnected spreadsheets and custom scripts. It also means every public or assistant-facing action must respect the same roles and permissions as the Desk.
+
+### 4.2 ERP backend: the financial and operational backbone
+
+ERP backend supplies the standard records that make the property model commercially useful:
+
+- Company, Customer, Supplier, Contact, Address, Territory, and User.
+- Item and Item Price for rent, service, utility, connection, and other billable lines.
+- Serial No and Asset where meters, equipment, or fixed assets need traceable identities.
+- Sales Order, Sales Invoice, Payment Entry, Account, Cost Center, Project, and Auto Repeat for the transaction and accounting lifecycle.
+- Communication, File, Workflow, Notification, Webhook, and assignment mechanisms for operational control.
+
+ERP backend is not the property register by itself. It is the financial and transaction engine that receives a verified unit, customer, contract, and billing structure.
+
+### 4.3 Utility and rental billing: the property-to-cash workflow
+
+The installed utility app provides the most direct fit for Eens property operations.
+
+#### Core records
+
+- **Utility Property:** a tree structure for estates, buildings, floors, units, unit status, unit type, location, size, bedrooms, bathrooms, features, legal description, and optional fixed-asset linkage.
+- **Utility Service Request:** the intake record for a customer, lead, or other party. It can hold request type, territory, location, selected services, property selections, contract dates, terms, utility structure, and fulfilment requirements.
+- **Contract Utility Property Item:** the contract-to-unit child record. It carries the unit, active flag, start and end dates, contract length, adjustment rule, and insurance link.
+- **Utility Bill Structure:** a reusable collection of billable items and monthly amounts.
+- **Meter Reading:** the customer, property, date, price list, utility items, previous reading, current reading, consumption, meter number, company, cost center, and project.
+- **Billing Adjustment Rule:** frequency, increments, grace periods, penalties, caps, accounts, and invoice submission behaviour.
+- **Utility Billing Settings:** draft/submitted behaviour, merged invoices, customer creation, site survey, deposit-before-contract, contract-before-invoice, and tenancy-ending notice timing.
+
+#### Business flow
+
+```text
+Prospect or CRM Lead
+        -> Utility Service Request
+        -> optional site survey / fulfilment checklist
+        -> selected Utility Property unit(s)
+        -> deposit Sales Order
+        -> Contract
+        -> recurring Auto Repeat / Sales Invoice
+        -> Meter Reading + tariff calculation
+        -> utility Sales Order / Sales Invoice
+        -> Payment Entry and receivables reporting
+```
+
+This helps Eens keep rent, utility consumption, deposits, renewals, and tenant communication linked to one customer and one property relationship.
+
+### 4.4 CRM: the demand and relationship layer
+
+CRM supplies the commercial pipeline before a lease exists.
+
+- **CRM Lead** captures name, email, phone, organisation, channel, industry, territory, lead owner, status, SLA fields, Facebook lead identifiers, products, and communication state.
+- **CRM Deal** captures organisation, lead, owner, channel, territory, probability, deal value, next step, expected closure, contacts, status changes, SLA, and lost reasons.
+- **CRM Task** records the next action, owner, priority, status, due date, and linked record.
+- **CRM Call Log, FCRM Note, Communication, and notifications** keep the context around the relationship.
+- **CRM Lead Channel, Lead Status, Territory, Industry, and Organization** make campaign and market segmentation possible.
+- ERP backend integration can create or update a Customer as a deal reaches the agreed stage.
+
+CRM should be the first internal destination for website, advertising, social, and conversation enquiries. Utility Service Request should begin only when the enquiry contains enough information to select or discuss a property/service path.
+
+### 4.5 Communication layer: the human response surface
+
+The installed communication layer is capable of internal and customer-facing conversations, multimedia messages, topics, record links, support routing, mobile notifications, templates, and channel webhooks.
+
+Its role in the Eens strategy is not to replace CRM. It is to make CRM and operations responsive:
+
+- A new enquiry opens or updates a conversation and creates a CRM Lead.
+- A viewing conversation is linked to the Lead, Deal, or property code.
+- A contract or invoice notification is sent from a controlled template.
+- A customer question can be linked to a Sales Invoice, Contract, Utility Service Request, Issue, or Task.
+- A topic preserves the context that would otherwise be lost in a personal inbox.
+
+Public channel credentials, business verification, templates, operating hours, consent language, routing roles, and escalation rules must be configured and tested before public launch.
+
+### 4.6 Assistant and enquiry-agent layer: decision support inside permissions
+
+The assistant layer is installed and exposes a controlled assistant interface over the ERP backend. For Eens, the same layer can support a public enquiry agent when a web-chat or approved channel is configured. The agent can answer questions about verified listings, locations, lease terms, viewing requirements, and next steps, then hand a qualified enquiry to a person with its property and conversation context attached. It must not invent availability, quote unapproved terms, or perform a financial or contract action without the appropriate workflow and approval.
+
+Its important capabilities for Eens are:
+
+- Permission-aware record reading and writing tools.
+- DocType and field metadata discovery.
+- Search, reports, workflows, approvals, file extraction, dashboards, and analysis.
+- Prompt Templates for repeatable questions.
+- FAC Skills for domain procedures such as availability review, pipeline review, collections review, and renewal preparation.
+- Assistant Audit Log records with user, tool, target, status, timing, input/output, errors, and trace information.
+- Configurable code-execution limits and read-only database restrictions for analysis workflows.
+- Extension hooks that allow `eens_app` to add Eens-specific tools and skills without modifying the assistant core.
+
+The assistant should start as a read-and-recommend layer. Actions that change property availability, create contracts, submit invoices, send outbound messages, or affect payment records require explicit role permissions and confirmation. The assistant must never decide that an unverified property is available, expose private tenant information, or send a message without a controlled action path.
+
+### 4.7 `eens_app` and frontend: the public publishing layer
+
+The Eens ERP backend app is currently a clean shell rather than a business application. That is useful: the Eens integration logic can be added without making the public website depend directly on third-party app internals.
+
+The frontend is already structured around the public property register:
+
+- frontend property content is stored under `src/content/property`.
+- The property schema includes type, availability, address, zone, square footage, price, lease term, occupancy state, images, provenance, review date, listing code, and B2B specification fields.
+- The category index route builds directory pages.
+- The category detail route builds property pages.
+- The shared metadata component provides canonical, Open Graph, Twitter, manifest, and service-worker registration.
+- `frontend build configuration` enables static output, sitemap integration, and deployment into the ERP backend public tree.
+
+The next step is a controlled publishing bridge—not a direct database leak from ERP backend into the browser.
+
+### 4.8 Continuous service model
+
+The system is operated as a standing service, not a sequence of disconnected launches. The delivery team maintains a single backlog with daily operational checks, weekly sprint outcomes, and a monthly management review.
+
+**Daily operations, every working day**
+
+- Keep property, lead, viewing, contract, invoice, payment, and contact records current in the agreed system of record.
+- Review new enquiries, chat escalations, missed SLAs, viewing requests, and next actions; assign or escalate anything without an owner.
+- Monitor approved channels, website forms, workflow failures, uptime, errors, and public listing accuracy.
+- Track priority search terms, competitor changes, campaign performance, and material changes in demand.
+- Draft or refine copy for upcoming campaigns and property updates; schedule approved social content.
+- Review assistant and enquiry-agent conversations, correct recurring answers, and route unresolved questions to staff.
+- Keep a short operational log so the weekly report reflects shipped work, exceptions, and decisions.
+
+**Weekly sprint outcomes**
+
+| Sprint | Focus | Example outcome |
+|---|---|---|
+| 1 | Intake and baseline | Enquiry routing, ownership rules, SEO baseline, and approved property/content inventory |
+| 2 | Agent foundation | Verified FAQ and listing-answer knowledge base; web-chat or channel deployment plan |
+| 3 | Lead capture | Public form, attribution, deduplication, acknowledgement, and payment/viewing enquiry paths |
+| 4 | Leasing handoff | Lead-to-deal qualification, viewing task, service request, and follow-up workflow |
+| 5 | Agent launch | Enquiry agent handling approved questions with human escalation and transcript context |
+| 6 | SEO delivery | Technical fixes, rank tracking, and first location or property content shipped |
+| 7 | Campaign creative | Video and image ad copy, landing-page copy, and approval-ready campaign assets |
+| 8 | Social and reporting | Content calendar, campaign measurement, and channel-to-enquiry dashboard |
+| 9 | Authority and competitors | Backlink or partnership outreach and a competitor/market signal report |
+| 10 | AI visibility | Entity clarity, structured Q&A, and a recorded baseline for AI-answer visibility |
+| 11 | Website health | Performance, security, content, broken-link, and uptime review with fixes shipped |
+| 12 | Programme review | Monthly/quarterly report, lessons learned, and the next sprint sequence agreed |
+| 13–24 | Growth and optimisation | Repeat the cycle across approved locations and property types, adding conversion, retention, renewal, and channel-to-revenue improvements |
+
+The exact weekly deliverable is agreed at the start of each sprint. Daily operations continue during every sprint; a sprint does not replace response, monitoring, record maintenance, or incident handling.
+
+---
+
+## 5. Digital marketing and SEO operating system
+
+### 5.1 The acquisition principle
+
+Marketing should create demand for specific, verifiable property opportunities, then pass the resulting enquiry into a measurable operational path.
+
+The primary conversion is not a page view. It is a qualified next step:
+
+- request a viewing;
+- ask about a named listing;
+- request a specification pack;
+- ask for a unit in a zone and size band;
+- request a callback;
+- submit a company requirement;
+- request an apartment viewing.
+
+### 5.2 Search architecture
+
+The public site should grow by publishing useful pages around actual inventory and actual operating locations.
+
+#### Industrial and commercial clusters
+
+- godowns for rent in Syokimau;
+- warehouses for rent in Mlolongo;
+- warehouse space on Mombasa Road;
+- industrial units near the Nairobi logistics corridor;
+- shops and commercial space at approved business-park locations;
+- warehouse specifications by size, power, floor loading, clear height, water, and access;
+- lease terms, deposits, fit-out, and viewing information.
+
+#### Residential clusters
+
+- 3-bedroom apartments in Thika;
+- apartments in an approved estate or named development;
+- unit size, bedrooms, bathrooms, price, title/lease terms, and viewing information.
+
+The content model already supports the factual elements that make these pages useful. The proposal is to add only the missing operational evidence: verified availability, review date, listing code, clear next action, and structured lead attribution.
+
+### 5.3 Technical SEO workstream
+
+1. Keep one canonical URL per property and category.
+2. Build sitemap entries only for published, approved records.
+3. Use clear title and description templates that include property type, location, and the useful fact a searcher needs.
+4. Add structured data only where the page visibly supports it. Candidate types require a schema review before implementation; no review markup or invented ratings should be added.
+5. Keep address, area, price, availability, terms, and specification values in crawlable HTML.
+6. Add internal links from location pages, guides, category pages, and related listings.
+7. Keep image alt text factual and preserve image provenance.
+8. Monitor index coverage, crawl errors, canonical selection, page performance, and enquiry conversion by landing page.
+9. Keep the static build fast and cacheable; do not put the ERP or an assistant request in the critical path for public page rendering.
+
+### 5.4 Local search and Google Business Profiles
+
+Where Eens has separate, verifiable operating locations, each profile should have accurate ownership, name, address, category, hours, phone routing, website landing page, and review process. The rollout should begin with a location and ownership audit, not with duplicating profiles.
+
+Profile posts and review requests should point to real location pages and real property updates. They should never promise a unit that has not passed the internal availability check.
+
+### 5.5 Content operations
+
+The existing journal is a strong base because it explains locations, specifications, leasing terms, and publishing choices in a factual voice. The content programme should add:
+
+- one practical location or specification article each month;
+- one property or availability update when an approved record changes;
+- one short video or photo set for a verified location or unit;
+- one recurring answer page for a question that appears in CRM conversations;
+- one monthly content review using organic search, CRM channel data, and viewing outcomes.
+
+A content item is accepted when it has an input, a target query or customer question, a defined next action, and a link to an approved property or contact route.
+
+### 5.6 Campaign, creative, and website maintenance
+
+The continuous marketing service also covers the practical work required to keep demand generation and the public site usable:
+
+- **Rank and competitor monitoring:** maintain target queries, review meaningful ranking changes, and record competitor content, offers, and local-search signals.
+- **Advertising creative:** prepare copy and hooks for video, image, search, and social campaigns; align every landing page with an approved property or service offer.
+- **Social operations:** maintain an approved content calendar, schedule posts, monitor responses, and report campaign performance without presenting reach as revenue.
+- **Backlinks and partnerships:** pursue relevant local, property, business, and location links; record placements and reject low-quality or irrelevant links.
+- **Technical maintenance:** fix broken forms and links, review metadata and structured data, optimise images and page speed, apply approved platform updates, and verify backups.
+- **Site health:** monitor uptime, errors, indexation, mobile usability, Core Web Vitals, content accuracy, and listing freshness; triage user-facing failures on the same working day where the agreed support window allows.
+- **Reporting:** provide a weekly delivery note and a monthly report covering work shipped, rankings, traffic, enquiries, qualified demand, viewings, contracts, collections, site health, and the next decisions.
+
+These activities remain subject to approved scope, access, media budgets, third-party fees, provider limits, and the client’s review and consent obligations.
+
+---
+
+## 6. Kestra automation strategy
+
+Kestra should orchestrate systems, not become the system of record. ERP backend remains the authority for operational records; frontend remains the editorial authority for public composition; Kestra moves validated events between them. Official Kestra capabilities relevant to this design include declarative flows, schedule/event/webhook triggers, Python scripts with dependency-managed containers, task outputs and metrics, retries, timeouts, and observable execution history. Kestra is proposed as the replacement orchestration layer; it is not described as already deployed.
+
+### Workflow A — inventory publishing
+
+```text
+Property or availability change in ERP backend
+    -> webhook / scheduled export
+    -> validate required public fields
+    -> check approval + occupancy state
+    -> create a publishing task or approved content payload
+    -> update frontend property record or open human review
+    -> rebuild frontend site
+    -> verify page, canonical, and sitemap
+    -> record publication event and listing code
+```
+
+### Workflow B — lead capture
+
+```text
+Website / search ad / social / chat enquiry
+    -> receive webhook or form payload
+    -> validate fields and consent
+    -> attach UTM, landing page, channel, campaign, and timestamp
+    -> deduplicate by email/phone plus recent activity
+    -> create or update CRM Lead
+    -> assign owner and SLA
+    -> acknowledge the prospect
+    -> notify the responsible team
+```
+
+### Workflow C — qualification and viewing
+
+```text
+Conversation or CRM Lead
+    -> ask category, zone, size, budget, power, use, timeline
+    -> match against published and internally approved inventory
+    -> offer only records whose status is current
+    -> create CRM Task / Deal when qualified
+    -> create viewing task or calendar request
+    -> link transcript and property links
+    -> remind owner if no response within SLA
+```
+
+### Workflow D — service request and lease handoff
+
+```text
+Qualified CRM Deal
+    -> create Utility Service Request
+    -> select Utility Property unit(s)
+    -> record dates, service items, deposit, and terms
+    -> optional survey / fulfilment checklist
+    -> create deposit Sales Order
+    -> confirm deposit and approval
+    -> create Contract
+    -> configure Auto Repeat / invoice schedule
+```
+
+### Workflow E — billing and tenant communication
+
+```text
+Meter Reading or due Auto Repeat
+    -> calculate billable usage / rent
+    -> create Sales Order or Sales Invoice according to settings
+    -> send controlled statement or notification
+    -> receive payment webhook when a payment provider is approved
+    -> verify signature and code
+    -> create Payment Entry or reconciliation task
+    -> notify tenant and finance
+    -> log event and failure reason
+```
+
+### Workflow F — content and reputation loop
+
+```text
+Completed viewing / signed contract / resolved service issue
+    -> check consent and communication policy
+    -> request feedback through an approved channel
+    -> classify response for internal service improvement
+    -> create a content question or FAQ task when a repeated objection appears
+    -> never publish private feedback as a testimonial without written approval
+```
+
+### Workflow controls
+
+Every workflow must have:
+
+- idempotency key and event ID;
+- validation before record creation;
+- retry policy with bounded attempts;
+- dead-letter or exception queue;
+- owner and escalation path;
+- correlation ID across webhook, Kestra execution, ERP backend record, and message;
+- no secrets in payload logs;
+- replay-safe processing;
+- a manual approval step for public availability, financial submission, and outbound campaign actions.
+
+---
+
+## 7. Data collection and management information
+
+### 7.1 Demand data
+
+Capture only data that helps Eens respond or measure a business decision:
+
+- enquiry channel and campaign;
+- first landing page and listing code;
+- contact details and consent state;
+- category, zone, size range, use, power requirement, budget band, and timeline;
+- requested next step;
+- owner, SLA, status, last response, and next action;
+- viewing date, outcome, offer state, and reason lost;
+- conversion to customer, service request, contract, invoice, and payment.
+
+### 7.2 Property data
+
+Maintain one approved property vocabulary:
+
+- property code;
+- type and zone;
+- public address and internal location;
+- area, unit type, floor, power, water, parking, floor loading, clear height;
+- availability and occupancy state;
+- price, deposit, service charge, lease term, permitted use;
+- last reviewed date and reviewer;
+- public page status and image provenance.
+
+### 7.3 Operational dashboards
+
+The first management dashboard set should be:
+
+1. **Availability:** total units, available, reserved, occupied, maintenance, unpublished, and days since last review.
+2. **Leasing funnel:** leads, qualified deals, viewings, offers, contracts, conversion rates, time to first response, and time to lease.
+3. **Channel performance:** organic, Google Business Profile, paid search, social, referral, direct, and campaign-level qualified conversion.
+4. **Receivables:** invoices due, overdue, ageing, deposits, collections, and exceptions.
+5. **Tenancy:** active contracts, ending dates, escalation dates, insurance status, renewals, and notice horizon.
+6. **Utilities:** consumption by property, meter exceptions, tariff blocks, abnormal usage, and billed/unbilled readings.
+7. **Service operations:** open requests, fulfilment deadlines, survey status, issues, owner, and SLA breaches.
+8. **Content:** indexed pages, organic landing pages, enquiries by page, listing freshness, and content gaps.
+
+### 7.4 Measurement discipline
+
+A monthly report should distinguish:
+
+- **reach:** impressions, clicks, profile views, video views;
+- **interest:** enquiries, chat starts, calls, downloads, viewing requests;
+- **quality:** qualified leads, matched requirements, scheduled viewings;
+- **commercial outcome:** offers, signed contracts, deposits, invoiced rent, collected rent;
+- **retention:** renewals, service response, payment timeliness, and tenant feedback.
+
+This prevents marketing success from being claimed on the basis of traffic that never becomes a property conversation.
+
+---
+
+## 8. AI integration strategy
+
+AI is useful when it reduces search and reporting time without becoming an uncontrolled decision-maker.
+
+### First release: read, explain, and prepare
+
+Approved users should be able to ask:
+
+- Which approved industrial units are available in Mlolongo above a chosen size?
+- Which listings have not been reviewed recently?
+- Show open leads with no next action in the last five working days.
+- Summarise this month’s viewings by channel and outcome.
+- Which contracts end in the next six months?
+- Compare meter consumption for a property over the last three periods.
+- Prepare a collections follow-up list, grouped by owner and ageing.
+- Extract the key obligations and dates from an uploaded lease or inspection record.
+
+The assistant should prefer existing ERP backend and Utility Billing reports before custom analysis. Custom analysis should use a read-only path and bounded execution limits.
+
+### Eens-specific assistant skills
+
+The `eens_app` should register skills such as:
+
+- `property_availability_review` — approved public and internal availability rules;
+- `lead_followup_review` — overdue response and next-action review;
+- `viewing_pipeline_summary` — viewing outcomes and conversion;
+- `tenancy_renewal_review` — contracts, dates, notices, and escalation rules;
+- `utility_consumption_review` — meter readings, tariff blocks, and anomalies;
+- `content_opportunity_review` — repeated customer questions mapped to approved content;
+- `monthly_management_pack` — fixed report sequence and definitions.
+
+### Eens-specific tools
+
+Tools should be added in the Eens app and should expose narrow, testable contracts:
+
+- search approved property records;
+- compare public listing records with internal property status;
+- create a CRM follow-up task;
+- prepare a viewing brief;
+- generate a management summary from existing reports;
+- identify stale or incomplete public records;
+- prepare a content brief from approved customer questions.
+
+Writing, deleting, submitting financial records, sending external messages, changing availability, and changing contract data must be separate privileged actions with confirmation and audit logging.
+
+### AI governance
+
+- Use ERP backend roles and record permissions as the primary access boundary.
+- Keep tenant identity, payment data, credentials, and unrelated company data out of prompts.
+- Treat model output as untrusted data; validate it before creating a record or sending a message.
+- Keep an audit record for every assistant action, including failed and permission-denied actions.
+- Apply time, memory, CPU, recursion, and output limits to code-execution features.
+- Start with deterministic reports and approved content; add retrieval or embeddings only when a clear search problem remains.
+- Require human approval for public claims, financial actions, bulk communication, and destructive operations.
+
+---
+
+## 9. Security, privacy, and operational controls
+
+### Trust boundaries
+
+The system crosses these boundaries:
+
+1. public visitor to website or conversation endpoint;
+2. external channel provider to webhook endpoint;
+3. Kestra to ERP backend API;
+4. ERP backend to payment provider;
+5. user to assistant/MCP endpoint;
+6. uploaded file to extraction or OCR process;
+7. public content to AI context.
+
+### Required controls
+
+- HTTPS everywhere and restricted CORS for authenticated interfaces.
+- Environment-managed credentials; never commit or log tokens, passwords, or full payment payloads.
+- Webhook signature verification, timestamp/replay protection, and idempotent event processing.
+- Rate limits and input-size caps on public lead, chat, upload, and webhook routes.
+- Role and record permission checks on every server-side operation.
+- Allowlisted outbound hosts for integrations; no arbitrary server-side URL fetching.
+- Redacted structured logs with correlation IDs.
+- Separate staging credentials, test phone numbers, test payment links, and production credentials.
+- Backup verification, restore drills, error-log retention, and a defined rollback path.
+- Data-retention rules for lead, conversation, uploaded record, and audit data.
+- Consent and opt-out records for marketing communication.
+
+---
+
+## 10. Six-month implementation roadmap
+
+### Phase 0 — discovery and data contract (weeks 1–2)
+
+- Confirm property vocabulary, zones, unit identifiers, customer ownership, and operational roles.
+- Inventory existing Utility Property, CRM, contract, invoice, meter, and public listing records.
+- Define the public publishing allowlist and the internal authority rules.
+- Agree consent, retention, approval, and outbound messaging policies.
+- Define KPIs, dashboard formulas, event taxonomy, and acceptance tests.
+
+**Exit condition:** approved data dictionary and integration contract.
+
+### Phase 1 — operational foundation (weeks 3–6)
+
+- Configure Utility Property hierarchy for approved buildings, floors, and units.
+- Configure customer groups, utility items, tariffs, price lists, cost centres, and invoice behaviour.
+- Configure CRM channel, status, territory, owner, SLA, and next-action conventions.
+- Build only the Eens-specific DocTypes and hooks needed for the integration layer.
+- Create role and permission matrix for leasing, property management, finance, marketing, and assistants.
+
+**Exit condition:** a test unit can move from approved inventory to a controlled service request and billing preview.
+
+### Phase 2 — public publishing and technical SEO (weeks 5–8)
+
+- Add the approved operational fields required by public listings.
+- Build a review and publication workflow between ERP backend and frontend.
+- Add listing freshness checks, canonical/metadata templates, structured data where justified, and sitemap gating.
+- Connect landing-page events and UTM capture without putting analytics or ERP calls in the critical render path.
+- Produce location and property content from verified records.
+
+**Exit condition:** an approved availability change can be published, verified, and traced to a listing code.
+
+### Phase 3 — lead capture and communication operations (weeks 7–10)
+
+- Configure the public form, chat handoff, email, and approved channels.
+- Build Kestra lead validation, deduplication, attribution, assignment, acknowledgement, and escalation flows.
+- Link conversations to CRM Lead, CRM Deal, property links, and follow-up tasks.
+- Add approved templates for viewing acknowledgement, specification response, follow-up, contract, invoice, and payment status.
+
+**Exit condition:** a test enquiry becomes a CRM Lead, receives an owner and SLA, and retains its channel and property context.
+
+### Phase 4 — finance and tenant operations (weeks 9–14)
+
+- Configure contract, deposit, recurring rent, meter, tariff, adjustment, and invoice workflows.
+- Integrate one approved payment method after provider approval and test reconciliation.
+- Add tenant communication and exception handling.
+- Build availability, tenancy, service request, meter, collections, and pipeline dashboards.
+
+**Exit condition:** a test tenancy completes the agreed contract-to-invoice-to-payment reconciliation path.
+
+### Phase 5 — assistant and management intelligence (weeks 12–18)
+
+- Configure Assistant Core settings, connection policy, audit retention, and tool categories.
+- Register Eens-specific skills and narrow read-only tools.
+- Create prompt templates for management, leasing, collections, utilities, and content review.
+- Build the monthly management pack and verify every assistant result against an approved report.
+- Add approval gates for any write action.
+
+**Exit condition:** approved managers can answer the agreed management questions with permission-correct, auditable outputs.
+
+### Phase 6 — growth and optimisation (weeks 16–24)
+
+- Run SEO, local search, social, email, and paid campaign experiments by property type and zone.
+- Review qualified-lead cost, response time, viewing rate, offer rate, lease rate, and revenue channel.
+- Publish the content topics that repeated demand proves useful.
+- Improve stale inventory, lost-lead, and renewal workflows.
+- Complete security review, backup/restore test, performance check, and operational handover.
+
+**Exit condition:** Eens has a repeatable growth and operations cadence, not a collection of disconnected campaigns.
+
+### Operating commitments
+
+The six-month programme carries three linked commitments:
+
+1. **Every working day:** maintain records, respond to new demand, monitor the agent and channels, check site health, and flag exceptions.
+2. **Every week:** deliver one agreed sprint outcome and report what shipped, what is blocked, and what is next.
+3. **Every month:** review performance against baseline, including qualified demand, response time, viewings, contracts, collections, content, campaign results, and technical health.
+
+This cadence is a delivery commitment, not a promise that every integration is already configured. Public channels, payment providers, analytics destinations, advertising accounts, and production automations remain gated by access, approval, testing, and provider onboarding.
+
+---
+
+## 11. Proposed KPI framework
+
+Baseline values should be captured during Phase 0. Targets should be set after the baseline rather than invented in advance.
+
+| KPI | Definition | System of record |
+|---|---|---|
+| First response time | Time from captured enquiry to first human or approved automated response | CRM + communication events |
+| Lead completeness | Percentage of leads with channel, consent, contact, need, timeline, and next action | CRM |
+| Qualified lead rate | Qualified leads divided by captured leads | CRM |
+| Viewing rate | Completed or scheduled viewings divided by qualified leads | CRM Task / Deal |
+| Offer rate | Offers divided by completed viewings | CRM / Contract process |
+| Lease conversion | Signed contracts divided by qualified deals | Contract |
+| Channel-to-revenue | Collected or invoiced value attributed to a channel/campaign | CRM + ERP backend |
+| Listing freshness | Days since approved availability and specification review | ERP backend + frontend |
+| Occupancy | Occupied units divided by operational units | Utility Property |
+| Collection rate | Collected amount divided by amount due in period | ERP backend |
+| Utility exception rate | Readings rejected or flagged divided by readings submitted | Meter Reading |
+| Renewal coverage | Active contracts with an upcoming renewal action | Contract |
+| Assistant reliability | Responses with a cited record and permission-correct result | Assistant Audit Log |
+
+---
+
+## 12. Commercial framework
+
+The following is an indicative engagement structure inherited from the original commercial brief and should be confirmed after Phase 0:
+
+### Recommended six-month programme
+
+- **Proposed service fee:** KSh 120,000 per month for six months, covering the agreed daily operating cadence, weekly sprint delivery, reporting, engineering, SEO, marketing operations, and maintenance scope.
+- **Daily operations:** performed every working day within the agreed support window; urgent incident response requires a separately agreed SLA.
+- **Weekly sprints:** one defined deliverable per week, prioritised against the approved backlog and dependent on required access and approvals.
+- **Media budget:** paid directly by Eens to the selected advertising platforms.
+- **Third-party costs:** hosting, messaging/channel fees, payment-provider charges, domains, verification fees, and any paid SaaS services are excluded unless expressly included in the signed scope.
+- **Client responsibilities:** timely access, accurate property records, approved imagery, business verification, payment-provider onboarding, legal/privacy approval, and named owners for leasing, finance, operations, and marketing.
+
+The fee does not imply unlimited content production, unlimited campaign spend, guaranteed rankings, guaranteed occupancy, unconfigured payment or messaging channels, or 24/7 incident response without a separate SLA. Third-party access, credentials, approvals, media spend, and client-owned operational decisions remain Eens responsibilities unless the signed scope states otherwise.
+
+### Acceptance and change control
+
+Each phase should have:
+
+- a written acceptance checklist;
+- a test environment or controlled test data;
+- named approvers;
+- a rollback or manual fallback;
+- a list of deferred items;
+- a handover note and training record.
+
+---
+
+## 13. Decisions required from Eens
+
+1. Which person owns the operational property register?
+2. Which system is authoritative for availability during the transition: the ERP property record or the public CMS record?
+3. Which channels are approved for public messaging at launch?
+4. Which payment provider and settlement account will be used first?
+5. Which fields may be published publicly, and which must remain internal?
+6. What consent and retention policy applies to marketing and conversation records?
+7. Which roles may approve public availability, submit invoices, send campaigns, and use assistant write tools?
+8. Which locations have verified ownership and profile eligibility for local search?
+9. What is the baseline for occupancy, response time, qualified leads, viewings, and collections?
+10. Who accepts each phase and who receives incident escalations?
+
+### Executive approval checklist
+
+Before Phase 1 begins, Eens should record the following approvals in the signed scope or kickoff record:
+
+| Approval | Required confirmation | Owner |
+|---|---|---|
+| Business sponsor | Six-month objective, budget boundary, and decision cadence | Eens sponsor |
+| Operational truth | Interim availability owner and the future ERP backend-to-public publishing boundary | Property/operations lead |
+| Data and privacy | Public fields, consent language, retention period, and escalation policy | Eens management + legal/privacy reviewer |
+| Access and security | Named users, roles, staging access, credential custody, and backup responsibility | Eens technical owner |
+| Growth measurement | Baseline metrics, campaign naming, UTM rules, and qualified-conversion definition | Marketing owner |
+| Acceptance | Phase approvers, test-data owner, rollback contact, and incident escalation route | Eens sponsor + delivery lead |
+
+**Decision gate:** work should move from discovery into implementation only after these owners and boundaries are written down. This keeps the programme accountable without treating proposed integrations as live capabilities.
+
+---
+
+# Part II — Implementation controls
+
+## 14. Implementation contract
+
+### 14.1 Ownership boundaries
+
+| Concern | Owner | Public exposure |
+|---|---|---|
+| Unit identity, occupancy, lease state, meter, contract, invoice, payment | ERP backend | Never directly; publish approved projection only |
+| Public copy, layout, SEO title, media, guides | frontend | Yes, after editorial approval |
+| Lead and deal lifecycle | CRM | Selected summary only; no private timeline or financial data |
+| Rent and utility calculations | Utility Billing + ERP backend | Public terms only; no tenant ledger |
+| Conversations and channel delivery | Communication layer | Channel-specific; link internally to CRM/DocTypes |
+| Cross-system automation | Kestra | No business truth; stores execution state and error metadata |
+| Assistant context and action policy | FAC + Eens tools/skills | Permission-scoped; no direct public access by default |
+| Reporting definitions | ERP backend reports / controlled query tools | Management access only |
+
+### 14.2 Proposed public listing projection
+
+The Eens integration app should expose a versioned, allowlisted projection rather than the full ERP DocType:
+
+```json
+{
+  "code": "EE-MLO-014",
+  "title": "Mlolongo Warehouse - Unit 02",
+  "type": "WAREHOUSE",
+  "zone": "Mlolongo",
+  "address": "Mlolongo, Mombasa Road, KM 14",
+  "availability": "ForRent",
+  "occupancyState": "available",
+  "sqft": "9,000 sq ft",
+  "price": { "ksh": "3,150,000 / yr", "perSqft": "35" },
+  "leaseTerm": "3-year minimum",
+  "specSheet": {
+    "power": "150",
+    "water": "8",
+    "parking": 6,
+    "floorLoading": "30",
+    "clearHeight": "7.5"
+  },
+  "lastReviewedDate": "2026-08-13",
+  "revision": 3
+}
+```
+
+The projection must exclude customer names, tenant contacts, balances, private notes, credentials, contract records, and internal workflow commentary.
+
+### 14.3 Proposed integration endpoints
+
+Use standard ERP backend REST interfaces and whitelisted methods only where a domain operation needs a controlled contract.
+
+| Interface | Purpose | Rules |
+|---|---|---|
+| `GET /api/method/eens_app.api.public_listings.list` | Return approved public listing projections | Read-only, paginated, cacheable, no private fields |
+| `GET /api/method/eens_app.api.public_listings.get` | Return one approved listing projection | Validate code and publication status |
+| `POST /api/method/eens_app.api.leads.capture` | Create or update a CRM Lead | Validate consent, channel, payload size, idempotency key |
+| `POST /api/method/eens_app.api.viewings.request` | Create a CRM Task or controlled viewing request | Link listing code; require contact and preferred window |
+| `POST /api/method/eens_app.api.webhooks.receive` | Receive provider/Kestra events | Verify signature, timestamp, channel, and replay key |
+| `GET /api/method/eens_app.api.health` | Report integration health | Return dependency status without secrets or internal traces |
+
+List responses should be paginated and use a consistent error envelope. External responses must be schema-validated before entering ERP backend.
+
+### 14.4 Event contract
+
+```json
+{
+  "eventId": "provider-or-workflow-id",
+  "eventType": "lead.captured",
+  "occurredAt": "2026-08-13T10:30:00Z",
+  "channel": "website",
+  "correlationId": "request-id",
+  "idempotencyKey": "sha256-of-channel-and-event",
+  "payload": {
+    "name": "Prospect name",
+    "email": "prospect@example.com",
+    "phone": "redacted-in-logs",
+    "listingCode": "EE-MLO-014",
+    "zone": "Mlolongo",
+    "requirement": "9,000 sq ft warehouse",
+    "consent": true,
+    "utm": {
+      "channel": "google",
+      "medium": "organic",
+      "campaign": "mlolongo-warehouse"
+    }
+  }
+}
+```
+
+Event handlers must be safe to retry. A duplicate event must update or acknowledge the existing record, not create a second lead, contract, invoice, or payment.
+
+### 14.5 Operational authority transition
+
+Implement in this order:
+
+1. Reconcile current frontend property records with Utility Property records manually.
+2. Assign one stable listing code to each approved unit.
+3. Add `lastReviewedDate`, reviewer, and publication state to the operational record or an Eens-specific projection DocType.
+4. Build a read-only projection endpoint.
+5. Add a staging export into frontend and a human approval step.
+6. Add automated rebuild and page verification.
+7. Only then consider automated unpublishing when ERP state becomes reserved, occupied, or unpublished.
+
+Do not start with direct, destructive CMS mutations.
+
+---
+
+## 15. Engineering backlog by vertical slice
+
+### Slice 1 — approved inventory projection
+
+- Add Eens-specific public publication fields.
+- Implement read-only listing projection.
+- Map Utility Property to frontend property by stable code.
+- Test field allowlist and unpublished behaviour.
+- Verify category/detail pages and sitemap output.
+
+### Slice 2 — lead capture
+
+- Add validated public capture endpoint.
+- Create/update CRM Lead with channel and UTM fields.
+- Add deduplication and idempotency.
+- Add SLA, owner, and next-action assignment.
+- Test malformed, duplicate, consent-denied, and rate-limited requests.
+
+### Slice 3 — conversation routing
+
+- Configure approved channel profiles and operating hours.
+- Link inbound conversation to CRM Lead by identity and code.
+- Create template-driven acknowledgement and escalation.
+- Store only necessary transcript/file links.
+- Test webhook signatures, retries, opt-out, and channel failure.
+
+### Slice 4 — contract and billing handoff
+
+- Map qualified Deal to Utility Service Request.
+- Configure unit selection, deposit, contract gates, and invoice gates.
+- Test rent Auto Repeat and meter calculation with fixture data.
+- Reconcile Sales Order, Sales Invoice, and Payment Entry.
+- Test cancellation, amendment, overdue, and renewal paths.
+
+### Slice 5 — marketing attribution
+
+- Define event names and UTM persistence.
+- Send qualified conversion events to the analytics destination.
+- Join campaign channel to CRM Lead and Deal.
+- Build channel-to-viewing and channel-to-contract reports.
+- Test consent and attribution expiry rules.
+
+### Slice 6 — assistant skills and tools
+
+- Add Eens-specific read-only tools through `assistant_tools`.
+- Add skills through `assistant_skills` with owning app.
+- Configure FAC Tool Configuration categories and role access.
+- Add prompt templates with bounded arguments.
+- Test permission denial, audit entries, tool timeout, and stale data warnings.
+
+---
+
+## 16. Observability and support
+
+### Questions the team must be able to answer
+
+1. Did the enquiry arrive, and where did it come from?
+2. Was a CRM Lead created or updated, and who owns the next action?
+3. Did the conversation, viewing, service request, contract, invoice, or payment event succeed?
+4. Which dependency failed: website, Kestra, channel provider, ERP backend, or payment provider?
+5. Did an assistant result use the right relevant record and permission scope?
+
+### Required signals
+
+- Structured events with `eventName`, `correlationId`, `channel`, `status`, `durationMs`, and bounded error codes.
+- RED metrics for each public endpoint and external dependency: rate, error rate, and p95/p99 duration.
+- Queue age and failed execution counts for Kestra and background jobs.
+- ERP backend Error Log and Assistant Audit Log retention with a review process.
+- Alerts on user-facing symptoms: lead capture failure, webhook failure rate, invoice-generation failure, payment reconciliation exception, and critical public build failure.
+- A short runbook for each alert with first query, owner, fallback, and escalation path.
+
+Never log passwords, access tokens, payment credentials, full request bodies, or unredacted identity data.
+
+---
+
+## 17. Test and acceptance matrix
+
+| Area | Minimum acceptance test |
+|---|---|
+| Public inventory | A non-approved unit cannot appear in a public route or sitemap |
+| Listing freshness | A changed availability record is detected and routed for review |
+| Lead capture | A valid enquiry creates one CRM Lead with channel, consent, owner, SLA, and next action |
+| Deduplication | Replaying the same event does not create a duplicate lead or message |
+| Conversation | An inbound message is linked to the right profile and business record |
+| Contract | Deposit and contract gates prevent invalid invoice creation |
+| Meter billing | Previous/current readings produce the expected consumption and tariff amount |
+| Finance | Invoice and payment links reconcile to the right customer and contract |
+| Security | Unauthenticated, unauthorized, malformed, replayed, and oversized requests fail safely |
+| AI read path | Assistant answers respect user permissions and identify the relevant report/record |
+| AI write path | Any write action requires the intended role and explicit confirmation |
+| SEO | Canonical, title, description, sitemap, headings, and visible property facts are correct |
+| Performance | Public pages build statically and do not depend on live ERP or assistant calls |
+| Recovery | A failed workflow can be retried or manually completed without data duplication |
+
+---
+
+## Closing
+
+Eens does not need a collection of disconnected digital activities. It needs a controlled path from demand to occupancy, from occupancy to billing, and from operational data back to better marketing decisions.
+
+The recommended programme keeps the public site fast and factual, keeps ERP backend authoritative for operational and financial records, uses CRM for commercial follow-through, uses the communication layer for responsive service, uses Kestra for controlled orchestration, and uses the assistant layer to shorten analysis without bypassing permission or human accountability.
+
+The result is a system that helps Eens publish with confidence, respond while demand is active, operate leases and utilities with less manual reconciliation, and invest in marketing based on the enquiries and revenue it actually produces.

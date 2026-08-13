@@ -7,8 +7,8 @@ import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.a
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { getPropertyVisual } from '../../lib/contextual-images';
 import { getIllustrationSrc } from '../../lib/property-filters';
-import { listProperties, type PropertyNode } from '../../lib/data';
 import { filterParkProperties } from '../../lib/property-directories';
+import { listProperties, type PropertyNode } from '../../lib/data';
 
 const visual = getPropertyVisual('BUSINESS_PARK');
 const officialSource = 'https://eens.co.ke/property/warehouse-baba-dogo/warehouse-along-mombasa-road/eens-business-park/';
@@ -28,6 +28,7 @@ const cardProps = (property: PropertyNode) => ({
 	title: property.title ?? null,
 	availability: (property.availability as Availability | undefined) ?? null,
 	address: property.address ?? null,
+	development: property.development ?? null,
 	sqft: property.sqft ?? null,
 	price: property.price ?? null,
 	zone: property.zone ?? null,
@@ -104,8 +105,9 @@ const cardProps = (property: PropertyNode) => ({
 					))}
 				</div>
 			) : (
-				<div class="mt-8 max-w-3xl rounded-xl border border-hairline-steel bg-secondary p-8">
-					<h3 class="font-display text-2xl font-medium tracking-[-0.4px]">The park-linked shop register is not published yet.</h3>
+				<div class="relative mt-8 max-w-3xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-8">
+					<p class="font-mono text-[12px] text-primary">Register status</p>
+					<h3 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">The park-linked shop register is not published yet.</h3>
 					<p class="mt-3 text-muted-foreground">No shop record currently carries an operator-approved Eens Business Park membership. Ask about the next verified register or arrange a viewing through the Eens office.</p>
 					<div class="mt-6 flex flex-wrap gap-3">
 						<Button href="/contact" size="lg">Ask about shop space</Button>

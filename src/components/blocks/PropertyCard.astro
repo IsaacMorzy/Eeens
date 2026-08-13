@@ -26,6 +26,7 @@ export interface PropertyCardData {
 	title?: string | null;
 	availability?: Availability | null;
 	address?: string | null;
+	development?: string | null;
 	sqft?: string | null;
 	price?: { ksh?: string | null; perSqft?: string | null } | null;
 	zone?: string | null;
@@ -33,6 +34,7 @@ export interface PropertyCardData {
 	image?: { src?: string | null; alt?: string | null } | null;
 	ref?: string | null;
 	href?: string | null;
+	reference?: string | null;
 	viewLabel?: string | null;
 }
 
@@ -54,6 +56,24 @@ const mapHref = data.address || data.zone
 // Resolve image src: prefer Tina's heroImage.src, fall back to the local Pexels photo.
 const resolvedImageSrc = data.image?.src ?? fallbackImageSrc;
 const resolvedImageAlt = data.image?.alt ?? data.title ?? '';
+const typeLabel = data.type
+	? ({
+			SHOP: 'Shop unit',
+			WAREHOUSE: 'Warehouse',
+			GODOWN: 'Godown',
+			BUSINESS_PARK: 'Business park',
+			APARTMENT: 'Apartment',
+		}[data.type] ?? data.type)
+	: null;
+const typeIcon = data.type
+	? ({
+			SHOP: 'building-store',
+			WAREHOUSE: 'building-warehouse',
+			GODOWN: 'package',
+			BUSINESS_PARK: 'building-community',
+			APARTMENT: 'building',
+		}[data.type] ?? 'building')
+	: null;
 const sourceUrl = getPexelsSource(resolvedImageSrc);
 ---
 
@@ -64,25 +84,39 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 	]}
 	{...rest}
 >		{resolvedImageSrc && (
-		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
-			<img
-				src={resolvedImageSrc}
-				alt={resolvedImageAlt}
-				width={1280}
-				height={720}
-				loading="lazy"
-				decoding="async"
-				class="size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
-			/>
-
-		</div>
-	)}
-	<div class="flex flex-1 flex-col gap-3 p-5">
+			<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
+				{viewHref ? (
+					<a href={viewHref} aria-label={`View ${data.title ?? 'property'}`} class="block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50">
+						<img
+							src={resolvedImageSrc}
+							alt={resolvedImageAlt}
+							width={1280}
+							height={720}
+							loading="lazy"
+							decoding="async"
+							class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+						/>
+					</a>
+				) : (
+					<img
+						src={resolvedImageSrc}
+						alt={resolvedImageAlt}
+						width={1280}
+						height={720}
+						loading="lazy"
+						decoding="async"
+						class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+					/>
+				)}
+			</div>
+		)}
+	<div class="flex flex-1 flex-col gap-4 p-6">
 		{(data.type || data.availability) && (
 			<div class="flex flex-wrap items-center justify-between gap-2">
-				{data.type && (
-					<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">
-						{data.type}
+				{typeLabel && (
+					<span data-tina-field={tinaField(data as { type?: unknown }, 'type')} class="inline-flex items-center gap-2 text-[13px] font-medium uppercase tracking-[0.4px] text-primary">
+						{typeIcon && <Icon name={typeIcon} class="size-3.5" />}
+						<span>{typeLabel}</span>
 					</span>
 				)}
 				{data.availability && <AvailabilityBadge availability={data.availability} />}
@@ -90,13 +124,24 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 		)}
 		{data.title && (
 			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
-				{data.title}
+				{viewHref ? (
+					<a href={viewHref} class="transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">{data.title}</a>
+				) : data.title}
 			</h3>
+		)}
+		{data.reference && (
+			<p data-tina-field={tinaField(data as { reference?: unknown }, 'reference')} class="font-mono text-[12px] tabular-nums text-muted-foreground">{data.reference}</p>
 		)}
 		{data.address && (
 			<p data-tina-field={tinaField(data as { address?: unknown }, 'address')} class="text-sm text-muted-foreground">
 				{data.address}
 			</p>
+		)}
+		{data.development && (
+			<div data-tina-field={tinaField(data as { development?: unknown }, 'development')} class="flex items-center gap-2 font-mono text-[12px] text-muted-foreground">
+				<Icon name="building-community" aria-hidden="true" class="size-3.5 shrink-0 text-primary" />
+				<span>{data.development}</span>
+			</div>
 		)}
 		{data.sqft && (
 			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
@@ -117,7 +162,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center self-start rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>
 		)}
 		{(data.zone || data.leaseTerm) && (
-			<div class="flex flex-wrap items-center gap-2 pt-1">
+			<div class="flex flex-wrap items-center gap-2 pt-2">
 				{data.zone && (
 					<div data-tina-field={tinaField(data as { zone?: unknown }, 'zone')}>
 						<LocationPin zone={data.zone} mapHref={mapHref} />
@@ -131,7 +176,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{viewHref && (
-			<div class="mt-auto flex items-center justify-end pt-2">
+			<div class="mt-auto flex items-center justify-end pt-4">
 				<Button href={viewHref} variant="secondary" size="sm">
 					<span>{viewLabel}</span>
 					<Icon name="arrow-up-right" class="size-3.5" />

@@ -77,7 +77,7 @@ export const PropertyCollection: Collection = {
 			label: 'Development / park (optional)',
 			type: 'string',
 			options: [{ label: 'Eens Business Park', value: 'Eens Business Park' }],
-			description: 'Select only when an operator-approved record identifies the named development. Leave blank when compound membership is unknown.',
+			description: 'Select only when an operator-approved record identifies the named development or park. Leave blank when compound membership is unknown.',
 		},
 		{
 			name: 'buildingFeatures',
@@ -85,6 +85,7 @@ export const PropertyCollection: Collection = {
 			type: 'string',
 			list: true,
 			description: 'Operator-approved building or unit features only. Do not copy third-party listing claims or infer amenities from stock photography.',
+
 		},
 		{ name: 'availability', label: 'Availability', type: 'string', options: AVAILABILITY_OPTIONS, required: true },
 		{
