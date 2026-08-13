@@ -71,7 +71,7 @@ The `eensbpark.ke` site was checked against the live Bench installation on 13 Au
 | Frappe Assistant Core 2.5.0 | Installed and running | Permission-scoped assistant access, MCP connection, prompts, skills, reporting, analysis, dashboards, file extraction, and audit logs |
 | Internal and multichannel communication layer | Installed and running | Internal chat, record-linked topics, multimedia messages, support routing, channel profiles, templates, notifications, and webhooks |
 | `eens_app` | Installed; no custom DocTypes or active business hooks | Frappe app shell for Eens-specific extensions; ready for the integration layer described in this proposal |
-| Astro 7.2 + TinaCMS | Origin present in `eens_app/frontend` | Static public site, property content, editorial workflow, SEO metadata, category routes, detail pages, and PWA shell |
+| Astro 7.2 + TinaCMS | Content present in `eens_app/frontend` | Static public site, property content, editorial workflow, SEO metadata, category routes, detail pages, and PWA shell |
 | Vercel/static build path | Astro output is configured for the Frappe public directory | Public pages can be built separately from the ERP while sharing approved data through a controlled integration |
 
 ### 2.2 What is already present on the public website
@@ -206,11 +206,11 @@ This helps Eens keep rent, utility consumption, deposits, renewals, and tenant c
 
 CRM supplies the commercial pipeline before a lease exists.
 
-- **CRM Lead** captures name, email, phone, organisation, origin, industry, territory, lead owner, status, SLA fields, Facebook lead identifiers, products, and communication state.
-- **CRM Deal** captures organisation, lead, owner, origin, territory, probability, deal value, next step, expected closure, contacts, status changes, SLA, and lost reasons.
+- **CRM Lead** captures name, email, phone, organisation, channel, industry, territory, lead owner, status, SLA fields, Facebook lead identifiers, products, and communication state.
+- **CRM Deal** captures organisation, lead, owner, channel, territory, probability, deal value, next step, expected closure, contacts, status changes, SLA, and lost reasons.
 - **CRM Task** records the next action, owner, priority, status, due date, and linked record.
 - **CRM Call Log, FCRM Note, Communication, and notifications** keep the context around the relationship.
-- **CRM Lead Origin, Lead Status, Territory, Industry, and Organization** make campaign and market segmentation possible.
+- **CRM Lead Channel, Lead Status, Territory, Industry, and Organization** make campaign and market segmentation possible.
 - ERPNext integration can create or update a Customer as a deal reaches the agreed stage.
 
 CRM should be the first internal destination for website, advertising, social, and conversation enquiries. Utility Service Request should begin only when the enquiry contains enough information to select or discuss a property/service path.
@@ -286,12 +286,12 @@ The system is operated as a standing service, not a sequence of disconnected lau
 | 5 | Agent launch | Enquiry agent handling approved questions with human escalation and transcript context |
 | 6 | SEO delivery | Technical fixes, rank tracking, and first location or property content shipped |
 | 7 | Campaign creative | Video and image ad copy, landing-page copy, and approval-ready campaign assets |
-| 8 | Social and reporting | Content calendar, campaign measurement, and origin-to-enquiry dashboard |
+| 8 | Social and reporting | Content calendar, campaign measurement, and channel-to-enquiry dashboard |
 | 9 | Authority and competitors | Backlink or partnership outreach and a competitor/market signal report |
 | 10 | AI visibility | Entity clarity, structured Q&A, and a recorded baseline for AI-answer visibility |
 | 11 | Website health | Performance, security, content, broken-link, and uptime review with fixes shipped |
 | 12 | Programme review | Monthly/quarterly report, lessons learned, and the next sprint sequence agreed |
-| 13–24 | Growth and optimisation | Repeat the cycle across approved locations and property types, adding conversion, retention, renewal, and origin-to-revenue improvements |
+| 13–24 | Growth and optimisation | Repeat the cycle across approved locations and property types, adding conversion, retention, renewal, and channel-to-revenue improvements |
 
 The exact weekly deliverable is agreed at the start of each sprint. Daily operations continue during every sprint; a sprint does not replace response, monitoring, record maintenance, or incident handling.
 
@@ -361,7 +361,7 @@ The existing journal is a strong base because it explains locations, specificati
 - one property or availability update when an approved record changes;
 - one short video or photo set for a verified location or unit;
 - one recurring answer page for a question that appears in CRM conversations;
-- one monthly content review using organic search, CRM origin data, and viewing outcomes.
+- one monthly content review using organic search, CRM channel data, and viewing outcomes.
 
 A content item is accepted when it has an input, a target query or customer question, a defined next action, and a link to an approved property or contact route.
 
@@ -487,7 +487,7 @@ Every workflow must have:
 
 Capture only data that helps Eens respond or measure a business decision:
 
-- enquiry origin and campaign;
+- enquiry channel and campaign;
 - first landing page and listing code;
 - contact details and consent state;
 - category, zone, size range, use, power requirement, budget band, and timeline;
@@ -515,7 +515,7 @@ The first management dashboard set should be:
 
 1. **Availability:** total units, available, reserved, occupied, maintenance, unpublished, and days since last review.
 2. **Leasing funnel:** leads, qualified deals, viewings, offers, contracts, conversion rates, time to first response, and time to lease.
-3. **Origin performance:** organic, Google Business Profile, paid search, social, referral, direct, and campaign-level qualified conversion.
+3. **Channel performance:** organic, Google Business Profile, paid search, social, referral, direct, and campaign-level qualified conversion.
 4. **Receivables:** invoices due, overdue, ageing, deposits, collections, and exceptions.
 5. **Tenancy:** active contracts, ending dates, escalation dates, insurance status, renewals, and notice horizon.
 6. **Utilities:** consumption by property, meter exceptions, tariff blocks, abnormal usage, and billed/unbilled readings.
@@ -547,7 +547,7 @@ Approved users should be able to ask:
 - Which approved industrial units are available in Mlolongo above a chosen size?
 - Which listings have not been reviewed recently?
 - Show open leads with no next action in the last five working days.
-- Summarise this month’s viewings by origin and outcome.
+- Summarise this month’s viewings by channel and outcome.
 - Which contracts end in the next six months?
 - Compare meter consumption for a property over the last three periods.
 - Prepare a collections follow-up list, grouped by owner and ageing.
@@ -662,7 +662,7 @@ The system crosses these boundaries:
 - Link conversations to CRM Lead, CRM Deal, property links, and follow-up tasks.
 - Add approved templates for viewing acknowledgement, specification response, follow-up, contract, invoice, and payment status.
 
-**Exit condition:** a test enquiry becomes a CRM Lead, receives an owner and SLA, and retains its origin and property context.
+**Exit condition:** a test enquiry becomes a CRM Lead, receives an owner and SLA, and retains its channel and property context.
 
 ### Phase 4 — finance and tenant operations (weeks 9–14)
 
@@ -712,12 +712,12 @@ Baseline values should be captured during Phase 0. Targets should be set after t
 | KPI | Definition | System of record |
 |---|---|---|
 | First response time | Time from captured enquiry to first human or approved automated response | CRM + communication events |
-| Lead completeness | Percentage of leads with origin, consent, contact, need, timeline, and next action | CRM |
+| Lead completeness | Percentage of leads with channel, consent, contact, need, timeline, and next action | CRM |
 | Qualified lead rate | Qualified leads divided by captured leads | CRM |
 | Viewing rate | Completed or scheduled viewings divided by qualified leads | CRM Task / Deal |
 | Offer rate | Offers divided by completed viewings | CRM / Contract process |
 | Lease conversion | Signed contracts divided by qualified deals | Contract |
-| Origin-to-revenue | Collected or invoiced value attributed to a channel/campaign | CRM + ERPNext |
+| Channel-to-revenue | Collected or invoiced value attributed to a channel/campaign | CRM + ERPNext |
 | Listing freshness | Days since approved availability and specification review | Frappe + Tina |
 | Occupancy | Occupied units divided by operational units | Utility Property |
 | Collection rate | Collected amount divided by amount due in period | ERPNext |
@@ -826,7 +826,7 @@ The Eens integration app should expose a versioned, allowlisted projection rathe
     "clearHeight": "7.5"
   },
   "lastReviewedDate": "2026-08-13",
-  "originVersion": 3
+  "revision": 3
 }
 ```
 
@@ -840,9 +840,9 @@ Use standard Frappe REST interfaces and whitelisted methods only where a domain 
 |---|---|---|
 | `GET /api/method/eens_app.api.public_listings.list` | Return approved public listing projections | Read-only, paginated, cacheable, no private fields |
 | `GET /api/method/eens_app.api.public_listings.get` | Return one approved listing projection | Validate code and publication status |
-| `POST /api/method/eens_app.api.leads.capture` | Create or update a CRM Lead | Validate consent, origin, payload size, idempotency key |
+| `POST /api/method/eens_app.api.leads.capture` | Create or update a CRM Lead | Validate consent, channel, payload size, idempotency key |
 | `POST /api/method/eens_app.api.viewings.request` | Create a CRM Task or controlled viewing request | Link listing code; require contact and preferred window |
-| `POST /api/method/eens_app.api.webhooks.receive` | Receive provider/Kestra events | Verify signature, timestamp, origin, and replay key |
+| `POST /api/method/eens_app.api.webhooks.receive` | Receive provider/Kestra events | Verify signature, timestamp, channel, and replay key |
 | `GET /api/method/eens_app.api.health` | Report integration health | Return dependency status without secrets or internal traces |
 
 List responses should be paginated and use a consistent error envelope. External responses must be schema-validated before entering Frappe.
@@ -854,9 +854,9 @@ List responses should be paginated and use a consistent error envelope. External
   "eventId": "provider-or-workflow-id",
   "eventType": "lead.captured",
   "occurredAt": "2026-08-13T10:30:00Z",
-  "origin": "website",
+  "channel": "website",
   "correlationId": "request-id",
-  "idempotencyKey": "sha256-of-origin-and-event",
+  "idempotencyKey": "sha256-of-channel-and-event",
   "payload": {
     "name": "Prospect name",
     "email": "prospect@example.com",
@@ -866,7 +866,7 @@ List responses should be paginated and use a consistent error envelope. External
     "requirement": "9,000 sq ft warehouse",
     "consent": true,
     "utm": {
-      "origin": "google",
+      "channel": "google",
       "medium": "organic",
       "campaign": "mlolongo-warehouse"
     }
@@ -905,7 +905,7 @@ Do not start with direct, destructive CMS mutations.
 ### Slice 2 — lead capture
 
 - Add validated public capture endpoint.
-- Create/update CRM Lead with origin and UTM fields.
+- Create/update CRM Lead with channel and UTM fields.
 - Add deduplication and idempotency.
 - Add SLA, owner, and next-action assignment.
 - Test malformed, duplicate, consent-denied, and rate-limited requests.
@@ -930,8 +930,8 @@ Do not start with direct, destructive CMS mutations.
 
 - Define event names and UTM persistence.
 - Send qualified conversion events to the analytics destination.
-- Join campaign origin to CRM Lead and Deal.
-- Build origin-to-viewing and origin-to-contract reports.
+- Join campaign channel to CRM Lead and Deal.
+- Build channel-to-viewing and channel-to-contract reports.
 - Test consent and attribution expiry rules.
 
 ### Slice 6 — assistant skills and tools
@@ -952,11 +952,11 @@ Do not start with direct, destructive CMS mutations.
 2. Was a CRM Lead created or updated, and who owns the next action?
 3. Did the conversation, viewing, service request, contract, invoice, or payment event succeed?
 4. Which dependency failed: website, Kestra, channel provider, Frappe, or payment provider?
-5. Did an assistant result use the right origin record and permission scope?
+5. Did an assistant result use the right relevant record and permission scope?
 
 ### Required signals
 
-- Structured events with `eventName`, `correlationId`, `origin`, `status`, `durationMs`, and bounded error codes.
+- Structured events with `eventName`, `correlationId`, `channel`, `status`, `durationMs`, and bounded error codes.
 - RED metrics for each public endpoint and external dependency: rate, error rate, and p95/p99 duration.
 - Queue age and failed execution counts for Kestra and background jobs.
 - Frappe Error Log and Assistant Audit Log retention with a review process.
@@ -973,7 +973,7 @@ Never log passwords, access tokens, payment credentials, full request bodies, or
 |---|---|
 | Public inventory | A non-approved unit cannot appear in a public route or sitemap |
 | Listing freshness | A changed availability record is detected and routed for review |
-| Lead capture | A valid enquiry creates one CRM Lead with origin, consent, owner, SLA, and next action |
+| Lead capture | A valid enquiry creates one CRM Lead with channel, consent, owner, SLA, and next action |
 | Deduplication | Replaying the same event does not create a duplicate lead or message |
 | Conversation | An inbound message is linked to the right profile and business record |
 | Contract | Deposit and contract gates prevent invalid invoice creation |
