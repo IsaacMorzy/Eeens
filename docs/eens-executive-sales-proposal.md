@@ -364,6 +364,20 @@ Before Phase 1 begins, Eens should record:
 
 Approve the programme direction, nominate the owners above, and schedule the Phase 0 discovery session. The technical implementation proposal is the companion document for the engineering team; it contains the detailed system boundaries, records, interfaces, security controls, and acceptance tests.
 
+## Executive handoff pack
+
+At kickoff and at each phase review, Eens should receive a concise decision pack containing:
+
+- the approved scope, budget boundary, and deferred-item register;
+- the named business, property, finance, marketing, technical, and acceptance owners;
+- the current baseline for occupancy, response time, qualified demand, viewings, collections, and listing freshness;
+- the location and property priorities for the next phase;
+- the campaign and content priorities linked to approved business goals;
+- the phase acceptance checklist, risks, decisions required, and next review date;
+- a plain-language summary of what is live, what is being configured, and what remains planned.
+
+This handoff pack keeps executive decisions visible without turning the sales proposal into an engineering implementation contract.
+
 ---
 
 ## Document boundary
