@@ -70,12 +70,14 @@ const filtered: PropertyNode[] = all
 						title: p.title ?? null,
 						availability: (p.availability as Availability | null) ?? null,
 						address: p.address ?? null,
+						development: p.development ?? null,
 						sqft: p.sqft ?? null,
 						price: p.price ?? null,
 						zone: p.zone ?? null,
 						leaseTerm: p.leaseTerm ?? null,
 						image: p.heroImage ?? null,
 						ref: p._sys?.filename ?? null,
+						reference: p.reference ?? null,
 						viewLabel: 'View listing',
 					}}
 					fallbackImageSrc={getIllustrationSrc(p.type)}
