@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eens Limited — Digital Transformation Proposal</title>
+<style>
+  :root { --canvas:#fafaf9; --ink:#0f172a; --muted:#475569; --line:#94a3b8; --accent:#0e7490; --dark:#0f172a; --paper:#fff; }
+  @page { size: A4; margin: 18mm 16mm 18mm; }
+  * { box-sizing: border-box; }
+  html { background: var(--canvas); }
+  body { margin: 0; color: var(--ink); background: var(--paper); font-family: Arial, Helvetica, sans-serif; font-size: 10.2pt; line-height: 1.48; }
+  main { max-width: 180mm; margin: 0 auto; padding: 18mm 0; }
+  h1, h2, h3, h4 { font-family: Arial, Helvetica, sans-serif; color: var(--ink); line-height: 1.14; page-break-after: avoid; }
+  h1 { font-size: 25pt; margin: 0 0 12pt; letter-spacing: -.7pt; }
+  h2 { font-size: 17pt; margin: 23pt 0 8pt; border-bottom: 1px solid var(--line); padding-bottom: 4pt; }
+  h3 { font-size: 12.5pt; margin: 16pt 0 6pt; color: var(--accent); }
+  h4 { font-size: 10.5pt; margin: 12pt 0 4pt; }
+  p { margin: 0 0 8pt; orphans: 3; widows: 3; }
+  strong { font-weight: 700; }
+  em { color: var(--muted); }
+  code { font-family: "Courier New", monospace; font-size: 8.5pt; background:#f1f5f9; padding:1px 3px; }
+  pre { white-space: pre-wrap; font-family: "Courier New", monospace; font-size: 7.8pt; line-height: 1.35; background:#f1f5f9; border-left: 3px solid var(--accent); padding: 9pt 10pt; margin: 8pt 0 12pt; page-break-inside: avoid; }
+  blockquote { border-left: 3px solid var(--accent); margin: 10pt 0; padding: 3pt 12pt; color: var(--muted); font-size: 11pt; }
+  ul, ol { margin: 4pt 0 9pt 17pt; padding: 0; }
+  li { margin: 2pt 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 18pt 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0 13pt; font-size: 8.35pt; page-break-inside: auto; }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+  th { background: var(--dark); color: white; text-align: left; font-weight: 700; }
+  th, td { border: 1px solid #cbd5e1; padding: 5pt 6pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  a { color: var(--accent); text-decoration: none; }
+  .cover { min-height: 245mm; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; padding: 20mm 14mm 15mm; background: var(--dark); color: white; }
+  .cover h1, .cover h2, .cover h3, .cover p { color: white; border: 0; }
+  .cover h1 { font-size: 33pt; max-width: 145mm; margin-top: 25mm; }
+  .cover .eyebrow { color: #67e8f9; font-family: "Courier New", monospace; font-size: 9pt; letter-spacing: 1.2pt; text-transform: uppercase; }
+  .cover .rule { width: 35mm; border-top: 3px solid #67e8f9; margin: 20pt 0; }
+  .cover .meta { font-family: "Courier New", monospace; font-size: 8.5pt; color: #cbd5e1; line-height: 1.8; }
+  .cover .footer { border-top: 1px solid #475569; padding-top: 10pt; font-size: 8.5pt; color: #cbd5e1; }
+  .chapter { page-break-before: always; }
+  .small { font-size: 8.5pt; color: var(--muted); }
+  .notice { border: 1px solid var(--accent); border-left: 5px solid var(--accent); padding: 9pt 11pt; background: #f0fdfa; margin: 10pt 0 14pt; page-break-inside: avoid; }
+  .status-live { color:#047857; font-weight:700; }
+  .status-build { color:#b45309; font-weight:700; }
+  .status-gap { color:#b91c1c; font-weight:700; }
+  #loading { color: var(--muted); font-family: "Courier New", monospace; }
+  @media print { html, body { background: white; } main { padding:0; } a { color:inherit; } }
+</style>
+</head>
+<body>
+<main id="document"><p id="loading">Loading proposal…</p></main>
+<script>
+(function () {
+  const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const inline = (value) => {
+    let s = esc(value);
+    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    return s;
+  };
+  const tableCells = (line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((x) => inline(x.trim()));
+  const isTableSeparator = (line) => /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+  function render(md) {
+    const lines = md.replace(/\r\n/g, '\n').split('\n');
+    let out = '', i = 0, inCode = false, code = '';
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.startsWith('```')) {
+        if (!inCode) { inCode = true; code = ''; }
+        else { out += '<pre>' + esc(code.replace(/\n$/, '')) + '</pre>'; inCode = false; }
+        i++; continue;
+      }
+      if (inCode) { code += line + '\n'; i++; continue; }
+      if (!line.trim()) { i++; continue; }
+      if (line === '---') { out += '<hr>'; i++; continue; }
+      if (/^\|/.test(line) && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+        const head = tableCells(line); i += 2; let rows = [];
+        while (i < lines.length && /^\|/.test(lines[i]) && lines[i].trim()) { rows.push(tableCells(lines[i])); i++; }
+        out += '<table><thead><tr>' + head.map((x) => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>';
+        rows.forEach((row) => { out += '<tr>' + head.map((_, n) => '<td>' + (row[n] || '') + '</td>').join('') + '</tr>'; });
+        out += '</tbody></table>'; continue;
+      }
+      const heading = line.match(/^(#{1,4})\s+(.*)$/);
+      if (heading) {
+        const level = heading[1].length;
+        const cls = level === 1 && /Part II/.test(heading[2]) ? ' class="chapter"' : '';
+        out += '<h' + level + cls + '>' + inline(heading[2]) + '</h' + level + '>'; i++; continue;
+      }
+      if (/^>\s?/.test(line)) { out += '<blockquote>' + inline(line.replace(/^>\s?/, '')) + '</blockquote>'; i++; continue; }
+      if (/^\s*[-*]\s+/.test(line)) {
+        out += '<ul>'; while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) { out += '<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>'; i++; } out += '</ul>'; continue;
+      }
+      if (/^\s*\d+\.\s+/.test(line)) {
+        out += '<ol>'; while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { out += '<li>' + inline(lines[i].replace(/^\s*\d+\.\s+/, '')) + '</li>'; i++; } out += '</ol>'; continue;
+      }
+      let para = [line]; i++;
+      while (i < lines.length && lines[i].trim() && !/^#{1,4}\s/.test(lines[i]) && lines[i] !== '---' && !/^\s*[-*]\s+/.test(lines[i]) && !/^\s*\d+\.\s+/.test(lines[i]) && !/^>\s?/.test(lines[i]) && !/^\|/.test(lines[i]) && !lines[i].startsWith('```')) { para.push(lines[i]); i++; }
+      out += '<p>' + inline(para.join(' ')) + '</p>';
+    }
+    return out;
+  }
+  function load() {
+    const target = 'eens-digital-transformation-proposal.md';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', target, false);
+    try { xhr.send(null); } catch (e) { document.getElementById('document').innerHTML = '<p>Unable to load the editable proposal source.</p>'; return; }
+    if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 300)) {
+      document.getElementById('document').innerHTML = '<section class="cover"><div><div class="eyebrow">Eens Limited / NT-PRP-2026-EENS2</div><div class="rule"></div><h1>Digital Property Operations, Demand Capture, and Revenue Systems</h1><p>Evidence-led transformation proposal for public property publishing, leasing operations, utility billing, digital marketing, and permission-controlled decision support.</p></div><div><div class="meta">Prepared by Nimbuz Tech<br>13 August 2026<br>Six-month implementation and growth programme</div><div class="footer">Eens Limited · eens.co.ke · eensbpark.ke</div></div></section>' + render(xhr.responseText);
+    } else {
+      document.getElementById('document').innerHTML = '<p>Unable to load the editable proposal source.</p>';
+    }
+  }
+  load();
+})();
+</script>
+</body>
+</html>
