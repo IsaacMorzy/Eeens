@@ -7,6 +7,7 @@ import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.a
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { getPropertyVisual } from '../../lib/contextual-images';
 import { getIllustrationSrc } from '../../lib/property-filters';
+import { filterParkProperties } from '../../lib/property-directories';
 import { listProperties, type PropertyNode } from '../../lib/data';
 
 const visual = getPropertyVisual('BUSINESS_PARK');
@@ -14,9 +15,9 @@ const officialSource = 'https://eens.co.ke/property/warehouse-baba-dogo/warehous
 const referenceListing = 'https://finlay.co.ke/listings/eens-business-park-syokimau';
 
 const properties: PropertyNode[] = await listProperties();
-const shopUnits = properties.filter(
-	(property) => property.type === 'SHOP' && property.development === 'Eens Business Park',
-);
+const parkProperties = filterParkProperties(properties);
+const shopUnits = parkProperties.filter((property) => property.type === 'SHOP');
+const approvedFeatures = [...new Set(parkProperties.flatMap((property) => property.buildingFeatures ?? []))];
 const warehouses = properties.filter((property) => property.type === 'WAREHOUSE');
 const godowns = properties.filter((property) => property.type === 'GODOWN');
 const warehouseZones = [...new Set(warehouses.map((property) => property.zone).filter(Boolean))].join(', ');
@@ -122,8 +123,22 @@ const cardProps = (property: PropertyNode) => ({
 			<div class="max-w-2xl">
 				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">FEATURE REGISTER</span>
 				<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Amenities and features are published when confirmed.</h2>
-				<p class="mt-4 text-muted-foreground">The park page separates verified building features from contextual descriptions. No amenity, tenant, floor-plan, or service claim is added until its source is approved.</p>
+				<p class="mt-4 text-muted-foreground">{approvedFeatures.length > 0 ? 'These features come from operator-approved records linked to Eens Business Park.' : 'The park page separates verified building features from contextual descriptions. No amenity, tenant, floor-plan, or service claim is added until its source is approved.'}</p>
 			</div>
+			{approvedFeatures.length > 0 ? (
+				<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					{approvedFeatures.map((feature) => (
+						<div class="rounded-xl border border-hairline-steel bg-background p-5">
+							<span class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">APPROVED FEATURE</span>
+							<h3 class="mt-4 font-display text-xl font-medium">{feature}</h3>
+						</div>
+					))}
+				</div>
+			) : (
+				<div class="mt-8 rounded-xl border border-dashed border-hairline-steel bg-background p-6">
+					<p class="font-mono text-[12px] text-muted-foreground">FEATURE REGISTER PENDING OPERATOR APPROVAL</p>
+				</div>
+			)}
 			<div class="mt-8 grid gap-4 md:grid-cols-3">
 				{[
 					['01', 'Location', 'Read the literal address, zone, and access context before comparing spaces.'],

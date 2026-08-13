@@ -17,10 +17,10 @@ export const DIRECTORY_DEFINITIONS: Record<DirectoryKey, DirectoryDefinition> = 
 		key: 'shops',
 		type: 'SHOP',
 		label: 'Shop units',
-		title: 'Shop units available across Eens locations.',
-		description: 'Compare published shop spaces by area, monthly rent, availability, and zone.',
+		title: 'Shop units published across the Eens portfolio.',
+		description: 'Start with the Eens Business Park overview, then compare any shop records that have been published with a zone, area, price, and availability.',
 		emptyTitle: 'No shop units are published yet.',
-		emptyDescription: 'Ask Eens about upcoming shop space or send the unit reference for a viewing.',
+		emptyDescription: 'No operator-approved shop records are published yet. Start with the Eens Business Park overview or ask the office about the next verified register.',
 	},
 	warehouses: {
 		key: 'warehouses',
@@ -88,8 +88,12 @@ export const filterDirectoryProperties = (
 	return properties.filter((property) => property.type === definition.type);
 };
 
-export const filterParkProperties = (properties: readonly PropertyNode[]): PropertyNode[] =>
-	properties.filter((property) => property.development === 'Eens Business Park');
+export const filterParkProperties = (
+	properties: readonly PropertyNode[],
+	development = 'Eens Business Park',
+): PropertyNode[] => properties.filter((property) => property.development === development);
 
-export const filterZoneProperties = (properties: readonly PropertyNode[], zone: string): PropertyNode[] =>
-	properties.filter((property) => property.zone === zone);
+export const filterZoneProperties = (
+	properties: readonly PropertyNode[],
+	zone: string,
+): PropertyNode[] => properties.filter((property) => property.zone === zone);

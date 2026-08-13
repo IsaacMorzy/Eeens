@@ -88,7 +88,9 @@ const informationLinks = [
 					</h3>
 					<ul class="mt-4 space-y-2 text-sm">
 				{spaceLinks.map((l) => (
-					<li>						<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+					<li>
+						<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+
 									{l.title}
 								</a>
 							</li>
