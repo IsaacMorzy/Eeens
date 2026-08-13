@@ -49,7 +49,7 @@ const filtered: PropertyNode[] = all
 <Section>
 	<div class="mx-auto w-full">
 		{(data.title || data.description) && (
-			<header class="mx-auto mb-10 max-w-3xl text-center md:text-left">
+			<header class="mx-auto mb-8 max-w-3xl text-center md:mb-10 md:text-left">
 				{data.title && (
 					<h2 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">
 						{data.title}
@@ -62,7 +62,7 @@ const filtered: PropertyNode[] = all
 				)}
 			</header>
 		)}
-		<div class:list={[data.layout === 'strip' ? 'flex flex-col gap-6' : 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3']}>
+		<div class:list={[data.layout === 'strip' ? 'flex flex-col gap-6' : 'grid gap-8 sm:grid-cols-2 lg:grid-cols-3']}>
 			{filtered.map((p: PropertyNode) => (
 				<PropertyCardFeatured
 					data={{
@@ -83,7 +83,7 @@ const filtered: PropertyNode[] = all
 			))}
 		</div>
 		{blockActions.length > 0 && (
-			<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+			<div class="mt-8 flex flex-wrap items-center justify-center gap-3 md:mt-10">
 				{blockActions.map((action: Action) => (
 					<Button href={action.link} variant={action.type === 'link' ? 'ghost' : 'default'} size="lg">
 						{action.icon && <Icon name={action.icon} class="size-4" />}

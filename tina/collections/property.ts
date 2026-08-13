@@ -72,6 +72,12 @@ export const PropertyCollection: Collection = {
 			description: 'Shown on the listing card and as the page H1. Always include the zone + identifier.',
 		},
 		{ name: 'type', label: 'Type', type: 'string', options: TYPE_OPTIONS, required: true },
+		{
+			name: 'development',
+			label: 'Development / park (optional)',
+			type: 'string',
+			description: 'Use only when an operator-approved record identifies the named development or park. Leave blank when compound membership is unknown.',
+		},
 		{ name: 'availability', label: 'Availability', type: 'string', options: AVAILABILITY_OPTIONS, required: true },
 		{
 			name: 'address',
@@ -81,9 +87,6 @@ export const PropertyCollection: Collection = {
 			description: 'Include the zone + road + kilometer mark. e.g. "Mlolongo, Mombasa Road, KM 14".',
 		},
 		{ name: 'zone', label: 'Zone', type: 'string', options: ZONE_OPTIONS, required: true },
-		{ name: 'development', label: 'Named development / building', type: 'string', description: 'Set only when the listing is confirmed as part of a named development or building.' },
-		{ name: 'features', label: 'Building features', type: 'string', list: true, description: 'Verified building or development features only. Leave empty until reviewed.' },
-		{ name: 'amenities', label: 'Building amenities', type: 'string', list: true, description: 'Verified amenities only. Leave empty until reviewed.' },
 		{
 			name: 'sqft',
 			label: 'Square footage',

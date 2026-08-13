@@ -74,12 +74,12 @@ const menuGroups: MenuGroup[] = [
 		],
 	},
 	{
-		label: 'Journal',
+		label: 'News',
 		href: '/blog',
-		linkLabel: 'Read the journal',
+		linkLabel: 'Read the news',
 		intro: 'Practical notes on locations, specifications, and leasing.',
 		items: [
-			{ label: 'Property notes', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
+			{ label: 'Latest news', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
 			{ label: 'Warehouse specifications', href: '/blog/reading-warehouse-spec-sheets', detail: 'How to read a spec sheet', icon: 'ruler' },
 		],
 	},
@@ -155,7 +155,7 @@ const menuGroups: MenuGroup[] = [
 			</a>
 			<div class="space-y-1">
 				{menuGroups.map((group) => (
-					<details class="border-b border-border/60 last:border-b-0">
+					<details class="group border-b border-border/60 last:border-b-0">
 						<summary class="flex min-h-12 cursor-pointer list-none items-center justify-between py-3 text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
 							<span>{group.label}</span>
 							<Icon name="chevron-down" class="size-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />

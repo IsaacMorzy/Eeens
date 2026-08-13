@@ -26,6 +26,7 @@ export interface PropertyCardData {
 	title?: string | null;
 	availability?: Availability | null;
 	address?: string | null;
+	development?: string | null;
 	sqft?: string | null;
 	price?: { ksh?: string | null; perSqft?: string | null } | null;
 	zone?: string | null;
@@ -90,7 +91,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 				)}
 			</div>
 		)}
-	<div class="flex flex-1 flex-col gap-3 p-5">
+	<div class="flex flex-1 flex-col gap-4 p-6">
 		{(data.type || data.availability) && (
 			<div class="flex flex-wrap items-center justify-between gap-2">
 				{data.type && (
@@ -113,6 +114,12 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 				{data.address}
 			</p>
 		)}
+		{data.development && (
+			<div data-tina-field={tinaField(data as { development?: unknown }, 'development')} class="flex items-center gap-2 font-mono text-[12px] text-muted-foreground">
+				<Icon name="building-community" aria-hidden="true" class="size-3.5 shrink-0 text-primary" />
+				<span>{data.development}</span>
+			</div>
+		)}
 		{data.sqft && (
 			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
 				{data.sqft}
@@ -132,7 +139,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			<a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center self-start rounded-sm font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>
 		)}
 		{(data.zone || data.leaseTerm) && (
-			<div class="flex flex-wrap items-center gap-2 pt-1">
+			<div class="flex flex-wrap items-center gap-2 pt-2">
 				{data.zone && (
 					<div data-tina-field={tinaField(data as { zone?: unknown }, 'zone')}>
 						<LocationPin zone={data.zone} mapHref={mapHref} />
@@ -146,7 +153,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{viewHref && (
-			<div class="mt-auto flex items-center justify-end pt-2">
+			<div class="mt-auto flex items-center justify-end pt-4">
 				<Button href={viewHref} variant="secondary" size="sm">
 					<span>{viewLabel}</span>
 					<Icon name="arrow-up-right" class="size-3.5" />

@@ -27,7 +27,7 @@ if (!blog.pubDate) return new Response('Not Found', { status: 404 });
 ---
 
 <BlogPost
-	title={blog.title ?? 'Blog'}
+	title={blog.title ?? 'News'}
 	description={blog.description ?? ''}
 	pubDate={new Date(blog.pubDate)}
 	updatedDate={blog.updatedDate ? new Date(blog.updatedDate) : undefined}
