@@ -6,6 +6,15 @@ export const contentBlockSchema: Template = {
 	fields: [
 		{ type: 'string', label: 'Title', name: 'title' },
 		{ type: 'string', label: 'Description', name: 'description', ui: { component: 'textarea' } },
+		{
+			type: 'object',
+			label: 'Image (optional)',
+			name: 'image',
+			fields: [
+				{ type: 'image', label: 'Image source', name: 'src' },
+				{ type: 'string', label: 'Alt text', name: 'alt' },
+			],
+		},
 		{ type: 'rich-text', label: 'Body', name: 'body' },
 	],
 	ui: {

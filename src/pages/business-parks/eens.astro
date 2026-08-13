@@ -1,0 +1,236 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import ContextualVisual from '../../components/ui/ContextualVisual.astro';
+import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
+import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
+import { getPropertyVisual } from '../../lib/contextual-images';
+import { getIllustrationSrc } from '../../lib/property-filters';
+import { listProperties, type PropertyNode } from '../../lib/data';
+
+const visual = getPropertyVisual('BUSINESS_PARK');
+const officialSource = 'https://eens.co.ke/property/warehouse-baba-dogo/warehouse-along-mombasa-road/eens-business-park/';
+const referenceListing = 'https://finlay.co.ke/listings/eens-business-park-syokimau';
+
+const properties: PropertyNode[] = await listProperties();
+const shopUnits = properties.filter(
+	(property) => property.type === 'SHOP' && property.development === 'Eens Business Park',
+);
+const warehouses = properties.filter((property) => property.type === 'WAREHOUSE');
+const godowns = properties.filter((property) => property.type === 'GODOWN');
+const warehouseZones = [...new Set(warehouses.map((property) => property.zone).filter(Boolean))].join(', ');
+const godownZones = [...new Set(godowns.map((property) => property.zone).filter(Boolean))].join(', ');
+
+const cardProps = (property: PropertyNode) => ({
+	type: property.type ?? null,
+	title: property.title ?? null,
+	availability: (property.availability as Availability | undefined) ?? null,
+	address: property.address ?? null,
+	development: property.development ?? null,
+	sqft: property.sqft ?? null,
+	price: property.price ?? null,
+	zone: property.zone ?? null,
+	leaseTerm: property.leaseTerm ?? null,
+	image: property.heroImage ?? null,
+	ref: property._sys?.filename ?? null,
+	viewLabel: 'View listing',
+});
+---
+
+<Base
+	title="Eens Business Park | Syokimau, Mombasa Road"
+	description="Eens Business Park at Quiver Mombasa Road, Syokimau. Shop records are shown only when published; warehouses and godowns remain in separate directories."
+>
+	<!-- 1. Park introduction -->
+	<Section class="bg-background pt-10 md:pt-16">
+		<div class="mx-auto max-w-6xl">
+			<div class="max-w-3xl">
+				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">EENS BUSINESS PARK</span>
+				<h1 class="mt-4 text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-6xl md:tracking-[-1.8px]">Eens Business Park, Syokimau.</h1>
+				<p class="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">A commercial and industrial property location at Quiver Mombasa Road, Syokimau. This page separates the named park overview from the wider Eens warehouse, godown, and apartment register.</p>
+				<div class="mt-8 flex flex-wrap gap-3">
+					<Button href="/contact" size="lg">Arrange a viewing</Button>
+					<Button href="/shops" variant="secondary" size="lg">Browse shop records</Button>
+				</div>
+			</div>
+			{visual && <div class="mt-12"><ContextualVisual visual={visual} priority /></div>}
+			<p class="mt-3 font-mono text-xs text-muted-foreground">Contextual photo. It does not depict a specific Eens unit.</p>
+		</div>
+	</Section>
+
+	<!-- 2. Location context -->
+	<Section class="bg-secondary">
+		<div class="mx-auto max-w-6xl">
+			<div class="grid gap-8 lg:grid-cols-[1fr_2fr]">
+				<div>
+					<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">PUBLIC CONTEXT</span>
+					<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Location and corridor.</h2>
+					<p class="mt-4 max-w-md text-muted-foreground">Public property descriptions place the park in this corridor. Confirm current access, amenities, and unit membership with the Eens office before acting.</p>
+				</div>
+				<div class="space-y-4">
+					<div class="rounded-xl border border-hairline-steel bg-background p-5">
+						<span class="font-mono text-[13px] font-medium text-primary">LOCATION</span>
+						<p class="mt-2 font-mono text-sm text-foreground">Quiver Mombasa Road, Syokimau.</p>
+					</div>
+					<div class="rounded-xl border border-hairline-steel bg-background p-5">
+						<span class="font-mono text-[13px] font-medium text-primary">CORRIDOR</span>
+						<p class="mt-2 font-mono text-sm text-foreground">Mombasa Road commercial corridor.</p>
+					</div>
+					<div class="rounded-xl border border-hairline-steel bg-background p-5">
+						<span class="font-mono text-[13px] font-medium text-primary">PARK SCOPE</span>
+						<p class="mt-2 text-sm text-muted-foreground">The overview focuses on the named park. Other Eens listings stay in their type directories until a verified record establishes compound membership.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Section>
+
+	<!-- 3. Shop register -->
+	<Section id="shop-register" class="bg-background">
+		<div class="mx-auto max-w-6xl">
+			<div class="flex flex-wrap items-end justify-between gap-4">
+				<div class="max-w-2xl">
+					<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">SHOP REGISTER</span>
+					<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Shop records linked to the park.</h2>
+					<p class="mt-4 text-muted-foreground">Only records with an explicit operator-approved Eens Business Park membership are shown here. Exact unit, area, price, and availability facts are never inferred from a photo or a target count.</p>
+				</div>
+				<Button href="/shops" variant="secondary">Open the shop register</Button>
+			</div>
+			{shopUnits.length > 0 ? (
+				<div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					{shopUnits.map((property) => (
+						<PropertyCardFeatured data={cardProps(property)} fallbackImageSrc={getIllustrationSrc(property.type)} />
+					))}
+				</div>
+			) : (
+				<div class="relative mt-8 max-w-3xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-8">
+					<p class="font-mono text-[12px] text-primary">Register status</p>
+					<h3 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">The park-linked shop register is not published yet.</h3>
+					<p class="mt-3 text-muted-foreground">No shop record currently carries an operator-approved Eens Business Park membership. Ask about the next verified register or arrange a viewing through the Eens office.</p>
+					<div class="mt-6 flex flex-wrap gap-3">
+						<Button href="/contact" size="lg">Ask about shop space</Button>
+					</div>
+				</div>
+			)}
+		</div>
+	</Section>
+
+	<!-- 4. Decision checklist -->
+	<Section class="bg-secondary">
+		<div class="mx-auto max-w-6xl">
+			<div class="max-w-2xl">
+				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">FEATURE REGISTER</span>
+				<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Amenities and features are published when confirmed.</h2>
+				<p class="mt-4 text-muted-foreground">The park page separates verified building features from contextual descriptions. No amenity, tenant, floor-plan, or service claim is added until its source is approved.</p>
+			</div>
+			<div class="mt-8 grid gap-4 md:grid-cols-3">
+				{[
+					['01', 'Location', 'Read the literal address, zone, and access context before comparing spaces.'],
+					['02', 'Features', 'Check the published amenities and technical details; unknown features remain unpublished.'],
+					['03', 'Next step', 'Check the stated price or rate, availability, term, and viewing route before making contact.'],
+				].map(([number, title, text]) => (
+					<div class="rounded-xl border border-hairline-steel bg-background p-5">
+						<span class="font-mono text-[13px] text-primary">{number}</span>
+						<h3 class="mt-6 font-display text-xl font-medium">{title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</Section>
+
+	<!-- 5. Separate warehouse directory -->
+	<Section class="bg-background">
+		<div class="mx-auto max-w-6xl">
+			<div class="flex flex-wrap items-end justify-between gap-4">
+				<div class="max-w-2xl">
+					<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">WAREHOUSES</span>
+					<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Warehouse space at other locations.</h2>
+					<p class="mt-4 text-muted-foreground">Warehouses outside the park are tracked separately by location. {warehouseZones ? `Published zones: ${warehouseZones}.` : 'Zone details are published with each listing.'}</p>
+				</div>
+				<Button href="/warehouses" variant="secondary">Open warehouse directory</Button>
+			</div>
+		</div>
+	</Section>
+
+	<!-- 6. Separate godown directory -->
+	<Section class="bg-secondary">
+		<div class="mx-auto max-w-6xl">
+			<div class="flex flex-wrap items-end justify-between gap-4">
+				<div class="max-w-2xl">
+					<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">GODOWNS</span>
+					<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Godown space at other locations.</h2>
+					<p class="mt-4 text-muted-foreground">Godowns are listed through their own directory and remain separate from park membership until confirmed. {godownZones ? `Published zones: ${godownZones}.` : 'Zone details are published with each listing.'}</p>
+				</div>
+				<Button href="/godowns" variant="secondary">Open godown directory</Button>
+			</div>
+		</div>
+	</Section>
+
+	<!-- 7. Viewing process -->
+	<Section class="bg-background">
+		<div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.5fr] lg:items-end">
+			<div>
+				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">VIEWING PROCESS</span>
+				<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">A clear next step, not a form maze.</h2>
+			</div>
+			<div>
+				<p class="max-w-2xl text-muted-foreground">Send the listing reference, category, or question to the Eens office. Availability and access are confirmed before a viewing is arranged.</p>
+				<div class="mt-6 flex flex-wrap gap-3">
+					<Button href="/contact" size="lg">Arrange a viewing</Button>
+					<Button href="/lease-terms" variant="secondary" size="lg">Read lease terms</Button>
+				</div>
+			</div>
+		</div>
+	</Section>
+
+	<!-- 8. Directory paths -->
+	<Section class="bg-secondary">
+		<div class="mx-auto max-w-6xl">
+			<div class="max-w-3xl">
+				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">PUBLISHED PATHS</span>
+				<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Choose the property type.</h2>
+				<p class="mt-4 max-w-2xl text-muted-foreground">The type directories remain the source of truth for published listings and their availability.</p>
+			</div>
+			<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{[
+					['Shop units', '/shops', 'Published shop records'],
+					['Warehouses', '/warehouses', 'Industrial specifications'],
+					['Godowns', '/godowns', 'Storage and distribution space'],
+					['Apartments', '/apartments', 'Residential sale listings'],
+				].map(([label, href, description]) => (
+					<a href={href} class="rounded-xl border border-hairline-steel bg-background p-5 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+						<h3 class="font-display text-xl font-medium">{label}</h3>
+						<p class="mt-2 text-sm text-muted-foreground">{description}</p>
+						<span class="mt-5 inline-flex min-h-10 items-center text-sm font-medium text-primary">View directory <span aria-hidden="true" class="ml-1">→</span></span>
+					</a>
+				))}
+			</div>
+		</div>
+	</Section>
+
+	<!-- 9. Source notes -->
+	<Section class="bg-background">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Source notes</h2>
+			<p class="mt-3 max-w-2xl text-sm text-muted-foreground">The overview uses public property descriptions for location and commercial context. Confirm current availability, exact unit membership, amenities, and viewing details against the published listing before acting.</p>
+			<div class="mt-5 flex flex-wrap gap-x-6 gap-y-3 font-mono text-xs">
+				<a href={officialSource} target="_blank" rel="noopener noreferrer" class="text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Eens source</a>
+				<a href={referenceListing} target="_blank" rel="noopener noreferrer" class="text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Reference listing</a>
+			</div>
+		</div>
+	</Section>
+
+	<!-- 10. Closing action -->
+	<Section class="bg-canvas-dark text-ink-dark">
+		<div class="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
+			<div class="max-w-2xl">
+				<span class="font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary-dark">EENS BUSINESS PARK</span>
+				<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Bring the listing reference. Leave with a confirmed next step.</h2>
+				<p class="mt-4 text-ink-dark/70">Ask about shop space, inspect a published unit, or compare the separate warehouse and godown directories.</p>
+			</div>
+			<Button href="/contact" variant="inverse" size="lg">Contact Eens</Button>
+		</div>
+	</Section>
+</Base>

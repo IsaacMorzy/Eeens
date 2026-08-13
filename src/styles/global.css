@@ -171,7 +171,7 @@
 		color: var(--foreground);
 		font-family: var(--font-sans);
 		margin: 0;
-		padding-top: 5rem;                          /* sticky header compensation */
+		padding-top: 4rem;                          /* sticky header compensation */
 	}
 	.bg-default {
 		background-color: var(--background);
@@ -382,14 +382,21 @@
    keeps the cyan-teal tint, rather than the plugin's default zero-chroma grays.
    Unlayered so it overrides the typography plugin's layered variables. */
 .full-bleed-media {
-	width: calc(100% + 3rem);
-	margin-left: -1.5rem;
+	width: calc(100% + 2rem);
+	margin-left: -1rem;
+}
+
+@media (min-width: 640px) {
+	.full-bleed-media {
+		width: calc(100% + 3rem);
+		margin-left: -1.5rem;
+	}
 }
 
 @media (min-width: 1024px) {
 	.full-bleed-media {
-		width: calc(100% + 5rem);
-		margin-left: -2.5rem;
+		width: calc(100% + 4rem);
+		margin-left: -2rem;
 	}
 }
 

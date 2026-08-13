@@ -83,10 +83,10 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent
 								price: property.price ?? null,
 								zone: property.zone ?? null,
 								leaseTerm: property.leaseTerm ?? null,
-								image: property.heroImage ?? null,									ref: property._sys?.filename ?? null,
-									reference: property.reference ?? null,
-									viewLabel: category === 'shops' ? 'View shop' : 'View listing',
-
+								image: property.heroImage ?? null,
+								ref: property._sys?.filename ?? null,
+								reference: property.reference ?? null,
+								viewLabel: category === 'shops' ? 'View shop' : 'View listing',
 							}}
 							fallbackImageSrc={getIllustrationSrc(property.type)}
 						/>

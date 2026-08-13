@@ -4,6 +4,8 @@ import {
 	directoryHrefForType,
 	directoryKeyForType,
 	filterDirectoryProperties,
+	filterParkProperties,
+	filterZoneProperties,
 } from './property-directories';
 import type { PropertyNode } from './data';
 
@@ -50,5 +52,29 @@ describe('property directories', () => {
 
 	it('returns an empty result when the category has no published records', () => {
 		expect(filterDirectoryProperties([property('WAREHOUSE', 'Warehouse')], 'shops')).toEqual([]);
+	});
+
+	it('filters park membership only when the named development is explicit', () => {
+		const properties = [
+			property('SHOP', 'Park shop'),
+			{ ...property('SHOP', 'Marked park shop'), development: 'Eens Business Park' },
+		];
+
+		expect(filterParkProperties(properties).map((item) => item.title)).toEqual(['Marked park shop']);
+	});
+
+	it('filters listings by exact operating zone', () => {
+		const properties = [{ ...property('GODOWN', 'Syokimau godown'), zone: 'Syokimau' }, { ...property('WAREHOUSE', 'Mlolongo warehouse'), zone: 'Mlolongo' }];
+
+		expect(filterZoneProperties(properties, 'Syokimau').map((item) => item.title)).toEqual(['Syokimau godown']);
+	});
+
+	it('keeps named-park warehouses out of other-location inventory', () => {
+		const properties = [
+			property('WAREHOUSE', 'Other warehouse'),
+			{ ...property('WAREHOUSE', 'Eens warehouse'), development: 'Eens Business Park' },
+		];
+
+		expect(properties.filter((item) => item.type === 'WAREHOUSE' && item.development !== 'Eens Business Park').map((item) => item.title)).toEqual(['Other warehouse']);
 	});
 });

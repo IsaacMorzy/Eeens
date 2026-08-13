@@ -74,12 +74,12 @@ const menuGroups: MenuGroup[] = [
 		],
 	},
 	{
-		label: 'Journal',
+		label: 'News',
 		href: '/blog',
-		linkLabel: 'Read the journal',
+		linkLabel: 'Read the news',
 		intro: 'Practical notes on locations, specifications, and leasing.',
 		items: [
-			{ label: 'Property notes', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
+			{ label: 'Latest news', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
 			{ label: 'Warehouse specifications', href: '/blog/reading-warehouse-spec-sheets', detail: 'How to read a spec sheet', icon: 'ruler' },
 		],
 	},
@@ -89,7 +89,7 @@ const menuGroups: MenuGroup[] = [
 <header class="fixed top-0 z-20 w-full border-b border-hairline-steel/60 bg-background">
 	<nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3" aria-label="Primary navigation">
 		<a href="/" class="flex min-w-max items-center gap-3 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, 'title') : undefined}>
-			<img src={seo?.logo ?? '/eens-wordmark.svg'} alt="Eens" width="120" height="28" decoding="async" class="h-7 w-auto" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
+			<img src={seo?.logo ?? '/logo-enns.png'} alt="Eens Limited" width="76" height="28" decoding="async" class="h-7 w-auto dark:invert" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
 		</a>
 
 		<div class="hidden items-center gap-1 xl:flex">
@@ -124,6 +124,15 @@ const menuGroups: MenuGroup[] = [
 			))}
 		</div>
 
+		<a
+			href="/upcoming-projects"
+			aria-current={isCurrentPath(Astro.url.pathname, '/upcoming-projects') ? 'page' : undefined}
+			class="hidden min-h-10 items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 xl:inline-flex"
+		>
+			<span>Upcoming projects</span>
+			<Icon name="arrow-up-right" class="size-3.5" />
+		</a>
+
 		<div class="flex items-center gap-2">
 			<a href={viewingHref} class="hidden h-10 items-center gap-1.5 rounded-md border border-primary px-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex">
 				<Icon name="calendar" class="size-3.5" />
@@ -140,6 +149,10 @@ const menuGroups: MenuGroup[] = [
 	<div id="mobile-menu-panel" hidden class="border-t-2 border-primary bg-background xl:hidden">
 		<div class="mx-auto flex max-w-7xl flex-col px-6 py-4">
 			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
+			<a href="/upcoming-projects" aria-current={isCurrentPath(Astro.url.pathname, '/upcoming-projects') ? 'page' : undefined} class="mb-2 flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-primary-hover aria-[current=page]:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+				<Icon name="arrow-up-right" class="size-4 shrink-0" />
+				<span>Upcoming projects</span>
+			</a>
 			<div class="space-y-1">
 				{menuGroups.map((group) => (
 					<details class="group border-b border-border/60 last:border-b-0">

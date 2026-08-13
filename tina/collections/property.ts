@@ -72,6 +72,12 @@ export const PropertyCollection: Collection = {
 			description: 'Shown on the listing card and as the page H1. Always include the zone + identifier.',
 		},
 		{ name: 'type', label: 'Type', type: 'string', options: TYPE_OPTIONS, required: true },
+		{
+			name: 'development',
+			label: 'Development / park (optional)',
+			type: 'string',
+			description: 'Use only when an operator-approved record identifies the named development or park. Leave blank when compound membership is unknown.',
+		},
 		{ name: 'availability', label: 'Availability', type: 'string', options: AVAILABILITY_OPTIONS, required: true },
 		{
 			name: 'address',

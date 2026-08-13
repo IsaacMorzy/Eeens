@@ -56,6 +56,13 @@ const descriptionText = description || 'Published property listings, locations, 
 		// so re-apply the persisted theme and bind new page reveals.
 		document.addEventListener('astro:after-swap', apply);
 		document.addEventListener('astro:page-load', reveal);
+		if ('serviceWorker' in navigator && window.isSecureContext) {
+			const registerServiceWorker = () => {
+				void navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => undefined);
+			};
+			if (document.readyState === 'loading') window.addEventListener('load', registerServiceWorker, { once: true });
+			else registerServiceWorker();
+		}
 	})();
 </script>
 
@@ -63,6 +70,8 @@ const descriptionText = description || 'Published property listings, locations, 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/pwa-192.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
 <meta name="generator" content={Astro.generator} />
 
 <!-- Tina Cloud rewrites media URLs to assets.tina.io in production; warm the connection. -->
