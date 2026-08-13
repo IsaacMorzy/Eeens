@@ -9,6 +9,16 @@
 **Date:** 13 August 2026
 **Proposal period:** Six-month implementation and growth programme
 
+## Document set and audience
+
+This repository now publishes three related documents with different jobs:
+
+- [Executive sales proposal](eens-executive-sales-proposal.md) — client-facing business case, outcomes, programme, investment framework, approvals, and next steps.
+- [Technical implementation proposal](eens-technical-implementation-proposal.md) — engineer-facing records, interfaces, workflows, security controls, AI boundaries, observability, and acceptance tests.
+- This combined proposal — the evidence-led reference that preserves the full business narrative and engineering follow-on in one document.
+
+**Audience boundary:** use the executive proposal for stakeholder and commercial review. Use the technical proposal for engineering estimation, implementation, testing, and handover. Do not use the executive document as an API or delivery contract.
+
 ---
 
 ## Executive note
