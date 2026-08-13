@@ -573,6 +573,24 @@ Every integration needs a manual completion path. A provider outage must not req
 | Performance | Public pages build statically without live ERP or assistant dependency |
 | Recovery | A failed workflow can be retried or manually completed without duplication |
 
+### Acceptance fixtures
+
+Seed these records in a non-production site. The values are test fixtures, not live Eens inventory or customer data.
+
+| Fixture | Minimum seed data | Assertions |
+|---|---|---|
+| Available unit | `EE-TEST-AVAILABLE`, Mlolongo, approved, available, 9,000 sq ft | Appears in the approved projection and public test build |
+| Reserved unit | `EE-TEST-RESERVED`, same property family, reserved | Never appears as available or in an availability campaign |
+| Complete enquiry | Test prospect, consent true, listing reference, UTM source, size, zone, timeline | Creates one CRM Lead with owner, SLA, source, and next action |
+| Duplicate enquiry | Same identity and event/idempotency key replayed twice | Updates or acknowledges one Lead; creates no duplicate |
+| Meter pair | One prior reading and one current reading for the same meter and unit | Produces expected consumption and tariff fixture amount |
+| Contract and invoice | Test customer, selected unit, deposit gate, contract dates, billable item | Invalid gate blocks invoice; valid path creates linked records |
+| Payment event | Signed test provider event with known invoice reference | Creates one Payment Entry or one finance exception; replay is safe |
+| Unauthorized user | Role without publish, finance-submit, or assistant-write permission | Action is denied and produces an audit/error signal |
+| Assistant read case | Approved user and known report fixture | Result cites the source and contains only permitted records |
+
+Each fixture must be resettable, isolated from production, and identified by a test prefix. Acceptance evidence should record the fixture IDs, request/event IDs, expected result, actual result, and reviewer.
+
 ---
 
 ## 14. Decisions required from engineering and Eens
