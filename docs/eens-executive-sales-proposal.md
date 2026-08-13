@@ -101,7 +101,7 @@ The public website already provides property categories, listing details, locati
 - A reviewed bridge between operational property truth and public publishing.
 - Public lead capture that creates or updates CRM records.
 - Conversation routing, qualification, viewing coordination, and follow-up automation.
-- n8n workflows for validation, attribution, assignment, alerts, and controlled publishing.
+- Kestra workflows, including Python-capable tasks, for validation, attribution, assignment, alerts, and controlled publishing.
 - Approved payment-provider integration and reconciliation after provider onboarding.
 - Campaign, landing-page, and qualified-conversion measurement.
 - Local search and Google Business Profile operations for verified locations.
@@ -109,7 +109,7 @@ The public website already provides property categories, listing details, locati
 
 ### Explicit boundaries
 
-The checked source does not evidence a live Eens property synchronisation, public CRM lead endpoint, payment integration, n8n installation, public analytics pipeline, or Eens-specific assistant tool set. These are delivery items, not existing claims.
+The checked source does not evidence a live Eens property synchronisation, public CRM lead endpoint, payment integration, Kestra installation, public analytics pipeline, or Eens-specific assistant tool set. These are delivery items, not existing claims.
 
 No programme language should promise unavailable units, an unconfigured payment channel, automatic public availability changes, or unattended financial and outbound communication actions.
 

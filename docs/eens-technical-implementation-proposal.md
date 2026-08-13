@@ -21,7 +21,7 @@ The implementation target is:
 Public demand
   -> Astro/Tina property publishing
   -> validated enquiry or conversation
-  -> n8n orchestration and attribution
+  -> Kestra orchestration and attribution
   -> Frappe CRM Lead / Deal
   -> Utility Service Request and approved property match
   -> Contract, deposit, rent, meter billing, invoice, payment
@@ -33,7 +33,7 @@ This document covers:
 - system ownership and source-of-truth boundaries;
 - verified applications, DocTypes, and current gaps;
 - proposed public projections, API methods, and event contracts;
-- n8n, channel, payment, analytics, and CMS integration flows;
+- Kestra, channel, payment, analytics, and CMS integration flows;
 - Assistant Core skills, tools, permissions, and approval gates;
 - security, privacy, idempotency, observability, and recovery;
 - vertical-slice delivery and acceptance tests.
@@ -63,7 +63,7 @@ The inspected source does not evidence:
 
 - an API synchronisation between ERP property records and Tina records;
 - a public lead endpoint creating CRM records;
-- an installed n8n runtime in the Bench;
+- an installed Kestra runtime in the Bench;
 - a payment-provider integration or reconciliation handler;
 - public analytics event capture and source-to-revenue joins;
 - configured public channel credentials and templates;
@@ -84,7 +84,7 @@ The system needs two records of responsibility and one controlled integration co
 | Public copy, page composition, SEO fields, media, guides, and editorial review | TinaCMS/Astro | Publishing truth; only approved fields are projected from operations |
 | Enquiry and commercial follow-through | CRM | Lead and Deal own source, owner, SLA, next action, and commercial status |
 | Conversation delivery and channel context | Communication layer | Link conversations to the CRM or operational record; do not replace CRM |
-| Workflow execution state | n8n | Orchestrates validated events; never becomes business truth |
+| Workflow execution state | Kestra | Orchestrates validated events; never becomes business truth |
 | Assistant context and action policy | Assistant Core + `eens_app` extensions | Permission-scoped; read-first; audited writes only |
 | Accounting and receivables | ERPNext | Financial submission and reconciliation remain controlled by finance roles |
 
@@ -168,7 +168,7 @@ Private tenant names, contacts, balances, internal notes, contract files, creden
                    form / conversation / email event
                               v
                      WEBHOOK AND ORCHESTRATION
-              n8n + validation + deduplication + routing
+              Kestra + validation + deduplication + routing
                               |
                               v
                          FRAPPE / ERPNext
@@ -238,7 +238,7 @@ Use standard Frappe REST resources where possible. Add whitelisted methods only 
 | `GET /api/method/eens_app.api.public_listings.get` | One approved listing projection | Validate reference and publication state |
 | `POST /api/method/eens_app.api.leads.capture` | Create or update a CRM Lead | Consent, payload limits, source, idempotency key |
 | `POST /api/method/eens_app.api.viewings.request` | Create a controlled viewing task/request | Listing reference, contact, preferred window |
-| `POST /api/method/eens_app.api.webhooks.receive` | Receive provider or n8n events | Signature, timestamp, source, replay key |
+| `POST /api/method/eens_app.api.webhooks.receive` | Receive provider or Kestra events | Signature, timestamp, source, replay key |
 | `GET /api/method/eens_app.api.health` | Report integration health | No secrets or internal traces |
 
 All responses need a consistent error envelope. External payloads must be schema-validated before they enter Frappe.
@@ -274,9 +274,11 @@ Handlers must be retry-safe. Replaying an event must update or acknowledge the e
 
 ---
 
-## 7. n8n orchestration design
+## 7. Kestra orchestration design
 
-n8n is an integration coordinator. It validates, enriches, routes, retries, and records execution metadata. It does not own property availability, accounting truth, or CRM lifecycle.
+Kestra is the proposed integration coordinator. It validates, enriches, routes, retries, and records execution metadata; it does not own property availability, accounting truth, or CRM lifecycle. Its declarative flows can start from schedules, external events, or webhooks, run Python scripts with explicit dependencies and container images, pass outputs to downstream tasks, and expose task logs, metrics, retry attempts, and timeouts for operations.
+
+Use Kestra Python tasks for deterministic transformations, payload validation, attribution, reconciliation preparation, and bounded API calls. Keep financial submission, public availability, and outbound communication behind Frappe permissions and explicit approval steps. Kestra is proposed, not currently deployed in the Bench.
 
 ### Workflow A — approved inventory publishing
 
@@ -348,7 +350,7 @@ Every workflow requires:
 - source event ID and idempotency key;
 - input validation and payload limits;
 - bounded retries and a visible exception/dead-letter path;
-- correlation ID across provider, n8n, Frappe, and message events;
+- correlation ID across provider, Kestra, Frappe, and message events;
 - redacted logs and no secrets in execution data;
 - owner, escalation, and manual fallback;
 - approval before public availability, financial submission, or outbound campaign action.
@@ -454,7 +456,7 @@ Writing, deleting, submitting financial documents, changing availability, changi
 
 1. Public visitor to website or enquiry endpoint.
 2. External channel provider to webhook endpoint.
-3. n8n to Frappe API.
+3. Kestra to Frappe API.
 4. Frappe to payment provider.
 5. User to assistant/MCP endpoint.
 6. Uploaded document to extraction/OCR process.
@@ -538,14 +540,14 @@ The team must be able to answer:
 1. Did the enquiry arrive and where did it come from?
 2. Was one CRM Lead created or updated, and who owns the next action?
 3. Did the conversation, viewing, service request, contract, invoice, or payment event succeed?
-4. Which dependency failed: website, n8n, channel provider, Frappe, or payment provider?
+4. Which dependency failed: website, Kestra, channel provider, Frappe, or payment provider?
 5. Did an assistant result use the right source record and permission scope?
 
 Required signals:
 
 - structured events with `eventName`, `correlationId`, `source`, `status`, `durationMs`, and bounded error codes;
 - rate, error rate, and p95/p99 duration for public endpoints and dependencies;
-- n8n execution age and failed-workflow counts;
+- Kestra execution age and failed-workflow counts;
 - Frappe Error Log and Assistant Audit Log retention with a review owner;
 - alerts for lead capture, webhook, invoice generation, payment reconciliation, and public build failures;
 - a runbook for every alert with first query, owner, fallback, and escalation.
@@ -655,6 +657,11 @@ The proposal is based on the live Bench and checked source, including:
 - Google canonical URLs: <https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls>
 - Google structured-data policies: <https://developers.google.com/search/docs/appearance/structured-data/sd-policies>
 - WhatsApp Business Platform: <https://developers.facebook.com/docs/whatsapp/cloud-api/>
+- Kestra documentation: <https://kestra.io/docs>
+- Kestra Python workflows: <https://kestra.io/docs/use-cases/python-workflows>
+- Kestra triggers: <https://kestra.io/docs/workflow-components/triggers>
+- Kestra retries: <https://kestra.io/docs/workflow-components/retries>
+- Kestra architecture and installation: <https://kestra.io/docs/architecture> and <https://kestra.io/docs/installation>
 
 ---
 
