@@ -707,6 +707,21 @@ Each phase should have:
 9. What is the baseline for occupancy, response time, qualified leads, viewings, and collections?
 10. Who accepts each phase and who receives incident escalations?
 
+### Executive approval checklist
+
+Before Phase 1 begins, Eens should record the following approvals in the signed scope or kickoff record:
+
+| Approval | Required confirmation | Owner |
+|---|---|---|
+| Business sponsor | Six-month objective, budget boundary, and decision cadence | Eens sponsor |
+| Operational truth | Interim availability owner and the future Frappe-to-public publishing boundary | Property/operations lead |
+| Data and privacy | Public fields, consent language, retention period, and escalation policy | Eens management + legal/privacy reviewer |
+| Access and security | Named users, roles, staging access, credential custody, and backup responsibility | Eens technical owner |
+| Growth measurement | Baseline metrics, campaign naming, UTM rules, and qualified-conversion definition | Marketing owner |
+| Acceptance | Phase approvers, test-data owner, rollback contact, and incident escalation route | Eens sponsor + delivery lead |
+
+**Decision gate:** work should move from discovery into implementation only after these owners and boundaries are written down. This keeps the programme accountable without treating proposed integrations as live capabilities.
+
 ---
 
 # Part II — Engineering follow-on
