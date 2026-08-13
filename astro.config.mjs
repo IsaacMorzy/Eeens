@@ -6,19 +6,20 @@ import icon from 'astro-icon';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import tailwindcss from '@tailwindcss/vite';
-import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-	site: process.env.SITE_URL || `https://${process.env.VERCEL_URL}`,
+	// Public origin served by Tailscale Funnel (funnel :10000 -> nginx :8081 ->
+	// this static build out of sites/eensbpark.ke/public). Absolute URLs in the
+	// sitemap and canonical tags must match the origin the browser actually hits.
+	site: process.env.SITE_URL || 'https://vmi3416692.tailc65d30.ts.net:10000',
 	output: 'static',
-	adapter: vercel(),
 	// Astro 7.2: this site has no session state, so keep the session runtime
 	// out of adapter output and reuse unchanged prerendered pages.
 	session: false,
-	experimental: {
-		incrementalBuild: true,
-	},
+	// Canonical Frappe-bench public path consumed by deploy.sh, which copies
+	// this build into sites/eensbpark.ke/public for nginx to serve.
+	outDir: '../eens_app/public/astro_pages',
 	redirects: { '/home': '/' },
 	integrations: [mdx(), sitemap(), icon(), tina()],
 	build: {

@@ -30,6 +30,7 @@ const { config } = Astro.props;
 const seo = config?.seo ?? null;
 const contactLinks = (config?.contactLinks ?? []).filter(item => item !== null);
 const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent('Schedule a viewing')}`;
+const loginHref = '/login';
 const configuredNav = (config?.nav ?? []).filter((item) => item !== null);
 const groupHref = (group: MenuGroup): string =>
 	configuredNav.find((item) => item.title === group.label)?.link ?? group.href;
@@ -134,6 +135,7 @@ const menuGroups: MenuGroup[] = [
 		</a>
 
 		<div class="flex items-center gap-2">
+			<a href={loginHref} class="hidden min-h-10 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex">Login</a>
 			<a href={viewingHref} class="hidden h-10 items-center gap-1.5 rounded-md border border-primary px-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex">
 				<Icon name="calendar" class="size-3.5" />
 				<span>Schedule a viewing</span>
@@ -179,6 +181,7 @@ const menuGroups: MenuGroup[] = [
 			</div>
 			<div class="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-4">
 				<div class="flex items-center gap-2">
+					<a href={loginHref} class="inline-flex h-10 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Login</a>
 					{contactLinks.map((link) => (
 						<IconLink title={link.title} link={link.link} icon={link.icon} data-tina-field={tinaField(link, 'title')} />
 					))}
