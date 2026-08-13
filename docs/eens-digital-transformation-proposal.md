@@ -10,7 +10,7 @@
 
 ## Executive note
 
-Eens already has the beginnings of a strong operating system. Its public website is a fast, factual property register. Its internal site runs Frappe and ERPNext with CRM, utility and rental billing, a communication layer, and a permission-controlled assistant layer. The opportunity is not to replace these systems. It is to connect them around one business truth:
+Eens already has the beginnings of a strong operating system. Its public website is a fast, factual property register. Its internal site runs ERP backend with CRM, utility and rental billing, a communication layer, and a permission-controlled assistant layer. The opportunity is not to replace these systems. It is to connect them around one business truth:
 
 > **Every published property, enquiry, viewing, lease, meter reading, invoice, payment, and follow-up should be traceable to the same property and customer record.**
 
@@ -64,19 +64,19 @@ The `eensbpark.ke` site was checked against the live Bench installation on 13 Au
 
 | Layer | Verified state | Role in the proposed system |
 |---|---|---|
-| Frappe Framework 16.25.0 | Installed and running | Authentication, roles, DocTypes, permissions, APIs, background jobs, workflows, files, notifications, and web application foundation |
-| ERPNext 16.26.2 | Installed and running | Customers, items, sales orders, sales invoices, payments, accounts, assets, stock, reports, and accounting controls |
-| Frappe CRM 1.81.1 | Installed and running | Lead, deal, channel, status, territory, tasks, calls, notes, communication history, SLAs, and ERPNext handoff |
+| ERP backend platform | Installed and running | Authentication, roles, DocTypes, permissions, APIs, background jobs, workflows, files, notifications, and web application foundation |
+| ERP backend finance | Installed and running | Customers, items, sales orders, sales invoices, payments, accounts, assets, stock, reports, and accounting controls |
+| CRM | Installed and running | Lead, deal, channel, status, territory, tasks, calls, notes, communication history, SLAs, and ERP backend handoff |
 | Utility & Rental Billing 0.0.1 | Installed and running | Property hierarchy, service requests, contracts, deposits, recurring rent, meters, tariffs, adjustments, and utility reporting |
-| Frappe Assistant Core 2.5.0 | Installed and running | Permission-scoped assistant access, MCP connection, prompts, skills, reporting, analysis, dashboards, file extraction, and audit logs |
+| Assistant layer | Installed and running | Permission-scoped assistant access, MCP connection, prompts, skills, reporting, analysis, dashboards, file extraction, and audit logs |
 | Internal and multichannel communication layer | Installed and running | Internal chat, record-linked topics, multimedia messages, support routing, channel profiles, templates, notifications, and webhooks |
-| `eens_app` | Installed; no custom DocTypes or active business hooks | Frappe app shell for Eens-specific extensions; ready for the integration layer described in this proposal |
-| Astro 7.2 + TinaCMS | Content present in `eens_app/frontend` | Static public site, property content, editorial workflow, SEO metadata, category routes, detail pages, and PWA shell |
-| Vercel/static build path | Astro output is configured for the Frappe public directory | Public pages can be built separately from the ERP while sharing approved data through a controlled integration |
+| `eens_app` | Installed; no custom DocTypes or active business hooks | ERP backend app shell for Eens-specific extensions; ready for the integration layer described in this proposal |
+| frontend | Content present in `eens_app/frontend` | Static public site, property content, editorial workflow, SEO metadata, category routes, detail pages, and PWA shell |
+| Vercel/static build path | frontend output is configured for the ERP backend public directory | Public pages can be built separately from the ERP while sharing approved data through a controlled integration |
 
 ### 2.2 What is already present on the public website
 
-The Astro/Tina frontend currently provides:
+The frontend currently provides:
 
 - Property collections with type, availability, address, zone, area, price, lease terms, links, images, videos, occupancy state, review metadata, and industrial specifications.
 - Canonical category directories for shops, warehouses, godowns, business parks, and apartments.
@@ -89,14 +89,14 @@ The Astro/Tina frontend currently provides:
 
 The following are not evidenced as live integrations in the checked installation and site configuration:
 
-- No verified API synchronisation between Frappe property records and Tina property records.
+- No verified API synchronisation between ERP backend property records and frontend property records.
 - No public lead-capture endpoint that creates a CRM Lead or Utility Service Request.
 - No M-Pesa Daraja or bank-transfer integration in the checked Eens, Utility Billing, CRM, or core app.
 - No Kestra workflow installation in the Bench; Kestra is therefore proposed as a separately deployed orchestration service, not described as already deployed.
 - No public analytics tag, conversion event schema, or campaign-attribution pipeline in the frontend inspection.
 - No evidence that channel credentials or public web support have been configured, even though the communication layer supports those flows.
 - No Eens-specific Assistant Core tools or skills are registered yet; the app is installed and supports the required extension hooks.
-- The original Frappe app shell has no Eens-specific business DocTypes, scheduled tasks, or integration hooks.
+- The original ERP backend app shell has no Eens-specific business DocTypes, scheduled tasks, or integration hooks.
 
 These gaps do not weaken the opportunity. They define the work that turns the installed platform into an operating system.
 
@@ -110,7 +110,7 @@ These gaps do not weaken the opportunity. They define the work that turns the in
                               | UTM + consent
                               v
                  EENS PUBLIC PROPERTY REGISTER
-             Astro + TinaCMS + verified listing content
+             frontend + verified listing content
         category pages | property pages | guides | viewing actions
                               |
                  lead form / chat / phone / email links
@@ -120,7 +120,7 @@ These gaps do not weaken the opportunity. They define the work that turns the in
           deduplication | validation | attribution | alerts
                               |
                               v
-                      FRAPPE / ERPNext CORE
+                      ERP BACKEND CORE
      CRM Lead -> CRM Deal -> Utility Service Request -> Contract
         -> Sales Order / Deposit -> Auto Repeat -> Invoice
         -> Meter Reading -> Tariff -> Invoice -> Payment Entry
@@ -144,8 +144,8 @@ These gaps do not weaken the opportunity. They define the work that turns the in
 
 The public site and the ERP should not both become uncontrolled masters of property availability.
 
-- **Frappe/ERPNext becomes the operational record** for units, occupancy, customers, contracts, billing, payments, and internal status.
-- **TinaCMS remains the publishing and editorial record** for approved public copy, images, specification presentation, SEO titles, guides, and page composition.
+- **ERP backend becomes the operational record** for units, occupancy, customers, contracts, billing, payments, and internal status.
+- **frontend remains the publishing and editorial record** for approved public copy, images, specification presentation, SEO titles, guides, and page composition.
 - A small integration contract publishes only approved fields from the operational record into the public content workflow. It does not expose private tenant, financial, or identity data.
 - Until that synchronisation is built and accepted, the public register remains a manually reviewed publishing surface. No proposal language should imply that it is already live-synchronised.
 
@@ -153,15 +153,15 @@ The public site and the ERP should not both become uncontrolled masters of prope
 
 ## 4. Operating foundation
 
-### 4.1 Frappe Framework: the application and data foundation
+### 4.1 ERP backend: the application and data foundation
 
-Frappe provides the metadata-driven model beneath the operational system. A DocType defines a record type, fields, relationships, permissions, views, and lifecycle behaviour. The framework supplies authentication, role-based access, database APIs, REST access, background jobs, webhooks, workflow hooks, files, notifications, and the Desk interface.
+ERP backend provides the metadata-driven model beneath the operational system. A DocType defines a record type, fields, relationships, permissions, views, and lifecycle behaviour. The framework supplies authentication, role-based access, database APIs, REST access, background jobs, webhooks, workflow hooks, files, notifications, and the Desk interface.
 
 For Eens, this means the integration layer can use stable business records rather than a collection of disconnected spreadsheets and custom scripts. It also means every public or assistant-facing action must respect the same roles and permissions as the Desk.
 
-### 4.2 ERPNext: the financial and operational backbone
+### 4.2 ERP backend: the financial and operational backbone
 
-ERPNext supplies the standard records that make the property model commercially useful:
+ERP backend supplies the standard records that make the property model commercially useful:
 
 - Company, Customer, Supplier, Contact, Address, Territory, and User.
 - Item and Item Price for rent, service, utility, connection, and other billable lines.
@@ -169,7 +169,7 @@ ERPNext supplies the standard records that make the property model commercially 
 - Sales Order, Sales Invoice, Payment Entry, Account, Cost Center, Project, and Auto Repeat for the transaction and accounting lifecycle.
 - Communication, File, Workflow, Notification, Webhook, and assignment mechanisms for operational control.
 
-ERPNext is not the property register by itself. It is the financial and transaction engine that receives a verified unit, customer, contract, and billing structure.
+ERP backend is not the property register by itself. It is the financial and transaction engine that receives a verified unit, customer, contract, and billing structure.
 
 ### 4.3 Utility and rental billing: the property-to-cash workflow
 
@@ -211,7 +211,7 @@ CRM supplies the commercial pipeline before a lease exists.
 - **CRM Task** records the next action, owner, priority, status, due date, and linked record.
 - **CRM Call Log, FCRM Note, Communication, and notifications** keep the context around the relationship.
 - **CRM Lead Channel, Lead Status, Territory, Industry, and Organization** make campaign and market segmentation possible.
-- ERPNext integration can create or update a Customer as a deal reaches the agreed stage.
+- ERP backend integration can create or update a Customer as a deal reaches the agreed stage.
 
 CRM should be the first internal destination for website, advertising, social, and conversation enquiries. Utility Service Request should begin only when the enquiry contains enough information to select or discuss a property/service path.
 
@@ -231,7 +231,7 @@ Public channel credentials, business verification, templates, operating hours, c
 
 ### 4.6 Assistant and enquiry-agent layer: decision support inside permissions
 
-Frappe Assistant Core is installed and exposes a controlled assistant interface over Frappe. For Eens, the same layer can support a public enquiry agent when a web-chat or approved channel is configured. The agent can answer questions about verified listings, locations, lease terms, viewing requirements, and next steps, then hand a qualified enquiry to a person with its property and conversation context attached. It must not invent availability, quote unapproved terms, or perform a financial or contract action without the appropriate workflow and approval.
+The assistant layer is installed and exposes a controlled assistant interface over the ERP backend. For Eens, the same layer can support a public enquiry agent when a web-chat or approved channel is configured. The agent can answer questions about verified listings, locations, lease terms, viewing requirements, and next steps, then hand a qualified enquiry to a person with its property and conversation context attached. It must not invent availability, quote unapproved terms, or perform a financial or contract action without the appropriate workflow and approval.
 
 Its important capabilities for Eens are:
 
@@ -246,20 +246,20 @@ Its important capabilities for Eens are:
 
 The assistant should start as a read-and-recommend layer. Actions that change property availability, create contracts, submit invoices, send outbound messages, or affect payment records require explicit role permissions and confirmation. The assistant must never decide that an unverified property is available, expose private tenant information, or send a message without a controlled action path.
 
-### 4.7 `eens_app` and Astro/Tina: the public publishing layer
+### 4.7 `eens_app` and frontend: the public publishing layer
 
-The Eens Frappe app is currently a clean shell rather than a business application. That is useful: the Eens integration logic can be added without making the public website depend directly on third-party app internals.
+The Eens ERP backend app is currently a clean shell rather than a business application. That is useful: the Eens integration logic can be added without making the public website depend directly on third-party app internals.
 
-The Astro/Tina frontend is already structured around the public property register:
+The frontend is already structured around the public property register:
 
-- Tina property content is stored under `src/content/property`.
+- frontend property content is stored under `src/content/property`.
 - The property schema includes type, availability, address, zone, square footage, price, lease term, occupancy state, images, provenance, review date, listing code, and B2B specification fields.
-- `src/pages/[category]/index.astro` builds directory pages.
-- `src/pages/[category]/[slug].astro` builds detail pages.
-- `BaseHead.astro` provides canonical, metadata, Open Graph, Twitter, manifest, and service-worker registration.
-- `astro.config.mjs` enables static output, sitemap integration, and deployment into the Frappe public tree.
+- The category index route builds directory pages.
+- The category detail route builds property pages.
+- The shared metadata component provides canonical, Open Graph, Twitter, manifest, and service-worker registration.
+- `frontend build configuration` enables static output, sitemap integration, and deployment into the ERP backend public tree.
 
-The next step is a controlled publishing bridge—not a direct database leak from ERPNext into the browser.
+The next step is a controlled publishing bridge—not a direct database leak from ERP backend into the browser.
 
 ### 4.8 Continuous service model
 
@@ -383,18 +383,18 @@ These activities remain subject to approved scope, access, media budgets, third-
 
 ## 6. Kestra automation strategy
 
-Kestra should orchestrate systems, not become the system of record. Frappe remains the authority for operational records; Tina remains the editorial authority for public composition; Kestra moves validated events between them. Official Kestra capabilities relevant to this design include declarative flows, schedule/event/webhook triggers, Python scripts with dependency-managed containers, task outputs and metrics, retries, timeouts, and observable execution history. Kestra is proposed as the replacement orchestration layer; it is not described as already deployed.
+Kestra should orchestrate systems, not become the system of record. ERP backend remains the authority for operational records; frontend remains the editorial authority for public composition; Kestra moves validated events between them. Official Kestra capabilities relevant to this design include declarative flows, schedule/event/webhook triggers, Python scripts with dependency-managed containers, task outputs and metrics, retries, timeouts, and observable execution history. Kestra is proposed as the replacement orchestration layer; it is not described as already deployed.
 
 ### Workflow A — inventory publishing
 
 ```text
-Property or availability change in Frappe
+Property or availability change in ERP backend
     -> webhook / scheduled export
     -> validate required public fields
     -> check approval + occupancy state
     -> create a publishing task or approved content payload
-    -> update Tina property record or open human review
-    -> rebuild Astro site
+    -> update frontend property record or open human review
+    -> rebuild frontend site
     -> verify page, canonical, and sitemap
     -> record publication event and listing code
 ```
@@ -474,7 +474,7 @@ Every workflow must have:
 - retry policy with bounded attempts;
 - dead-letter or exception queue;
 - owner and escalation path;
-- correlation ID across webhook, Kestra execution, Frappe record, and message;
+- correlation ID across webhook, Kestra execution, ERP backend record, and message;
 - no secrets in payload logs;
 - replay-safe processing;
 - a manual approval step for public availability, financial submission, and outbound campaign actions.
@@ -553,7 +553,7 @@ Approved users should be able to ask:
 - Prepare a collections follow-up list, grouped by owner and ageing.
 - Extract the key obligations and dates from an uploaded lease or inspection record.
 
-The assistant should prefer existing ERPNext and Utility Billing reports before custom analysis. Custom analysis should use a read-only path and bounded execution limits.
+The assistant should prefer existing ERP backend and Utility Billing reports before custom analysis. Custom analysis should use a read-only path and bounded execution limits.
 
 ### Eens-specific assistant skills
 
@@ -583,7 +583,7 @@ Writing, deleting, submitting financial records, sending external messages, chan
 
 ### AI governance
 
-- Use Frappe roles and record permissions as the primary access boundary.
+- Use ERP backend roles and record permissions as the primary access boundary.
 - Keep tenant identity, payment data, credentials, and unrelated company data out of prompts.
 - Treat model output as untrusted data; validate it before creating a record or sending a message.
 - Keep an audit record for every assistant action, including failed and permission-denied actions.
@@ -601,8 +601,8 @@ The system crosses these boundaries:
 
 1. public visitor to website or conversation endpoint;
 2. external channel provider to webhook endpoint;
-3. Kestra to Frappe API;
-4. Frappe to payment provider;
+3. Kestra to ERP backend API;
+4. ERP backend to payment provider;
 5. user to assistant/MCP endpoint;
 6. uploaded file to extraction or OCR process;
 7. public content to AI context.
@@ -648,7 +648,7 @@ The system crosses these boundaries:
 ### Phase 2 — public publishing and technical SEO (weeks 5–8)
 
 - Add the approved operational fields required by public listings.
-- Build a review and publication workflow between Frappe and Tina.
+- Build a review and publication workflow between ERP backend and frontend.
 - Add listing freshness checks, canonical/metadata templates, structured data where justified, and sitemap gating.
 - Connect landing-page events and UTM capture without putting analytics or ERP calls in the critical render path.
 - Produce location and property content from verified records.
@@ -717,10 +717,10 @@ Baseline values should be captured during Phase 0. Targets should be set after t
 | Viewing rate | Completed or scheduled viewings divided by qualified leads | CRM Task / Deal |
 | Offer rate | Offers divided by completed viewings | CRM / Contract process |
 | Lease conversion | Signed contracts divided by qualified deals | Contract |
-| Channel-to-revenue | Collected or invoiced value attributed to a channel/campaign | CRM + ERPNext |
-| Listing freshness | Days since approved availability and specification review | Frappe + Tina |
+| Channel-to-revenue | Collected or invoiced value attributed to a channel/campaign | CRM + ERP backend |
+| Listing freshness | Days since approved availability and specification review | ERP backend + frontend |
 | Occupancy | Occupied units divided by operational units | Utility Property |
-| Collection rate | Collected amount divided by amount due in period | ERPNext |
+| Collection rate | Collected amount divided by amount due in period | ERP backend |
 | Utility exception rate | Readings rejected or flagged divided by readings submitted | Meter Reading |
 | Renewal coverage | Active contracts with an upcoming renewal action | Contract |
 | Assistant reliability | Responses with a cited record and permission-correct result | Assistant Audit Log |
@@ -775,7 +775,7 @@ Before Phase 1 begins, Eens should record the following approvals in the signed 
 | Approval | Required confirmation | Owner |
 |---|---|---|
 | Business sponsor | Six-month objective, budget boundary, and decision cadence | Eens sponsor |
-| Operational truth | Interim availability owner and the future Frappe-to-public publishing boundary | Property/operations lead |
+| Operational truth | Interim availability owner and the future ERP backend-to-public publishing boundary | Property/operations lead |
 | Data and privacy | Public fields, consent language, retention period, and escalation policy | Eens management + legal/privacy reviewer |
 | Access and security | Named users, roles, staging access, credential custody, and backup responsibility | Eens technical owner |
 | Growth measurement | Baseline metrics, campaign naming, UTM rules, and qualified-conversion definition | Marketing owner |
@@ -793,14 +793,14 @@ Before Phase 1 begins, Eens should record the following approvals in the signed 
 
 | Concern | Owner | Public exposure |
 |---|---|---|
-| Unit identity, occupancy, lease state, meter, contract, invoice, payment | Frappe/ERPNext | Never directly; publish approved projection only |
-| Public copy, layout, SEO title, media, guides | Tina/Astro | Yes, after editorial approval |
+| Unit identity, occupancy, lease state, meter, contract, invoice, payment | ERP backend | Never directly; publish approved projection only |
+| Public copy, layout, SEO title, media, guides | frontend | Yes, after editorial approval |
 | Lead and deal lifecycle | CRM | Selected summary only; no private timeline or financial data |
-| Rent and utility calculations | Utility Billing + ERPNext | Public terms only; no tenant ledger |
+| Rent and utility calculations | Utility Billing + ERP backend | Public terms only; no tenant ledger |
 | Conversations and channel delivery | Communication layer | Channel-specific; link internally to CRM/DocTypes |
 | Cross-system automation | Kestra | No business truth; stores execution state and error metadata |
 | Assistant context and action policy | FAC + Eens tools/skills | Permission-scoped; no direct public access by default |
-| Reporting definitions | Frappe reports / controlled query tools | Management access only |
+| Reporting definitions | ERP backend reports / controlled query tools | Management access only |
 
 ### 14.2 Proposed public listing projection
 
@@ -834,7 +834,7 @@ The projection must exclude customer names, tenant contacts, balances, private n
 
 ### 14.3 Proposed integration endpoints
 
-Use standard Frappe REST interfaces and whitelisted methods only where a domain operation needs a controlled contract.
+Use standard ERP backend REST interfaces and whitelisted methods only where a domain operation needs a controlled contract.
 
 | Interface | Purpose | Rules |
 |---|---|---|
@@ -845,7 +845,7 @@ Use standard Frappe REST interfaces and whitelisted methods only where a domain 
 | `POST /api/method/eens_app.api.webhooks.receive` | Receive provider/Kestra events | Verify signature, timestamp, channel, and replay key |
 | `GET /api/method/eens_app.api.health` | Report integration health | Return dependency status without secrets or internal traces |
 
-List responses should be paginated and use a consistent error envelope. External responses must be schema-validated before entering Frappe.
+List responses should be paginated and use a consistent error envelope. External responses must be schema-validated before entering ERP backend.
 
 ### 14.4 Event contract
 
@@ -880,11 +880,11 @@ Event handlers must be safe to retry. A duplicate event must update or acknowled
 
 Implement in this order:
 
-1. Reconcile current Tina property records with Utility Property records manually.
+1. Reconcile current frontend property records with Utility Property records manually.
 2. Assign one stable listing code to each approved unit.
 3. Add `lastReviewedDate`, reviewer, and publication state to the operational record or an Eens-specific projection DocType.
 4. Build a read-only projection endpoint.
-5. Add a staging export into Tina and a human approval step.
+5. Add a staging export into frontend and a human approval step.
 6. Add automated rebuild and page verification.
 7. Only then consider automated unpublishing when ERP state becomes reserved, occupied, or unpublished.
 
@@ -898,7 +898,7 @@ Do not start with direct, destructive CMS mutations.
 
 - Add Eens-specific public publication fields.
 - Implement read-only listing projection.
-- Map Utility Property to Tina property by stable code.
+- Map Utility Property to frontend property by stable code.
 - Test field allowlist and unpublished behaviour.
 - Verify category/detail pages and sitemap output.
 
@@ -951,7 +951,7 @@ Do not start with direct, destructive CMS mutations.
 1. Did the enquiry arrive, and where did it come from?
 2. Was a CRM Lead created or updated, and who owns the next action?
 3. Did the conversation, viewing, service request, contract, invoice, or payment event succeed?
-4. Which dependency failed: website, Kestra, channel provider, Frappe, or payment provider?
+4. Which dependency failed: website, Kestra, channel provider, ERP backend, or payment provider?
 5. Did an assistant result use the right relevant record and permission scope?
 
 ### Required signals
@@ -959,7 +959,7 @@ Do not start with direct, destructive CMS mutations.
 - Structured events with `eventName`, `correlationId`, `channel`, `status`, `durationMs`, and bounded error codes.
 - RED metrics for each public endpoint and external dependency: rate, error rate, and p95/p99 duration.
 - Queue age and failed execution counts for Kestra and background jobs.
-- Frappe Error Log and Assistant Audit Log retention with a review process.
+- ERP backend Error Log and Assistant Audit Log retention with a review process.
 - Alerts on user-facing symptoms: lead capture failure, webhook failure rate, invoice-generation failure, payment reconciliation exception, and critical public build failure.
 - A short runbook for each alert with first query, owner, fallback, and escalation path.
 
@@ -992,6 +992,6 @@ Never log passwords, access tokens, payment credentials, full request bodies, or
 
 Eens does not need a collection of disconnected digital activities. It needs a controlled path from demand to occupancy, from occupancy to billing, and from operational data back to better marketing decisions.
 
-The recommended programme keeps the public site fast and factual, keeps Frappe/ERPNext authoritative for operational and financial records, uses CRM for commercial follow-through, uses the communication layer for responsive service, uses Kestra for controlled orchestration, and uses the assistant layer to shorten analysis without bypassing permission or human accountability.
+The recommended programme keeps the public site fast and factual, keeps ERP backend authoritative for operational and financial records, uses CRM for commercial follow-through, uses the communication layer for responsive service, uses Kestra for controlled orchestration, and uses the assistant layer to shorten analysis without bypassing permission or human accountability.
 
 The result is a system that helps Eens publish with confidence, respond while demand is active, operate leases and utilities with less manual reconciliation, and invest in marketing based on the enquiries and revenue it actually produces.
