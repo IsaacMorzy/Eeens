@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import Section from '../ui/Section.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
@@ -21,7 +22,22 @@ const contextualVisual = getPageContentVisual(slug, index);
 			</p>
 		)}
 	</div>
-	{contextualVisual && (
+	{data.image?.src ? (
+		<div data-tina-field={tinaField(data, 'image')} class="mx-auto mt-8 w-full max-w-2xl">
+			<Image
+				src={data.image.src}
+				alt={data.image.alt ?? ''}
+				width={1655}
+				height={2340}
+				sizes="(min-width: 672px) 672px, 100vw"
+				format="webp"
+				quality={80}
+				loading="lazy"
+				decoding="async"
+				class="h-auto w-full rounded-xl border border-hairline-steel bg-secondary"
+			/>
+		</div>
+	) : contextualVisual && (
 		<div class="mx-auto mt-8 w-full max-w-7xl">
 			<ContextualVisual visual={contextualVisual} />
 		</div>
