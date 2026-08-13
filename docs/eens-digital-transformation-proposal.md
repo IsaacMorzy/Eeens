@@ -13,9 +13,13 @@
 
 This repository now publishes three related documents with different jobs:
 
-- [Executive sales proposal](eens-executive-sales-proposal.md) — client-facing business case, outcomes, programme, investment framework, approvals, and next steps.
-- [Technical implementation proposal](eens-technical-implementation-proposal.md) — engineer-facing records, interfaces, workflows, security controls, AI boundaries, observability, and acceptance tests.
-- This combined proposal — the evidence-led reference that preserves the full business narrative and engineering follow-on in one document.
+| Audience | Markdown source | Print HTML | PDF |
+|---|---|---|---|
+| Executive sales | [Read](eens-executive-sales-proposal.md) | [Open](eens-executive-sales-proposal.html) | [Download](eens-executive-sales-proposal.pdf) |
+| Engineering | [Read](eens-technical-implementation-proposal.md) | [Open](eens-technical-implementation-proposal.html) | [Download](eens-technical-implementation-proposal.pdf) |
+| Combined evidence reference | [Read](eens-digital-transformation-proposal.md) | [Open](eens-digital-transformation-proposal.html) | [Download](eens-digital-transformation-proposal.pdf) |
+
+The executive document contains the client-facing business case, outcomes, programme, investment framework, approvals, and next steps. The technical document contains engineer-facing records, interfaces, workflows, security controls, AI boundaries, observability, fixtures, and acceptance tests.
 
 **Audience boundary:** use the executive proposal for stakeholder and commercial review. Use the technical proposal for engineering estimation, implementation, testing, and handover. Do not use the executive document as an API or delivery contract.
 
