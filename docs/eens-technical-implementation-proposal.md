@@ -591,6 +591,21 @@ Seed these records in a non-production site. The values are test fixtures, not l
 
 Each fixture must be resettable, isolated from production, and identified by a test prefix. Acceptance evidence should record the fixture IDs, request/event IDs, expected result, actual result, and reviewer.
 
+### Staging walkthrough
+
+Run the acceptance pass in this order on a dedicated non-production site:
+
+1. Create or reset the fixture set with the test prefix and record the site/database snapshot ID.
+2. Confirm the available and reserved units produce the expected public projection difference.
+3. Submit one complete enquiry through the public capture contract and record its event, correlation, and CRM Lead IDs.
+4. Replay the same enquiry and confirm idempotent update behaviour without a second Lead or message.
+5. Move the valid fixture through viewing, Deal, Service Request, contract, meter, invoice, and payment test paths using finance-approved fixtures.
+6. Run unauthorized role checks for publication, invoice submission, external messaging, and assistant write actions.
+7. Compare assistant read results with the source report and confirm the audit entry, permission scope, and stale-data warning where applicable.
+8. Capture pass/fail evidence, owner, timestamp, logs, and unresolved exceptions; then reset or destroy the fixture data.
+
+No staging walkthrough may use production credentials, real payment references, real customer data, or destructive CMS mutations.
+
 ---
 
 ## 14. Decisions required from engineering and Eens
