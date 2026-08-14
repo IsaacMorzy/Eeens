@@ -88,7 +88,7 @@
       const heading = line.match(/^(#{1,4})\s+(.*)$/);
       if (heading) {
         const level = heading[1].length;
-        const cls = level === 1 && /Part II/.test(heading[2]) ? ' class="chapter"' : '';
+        const cls = level === 1 && /Part II|Part III/.test(heading[2]) ? ' class="chapter"' : '';
         out += '<h' + level + cls + '>' + inline(heading[2]) + '</h' + level + '>'; i++; continue;
       }
       if (/^>\s?/.test(line)) { out += '<blockquote>' + inline(line.replace(/^>\s?/, '')) + '</blockquote>'; i++; continue; }
