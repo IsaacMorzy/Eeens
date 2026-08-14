@@ -24,6 +24,7 @@ const viewingSubject = encodeURIComponent('Schedule a viewing');
 // config.seo.email and falls back to CONTACT_DEFAULTS.email so the build
 // is safe even before Tina regen picks up the Phase 19 schema additions.
 const viewingHref = `mailto:${contactEmail(config)}?subject=${viewingSubject}`;
+const loginHref = '/login';
 const today = new Date();
 const sinceYear = 2018;
 
@@ -41,6 +42,7 @@ const directoryLinks = [
 ];
 const informationLinks = [
 	{ title: 'Lease terms', href: '/lease-terms' },
+	{ title: 'Login', href: loginHref },
 	{ title: 'Upcoming projects', href: '/upcoming-projects' },
 	{ title: 'News', href: '/blog' },
 	{ title: 'Contact Eens', href: '/contact' },

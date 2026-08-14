@@ -995,3 +995,201 @@ Eens does not need a collection of disconnected digital activities. It needs a c
 The recommended programme keeps the public site fast and factual, keeps ERP backend authoritative for operational and financial records, uses CRM for commercial follow-through, uses the communication layer for responsive service, uses Kestra for controlled orchestration, and uses the assistant layer to shorten analysis without bypassing permission or human accountability.
 
 The result is a system that helps Eens publish with confidence, respond while demand is active, operate leases and utilities with less manual reconciliation, and invest in marketing based on the enquiries and revenue it actually produces.
+
+---
+
+# Part III — Digital Services Operating Model
+
+**Prepared for:** Eens Limited — Eens Business Park
+**Prepared by:** Nimbuz Tech
+**Date:** 13 August 2026
+**Status:** Final for review
+
+## 1. Overview
+
+This part defines a continuous engagement to run and grow Eens' digital property operations. It covers one integrated stack:
+
+- **An enquiry agent** (a chatbot) that handles property enquiries, viewings, and follow-ups through a **communication layer**.
+- **The ERP backend** (Frappe/ERPNext) that powers Eens' property records, CRM, contracts, utility and rental billing, invoicing, and payments.
+- **Digital marketing operations** that bring occupiers and tenants in — search, social, ads, content, and website growth — and keep the site healthy in every way.
+
+The engagement runs in **weekly sprints** with **daily operations** executed every working day. Each week has a defined deliverable; every day has standing operational work.
+
+## 2. The Stack We Operate
+
+### 2.1 ERP backend (system of record)
+
+Eens runs on **Frappe/ERPNext** — an ERP backend that holds every operational record: properties, units, customers, leads, service requests, contracts, meter readings, invoices, and payments. All property operations and all marketing data flow into and out of this backend. It is the single source of truth for the business.
+
+We maintain, automate, and extend this backend so that:
+
+- Enquiries are captured the moment they arrive (no enquiry is left sitting only in an inbox).
+- The full chain is automated and idempotent: **prospect → CRM Lead → Utility Service Request → Contract → Sales Order / Invoice → Payment Entry**.
+- Payment and collection status is tracked and acted on, with follow-ups for pending amounts.
+- Every record is verifiable via read-back checks after any write.
+
+### 2.2 Enquiry agent with a communication layer
+
+The prospect-facing front is an **enquiry agent** (a chatbot) — not a passive assistant layer. It is an active agent that:
+
+- Answers availability, lease-term, specification, and viewing questions 24/7.
+- Captures enquiries and viewing requests directly into the ERP backend.
+- Escalates to human staff when needed, with full context attached.
+- Guides prospects to approved, verified listings only — never to units that have not passed the internal availability check.
+
+The agent communicates through a **communication layer** that supports the website chat widget today and can be extended to approved messaging channels (for example WhatsApp or SMS). Extended channels are available as an optional add-on.
+
+## 3. Scope of Work
+
+### 3.1 Property operations automation (ERP backend)
+
+- Enquiry intake from web, email, advertising, and the enquiry agent into CRM Lead records.
+- Qualification flow: lead → deal → Utility Service Request → verified unit selection → deposit → contract.
+- Listing freshness: availability, occupancy state, and specification review on an agreed cadence.
+- Billing: recurring rent, utility consumption, adjustments, and receivables handled from linked records.
+- Payment tracking: mark invoices paid, trigger follow-ups for pending payments.
+- Idempotent, dry-run-first tooling so any step can be re-run safely and verified by read-back.
+
+### 3.2 Enquiry agent & communication layer
+
+- Build and tune the agent's knowledge base (verified listings, locations, lease terms, FAQs).
+- Deploy the web chat widget on the site.
+- Route captured enquiries and viewing requests into the ERP backend with channel and property context.
+- Escalation workflow to human staff with full conversation context.
+- Optional add-on: approved messaging channels (WhatsApp/SMS) — quoted separately.
+
+### 3.3 Digital marketing operations
+
+This is the standing work that runs **every week**, all year:
+
+**Search engine optimization (SEO)**
+
+- **Keyword research** — find the terms occupiers and tenants actually search (warehouses for rent in Mlolongo, godowns in Syokimau, industrial units on Mombasa Road, apartments in Thika, etc.).
+- **Rank tracking** — daily/weekly monitoring of the register's positions for target keywords.
+- **Competitor insights** — track competing property listings' rankings, content, ads, and backlinks.
+- **Backlinks** — build and maintain quality inbound links to the site.
+- **Site audits** — crawl the site for technical issues (broken links, indexation problems, speed, mobile, structured data) and fix them.
+- **AI visibility** — optimize the register to appear in AI answers and AI search results (the same way it appears in Google) so that when a prospect asks an AI assistant "which warehouse is available for rent in Mlolongo?", Eens is the answer.
+
+**Advertising & creative**
+
+- **Ad copy for video ads** — scripts and hooks for short-form property promotions.
+- **Ad copy for image ads** — headlines, body copy, and CTAs for display and social image ads.
+- Landing-page copy aligned to each property type and location.
+
+**Social media**
+
+- **Content scheduling** — plan, schedule, and publish the register's social content calendar across platforms.
+- **Campaign analysis** — measure the performance of campaigns (reach, engagement, conversions) and report on what works.
+- **Platform campaign management** — including X/Twitter campaign planning, scheduling, and post-campaign analysis.
+
+**Content**
+
+- Location guides, property and availability updates, and FAQ pages targeting keyword research.
+- Updates to listing descriptions, specifications, and landing pages as inventory changes.
+
+**Data entry & records**
+
+- Daily data entry: property, lead, viewing, contract, invoice, and payment records kept current in the ERP backend.
+- Import/export of property and prospect data as required.
+
+**Website maintenance (in all ways)**
+
+- **SEO optimization** — on-page fixes, meta data, schema/structured data, internal linking, indexation hygiene.
+- **Performance** — page speed, image optimization, caching, Core Web Vitals.
+- **Security & updates** — platform and app updates, security patches, backups verified.
+- **Uptime & monitoring** — availability monitoring, uptime reporting, quick response to outages.
+- **Content maintenance** — keeping all pages, links, and listings accurate and current.
+- **Technical maintenance** — fixing broken features, forms, and integrations; keeping the site working in every way.
+
+### 3.4 Reporting
+
+- Weekly sprint report: what was done, what shipped, what's next.
+- Monthly performance report: rankings, traffic, enquiries, qualified demand, viewings, contracts, collections, AI visibility.
+- Standing access to live dashboards of the register's key metrics.
+
+## 4. Weekly Sprint Plan
+
+The engagement runs as a **6-month engagement in two 12-week phases**. **Daily operations run every working day, every week** (see Section 5). Each week additionally delivers a specific sprint outcome:
+
+### Phase 1 — Foundation & launch (Weeks 1–12)
+
+| Week | Sprint focus | Weekly deliverable |
+|------|--------------|--------------------|
+| **1** | Setup & intake | Enquiry routing live: every new enquiry captured and owned; baseline SEO audit + keyword list established |
+| **2** | Agent foundation | Verified listing and FAQ knowledge base built; web chat deployed; first flows answering availability/terms questions |
+| **3** | Lead capture | Web + ad + chat enquiries flowing into CRM; no enquiry left in an inbox; acknowledgement and follow-up flow active |
+| **4** | Leasing handoff | Full chain automated for current inventory: lead → service request → deposit → contract |
+| **5** | Agent goes live | Agent handling property enquiries with escalation; first enquiries captured through the chat |
+| **6** | SEO sprint | On-page fixes from the audit shipped; keyword tracking live; first location/listing content published against target keywords |
+| **7** | Ads & creative | Video and image ad copy produced for flagship properties; landing copy aligned |
+| **8** | Social & campaigns | Social content calendar scheduled; first campaign launched; measurement dashboard wired |
+| **9** | Backlinks & authority | First backlink outreach round delivered; competitor and market-signal report shared |
+| **10** | AI visibility sprint | Register optimized for AI search answers: schema, entity clarity, Q&A content; baseline AI-visibility check recorded |
+| **11** | Website health pass | Full site audit re-run; performance, security, and content fixes shipped; uptime monitoring verified |
+| **12** | Review & plan | Month-end + quarter report: rankings, enquiries, qualified demand, viewings, contracts, collections, AI visibility; Phase 2 targets agreed |
+
+> Every week also includes: data entry, SEO rank tracking, ad copy drafting for upcoming campaigns, social scheduling, site health checks, and enquiry-agent monitoring — the daily operations below.
+
+### Phase 2 — Growth & optimization (Weeks 13–24)
+
+| Week | Sprint focus | Weekly deliverable |
+|------|--------------|--------------------|
+| **13** | Phase 2 kickoff | Phase 1 results reviewed; Phase 2 targets set; keyword list refreshed with performance data |
+| **14** | Inventory scale | Automation extended across all locations (Mlolongo, Syokimau, Baba Dogo, Thika) and property types (godowns, warehouses, business parks, shops, apartments) |
+| **15** | Agent expansion | Agent handles payment/status enquiries, viewing rescheduling, and follow-ups; expanded FAQ; sharper escalations |
+| **16** | SEO deep sprint | Content clusters built for priority zones and property types; on-page and internal-linking improvements shipped |
+| **17** | Ads scale | New ad sets for additional properties; A/B-tested video and image hooks |
+| **18** | Social growth | Platform expansion, partner/influencer outreach, and campaign experiments |
+| **19** | AI visibility round 2 | AI-answer optimization refreshed; AI citations monitored; competitor AI presence reviewed |
+| **20** | Backlinks round 2 | Second outreach round; digital PR; local citations built |
+| **21** | Conversion optimization | Landing-page tests; lead-capture improvements; agent qualification of enquiries |
+| **22** | Website performance pass | Core Web Vitals optimization; asset/image compression; uptime history reviewed |
+| **23** | Retention & renewals | Tenant communication flows; renewal preparation for ending contracts; referral activity |
+| **24** | Quarter review & renewal | Full 6-month report: ROI, rankings, enquiries, qualified demand, viewings, contracts, collections, AI visibility; renewal plan agreed |
+
+> Daily operations continue every working day in Phase 2 — same standing work as below.
+
+## 5. Daily Operations
+
+These run **every working day**, without exception:
+
+- **Data entry** — keep property, lead, viewing, contract, invoice, and payment records current in the ERP backend.
+- **Rank tracking & SEO monitoring** — check positions for target keywords; flag and fix ranking drops.
+- **Competitor & keyword watch** — new competitor activity and new keyword opportunities logged.
+- **Ad copy drafting** — ongoing production of video and image ad copy so creative is always ready.
+- **Social scheduling** — posts scheduled and published per the content calendar; engagement monitored.
+- **Campaign analysis** — daily review of running campaigns; adjustments made; results recorded.
+- **Enquiry-agent monitoring** — review chat transcripts, answer escalations, tune responses.
+- **Site health checks** — uptime, performance, and error checks; issues triaged same-day.
+- **Backlink building** — steady outreach and placement work.
+
+## 6. Success Metrics
+
+| Area | Metric |
+|------|--------|
+| Occupancy | Verified availability records, enquiries captured (none lost in inbox), time-to-first-response |
+| Enquiry agent | Enquiries answered, viewings captured via chat, escalation response time |
+| SEO | Keyword rankings, organic traffic, backlinks gained, site-audit score, AI-visibility appearances |
+| Ads & creative | Ad engagement, click-through, cost per qualified lead, lead volume |
+| Social | Reach, engagement, follower growth, campaign performance vs. targets |
+| Website | Uptime, page speed / Core Web Vitals, security posture, content accuracy |
+| Operations | Records up to date, listing freshness, report timeliness |
+
+## 7. Investment & Commitment
+
+- **Cadence:** 6-month engagement (two 12-week phases), renewable.
+- **Monthly retainer:** **KSh 120,000/month**, covering daily operations, weekly sprints, reporting, and all scope items in Section 3 (consistent with the commercial framework in Part I, Section 12).
+- **Daily operations:** every working day.
+- **Weekly sprints:** one defined deliverable per week.
+- **Optional add-on:** approved messaging channels (WhatsApp/SMS) — quoted separately.
+- **Renewal:** reviewed at the end of each 6-month engagement.
+- **Client responsibilities:** media budgets, third-party fees, payment-provider charges, hosting, and provider onboarding remain Eens responsibilities unless the signed scope states otherwise.
+
+## 8. Next Steps
+
+1. Review this part and confirm the 6-month engagement and monthly retainer.
+2. Confirm the enquiry agent's channel scope (web chat now; approved messaging channels later).
+3. Confirm public channel and payment-provider approvals (see Part I, Section 13 — Decisions required from Eens).
+4. Provide access to the ERP backend and site administration.
+5. Kick off Week 1.

@@ -21,3 +21,4 @@ Append one entry per run. Prune entries older than 30 days.
 
 <!-- Loop appends below this line -->
 {"run_id":"2026-08-09T04:39:00Z","pattern":"daily-triage","duration_s":0,"items_found":1,"actions_taken":0,"escalations":0,"tokens_estimate":23000,"outcome":"report-only"}
+{"run_id":"2026-08-13T22:12:42Z","pattern":"daily-triage","duration_s":420,"items_found":2,"actions_taken":0,"escalations":1,"tokens_estimate":12000,"outcome":"report-only"}

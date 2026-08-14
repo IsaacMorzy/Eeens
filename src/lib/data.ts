@@ -134,7 +134,9 @@ export type FeaturesBlock = Extract<PageBlock, { __typename: 'PageBlocksFeatures
 export type StatsBlock = Extract<PageBlock, { __typename: 'PageBlocksStats' }>;
 export type CtaBlock = Extract<PageBlock, { __typename: 'PageBlocksCta' }>;
 export type CtaBannerBlock = Extract<PageBlock, { __typename: 'PageBlocksCtaBanner' }>;
-export type ContentBlock = Extract<PageBlock, { __typename: 'PageBlocksContent' }>;
+export type ContentBlock = Extract<PageBlock, { __typename: 'PageBlocksContent' }> & {
+	image?: { src?: string | null; alt?: string | null } | null;
+};
 export type TestimonialBlock = Extract<PageBlock, { __typename: 'PageBlocksTestimonial' }>;
 export type VideoBlock = Extract<PageBlock, { __typename: 'PageBlocksVideo' }>;
 export type SplitBlock = Extract<PageBlock, { __typename: 'PageBlocksSplit' }>;
