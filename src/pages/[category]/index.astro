@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
 import Button from '../../components/ui/Button.astro';
 import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
+import DirectoryMap from '../../components/blocks/DirectoryMap.astro';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { contactEmail, getConfig, listProperties, type PropertyNode } from '../../lib/data';
 import {
@@ -10,7 +11,15 @@ import {
 	filterDirectoryProperties,
 	type DirectoryKey,
 } from '../../lib/property-directories';
-import { getIllustrationSrc } from '../../lib/property-filters';
+import {
+	activeFilterCount,
+	applyFilters,
+	getIllustrationSrc,
+	parseDirectoryFilters,
+	parseKva,
+	parseSqft,
+} from '../../lib/property-filters';
+import { selectDirectoryContext } from '../../lib/directory-context';
 
 export function getStaticPaths() {
 	return (Object.keys(DIRECTORY_DEFINITIONS) as DirectoryKey[]).map((category) => ({
@@ -22,9 +31,18 @@ export function getStaticPaths() {
 const category = Astro.props.category as DirectoryKey;
 const definition = DIRECTORY_DEFINITIONS[category];
 const properties: PropertyNode[] = await listProperties();
-const listings = filterDirectoryProperties(properties, category);
+const allListings = filterDirectoryProperties(properties, category);
 const config = (await getConfig()).data?.config ?? null;
+const context = selectDirectoryContext(config?.directoryContexts, category);
+const contextTitle = context?.title ?? definition.title;
+const contextDescription = context?.description ?? definition.description;
+const contextHighlights = (context?.highlights ?? []).filter((highlight) => highlight?.label || highlight?.value);
 const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent(`Ask about ${definition.label}`)}`;
+const zoneNames = ['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika'];
+const filters = parseDirectoryFilters(Astro.url.searchParams, zoneNames);
+const filteredListings = applyFilters(allListings, filters);
+const hasPowerFilter = category === 'warehouses' || category === 'godowns' || category === 'business-parks';
+const filterCount = activeFilterCount(filters);
 ---
 
 <Base title={`${definition.label} | Eens Business Park`} description={definition.description}>
@@ -35,10 +53,9 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent
 				{definition.title}
 			</h1>
 			<p class="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">{definition.description}</p>
-			{category === 'shops' && <p class="mt-4 max-w-2xl font-mono text-[12px] text-primary">Park linkage is recorded per listing. No shop unit is published until its source record is verified.</p>}
 			<div class="mt-6 flex flex-wrap items-center gap-3">
 				<a href="/locations" class="inline-flex min-h-10 items-center rounded-md border border-hairline-steel px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-primary-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Browse locations</a>
-				<span class="font-mono text-[13px] text-muted-foreground">{listings.length} published listing{listings.length === 1 ? '' : 's'}</span>
+				<span data-listing-count class="font-mono text-[13px] text-muted-foreground">{filteredListings.length} of {allListings.length} published listing{allListings.length === 1 ? '' : 's'}</span>
 			</div>
 		</div>
 	</Section>
@@ -57,66 +74,123 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent
 		</div>
 	</nav>
 
-	{category === 'shops' && (
-		<Section class="bg-secondary">
-			<div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.5fr] lg:items-end">
-				<div>
-					<p class="font-mono text-[12px] text-primary">Park-linked shop records</p>
-					<h2 class="mt-3 max-w-xl font-display text-3xl font-semibold tracking-[-0.6px]">Check the named park first.</h2>
+	<Section class="bg-secondary">
+		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
+			<div>
+				<p class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">Directory context</p>
+				<h2 class="mt-3 max-w-xl font-display text-3xl font-semibold tracking-[-0.6px]">{contextTitle}</h2>
+				<p class="mt-4 max-w-2xl text-muted-foreground">{contextDescription}</p>
+				{context?.zoneLabel && <p class="mt-4 font-mono text-[12px] text-primary">{context.zoneLabel}</p>}
+				<div class="mt-5 flex flex-wrap gap-3">
+					<Button href={context?.primaryActionLink ?? '/locations'} size="lg">{context?.primaryActionLabel ?? 'Browse locations'}</Button>
+					<Button href={viewingHref} variant="secondary" size="lg">Arrange a viewing</Button>
 				</div>
-				<div>
-					<p class="max-w-2xl text-muted-foreground">The shop directory is backed by the shared property collection. It will show a unit here only when the published record confirms its address, area, price, availability, and park relationship.</p>
-					<div class="mt-5 flex flex-wrap gap-3">
-						<Button href="/business-parks/eens" size="lg">Open the park overview</Button>
-						<Button href={viewingHref} variant="secondary" size="lg">Ask about shop space</Button>
+			</div>
+			{contextHighlights.length > 0 && (
+				<dl class="grid gap-px overflow-hidden rounded-xl border border-hairline-steel bg-hairline-steel sm:grid-cols-2">
+					{contextHighlights.map((highlight) => (
+						<div class="bg-background p-5">
+							<dt class="font-mono text-[12px] uppercase tracking-[0.4px] text-muted-foreground">{highlight?.label}</dt>
+							<dd class="mt-2 font-display text-lg font-medium text-foreground">{highlight?.value}</dd>
+						</div>
+					))}
+				</dl>
+			)}
+		</div>
+	</Section>
+
+	<Section class="bg-background">
+		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:items-start">
+			<DirectoryMap pathname={Astro.url.pathname} label={context?.mapLabel ?? 'Operating zones'} />
+			<div id="published-listings">
+				<header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+					<div>
+						<p class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">Register</p>
+						<h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.4px]">Published {definition.label.toLowerCase()}</h2>
+					</div>
+					<span data-result-status class="font-mono tabular-nums text-[13px] text-muted-foreground">{filterCount ? `${filteredListings.length} match${filteredListings.length === 1 ? '' : 'es'}` : `${allListings.length} record${allListings.length === 1 ? '' : 's'}`}</span>
+				</header>
+
+				<form data-directory-filters class="mb-8 rounded-xl border border-hairline-steel bg-secondary p-4 sm:p-5" method="get">
+					<div class="flex flex-wrap items-end gap-4">
+						<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`zone-${category}`}>
+							<span>Zone</span>
+							<select id={`zone-${category}`} name="zone" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+								<option value="">All zones</option>
+								{zoneNames.map((zone) => <option value={zone} selected={filters.zone === zone}>{zone}</option>)}
+							</select>
+						</label>
+						<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`area-${category}`}>
+							<span>Minimum area</span>
+							<select id={`area-${category}`} name="minSqft" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+								<option value="">Any published area</option>
+								<option value="4000" selected={filters.minSqft === 4000}>4,000 sq ft+</option>
+								<option value="9000" selected={filters.minSqft === 9000}>9,000 sq ft+</option>
+								<option value="18000" selected={filters.minSqft === 18000}>18,000 sq ft+</option>
+							</select>
+						</label>
+						{hasPowerFilter && (
+							<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`power-${category}`}>
+								<span>Minimum power</span>
+								<select id={`power-${category}`} name="minKva" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+									<option value="">Any published power</option>
+									<option value="50" selected={filters.minKva === 50}>50 kVA+</option>
+									<option value="200" selected={filters.minKva === 200}>200 kVA+</option>
+								</select>
+							</label>
+						)}
+						<button type="submit" class="inline-flex h-11 items-center justify-center rounded-md bg-action px-5 text-sm font-medium text-action-foreground transition-[background-color,transform] hover:bg-action-hover motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Filter listings</button>
+						<a href={Astro.url.pathname} class="inline-flex h-11 items-center px-2 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Reset</a>
+					</div>
+					<p class="mt-3 font-mono text-[12px] text-muted-foreground">Filters use published area, power, and zone facts only.</p>
+				</form>
+
+				{allListings.length > 0 ? (
+					<div data-listing-grid class="grid gap-8 sm:grid-cols-2">
+						{allListings.map((property) => (
+							<div data-directory-card data-zone={property.zone ?? ''} data-sqft={parseSqft(property.sqft)} data-kva={parseKva(property)}>
+								<PropertyCardFeatured
+									data={{
+										type: property.type ?? null,
+										title: property.title ?? null,
+										availability: (property.availability as Availability | undefined) ?? null,
+										address: property.address ?? null,
+										development: property.development ?? null,
+										sqft: property.sqft ?? null,
+										price: property.price ?? null,
+										zone: property.zone ?? null,
+										leaseTerm: property.leaseTerm ?? null,
+										image: property.heroImage ?? null,
+										ref: property._sys?.filename ?? null,
+										reference: property.reference ?? null,
+										viewLabel: category === 'shops' ? 'View shop' : 'View listing',
+									}}
+									fallbackImageSrc={getIllustrationSrc(property.type)}
+								/>
+							</div>
+						))}
+					</div>
+				) : (
+					<div class="relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-6 sm:p-8">
+						<p class="font-mono text-[12px] text-primary">Register status</p>
+						<h2 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">{definition.emptyTitle}</h2>
+						<p class="mt-3 text-muted-foreground">{definition.emptyDescription}</p>
+						<div class="mt-6 flex flex-wrap gap-3">
+							<Button href={viewingHref} size="lg">Ask about availability</Button>
+							<Button href="/locations" variant="secondary" size="lg">Browse locations</Button>
+						</div>
+					</div>
+				)}
+				<div data-filter-empty hidden class="mt-6 relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-6 sm:p-8">
+					<p class="font-mono text-[12px] text-primary">Filtered register</p>
+					<h2 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">No published records match these filters.</h2>
+					<p class="mt-3 text-muted-foreground">Clear a filter or ask the office about the next verified listing.</p>
+					<div class="mt-6 flex flex-wrap gap-3">
+						<Button href={viewingHref} size="lg">Ask about availability</Button>
+						<a href={Astro.url.pathname} class="inline-flex min-h-11 items-center rounded-md border border-hairline-steel px-5 text-sm font-medium text-foreground hover:border-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Clear filters</a>
 					</div>
 				</div>
 			</div>
-		</Section>
-	)}
-
-	<Section class="bg-background">
-		<div class="mx-auto max-w-7xl">
-			<header class="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
-				<div>
-					<h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Published {definition.label.toLowerCase()}</h2>
-				</div>
-				<span class="font-mono tabular-nums text-[13px] text-muted-foreground">{listings.length} record{listings.length === 1 ? '' : 's'}</span>
-			</header>
-			{listings.length > 0 ? (
-				<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-					{listings.map((property) => (
-						<PropertyCardFeatured
-							data={{
-								type: property.type ?? null,
-								title: property.title ?? null,
-								availability: (property.availability as Availability | undefined) ?? null,
-								address: property.address ?? null,
-								development: property.development ?? null,
-								sqft: property.sqft ?? null,
-								price: property.price ?? null,
-								zone: property.zone ?? null,
-								leaseTerm: property.leaseTerm ?? null,
-								image: property.heroImage ?? null,
-								ref: property._sys?.filename ?? null,
-								reference: property.reference ?? null,
-								viewLabel: category === 'shops' ? 'View shop' : 'View listing',
-							}}
-							fallbackImageSrc={getIllustrationSrc(property.type)}
-						/>
-					))}
-				</div>
-			) : (
-				<div class="relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-6 sm:p-8">
-					<p class="font-mono text-[12px] text-primary">Register status</p>
-					<h2 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">{definition.emptyTitle}</h2>
-					<p class="mt-3 text-muted-foreground">{definition.emptyDescription}</p>
-					<div class="mt-6 flex flex-wrap gap-3">
-						<Button href={viewingHref} size="lg">Ask about availability</Button>
-						<Button href="/locations" variant="secondary" size="lg">Browse locations</Button>
-					</div>
-				</div>
-			)}
 		</div>
 	</Section>
 
@@ -130,3 +204,62 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent
 		</div>
 	</Section>
 </Base>
+
+<script>
+	const root = document.querySelector('[data-directory-filters]')?.closest('#published-listings');
+	const form = root?.querySelector('[data-directory-filters]') as HTMLFormElement | null;
+	const cards = root ? [...root.querySelectorAll<HTMLElement>('[data-directory-card]')] : [];
+	const count = document.querySelector('[data-listing-count]');
+	const status = root?.querySelector('[data-result-status]');
+	const empty = root?.querySelector('[data-filter-empty]') as HTMLElement | null;
+	const params = new URLSearchParams(window.location.search);
+
+	if (root && form && cards.length) {
+		const zones = new Set(['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika']);
+		const sqftTiers = new Set([4000, 9000, 18000]);
+		const kvaTiers = new Set([50, 200]);
+		const validTier = (value: string | null, tiers: Set<number>) => {
+			const parsed = Number(value);
+			return value && tiers.has(parsed) ? parsed : 0;
+		};
+		const rawZone = params.get('zone');
+		const values = {
+			zone: rawZone && zones.has(rawZone) ? rawZone : '',
+			minSqft: validTier(params.get('minSqft'), sqftTiers),
+			minKva: validTier(params.get('minKva'), kvaTiers),
+		};
+		const select = (name: string): HTMLSelectElement | null => form.querySelector(`[name="${name}"]`);
+		for (const [name, value] of Object.entries(values)) {
+			const field = select(name);
+			if (field && value) field.value = String(value);
+		}
+		const apply = () => {
+			let matches = 0;
+			for (const card of cards) {
+				const match = (!values.zone || card.dataset.zone === values.zone)
+					&& (!values.minSqft || Number(card.dataset.sqft) >= values.minSqft)
+					&& (!values.minKva || Number(card.dataset.kva) >= values.minKva);
+				card.hidden = !match;
+				if (match) matches += 1;
+			}
+			const active = Boolean(values.zone || values.minSqft || values.minKva);
+			if (count) count.textContent = `${matches} of ${cards.length} published listing${cards.length === 1 ? '' : 's'}`;
+			if (status) status.textContent = active ? `${matches} match${matches === 1 ? '' : 'es'}` : `${cards.length} record${cards.length === 1 ? '' : 's'}`;
+			if (empty) empty.hidden = !active || matches > 0;
+		};
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const next = new URLSearchParams();
+			for (const [key, value] of new FormData(form).entries()) {
+				if (typeof value === 'string' && value) next.set(key, value);
+			}
+			window.history.pushState({}, '', `${window.location.pathname}${next.toString() ? `?${next}` : ''}`);
+			values.zone = next.get('zone') ?? '';
+			values.minSqft = Number(next.get('minSqft') ?? 0);
+			values.minKva = Number(next.get('minKva') ?? 0);
+			apply();
+		});
+		window.addEventListener('popstate', () => window.location.reload());
+		apply();
+	}
+</script>

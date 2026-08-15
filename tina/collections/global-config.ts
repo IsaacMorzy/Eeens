@@ -134,6 +134,47 @@ export const GlobalConfigCollection: Collection = {
         }
       ],
     },
+    {
+      name: "directoryContexts",
+      label: "Property Directory Context",
+      description: "Short, factual guidance shown above each property category directory. Keep every record tied to a live canonical directory.",
+      type: "object",
+      list: true,
+      ui: {
+        itemProps: (item) => ({ label: item?.key ?? item?.title ?? "Directory context" }),
+      },
+      fields: [
+        {
+          name: "key",
+          label: "Directory key",
+          type: "string",
+          required: true,
+          options: [
+            { label: "Shop units", value: "shops" },
+            { label: "Warehouses", value: "warehouses" },
+            { label: "Godowns", value: "godowns" },
+            { label: "Business parks", value: "business-parks" },
+            { label: "Apartments", value: "apartments" },
+          ],
+        },
+        { name: "title", label: "Context title", type: "string", required: true },
+        { name: "description", label: "Context description", type: "string", ui: { component: "textarea" } },
+        { name: "zoneLabel", label: "Zone label", type: "string" },
+        { name: "mapLabel", label: "Map label", type: "string" },
+        { name: "primaryActionLabel", label: "Primary action label", type: "string" },
+        { name: "primaryActionLink", label: "Primary action link", type: "string" },
+        {
+          name: "highlights",
+          label: "Context highlights",
+          type: "object",
+          list: true,
+          fields: [
+            { name: "label", label: "Label", type: "string" },
+            { name: "value", label: "Value", type: "string" },
+          ],
+        },
+      ],
+    },
     // Add other config fields here...
   ]
 }

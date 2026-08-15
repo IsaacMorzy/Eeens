@@ -36,5 +36,72 @@
       "link": "https://maps.google.com/?q=Mombasa+Road+Mlolongo",
       "icon": "tabler:map-pin"
     }
+  ],
+  "directoryContexts": [
+    {
+      "key": "shops",
+      "title": "Park-linked shop records",
+      "description": "Compare published shop records only when their park relationship, address, area, price, and availability are confirmed.",
+      "zoneLabel": "Eens Business Park, Syokimau",
+      "mapLabel": "Shop directory zones",
+      "primaryActionLabel": "Open the park overview",
+      "primaryActionLink": "/business-parks/eens",
+      "highlights": [
+        { "label": "Source", "value": "Published property records" },
+        { "label": "Next step", "value": "Arrange a viewing" }
+      ]
+    },
+    {
+      "key": "warehouses",
+      "title": "Warehouse space with published technical details",
+      "description": "Review the area, published specifications, price or rate, availability, and lease terms before requesting a tour.",
+      "zoneLabel": "Approved operating zones",
+      "mapLabel": "Warehouse zones",
+      "primaryActionLabel": "Browse locations",
+      "primaryActionLink": "/locations",
+      "highlights": [
+        { "label": "Compare", "value": "Area and published specifications" },
+        { "label": "Next step", "value": "Request a viewing" }
+      ]
+    },
+    {
+      "key": "godowns",
+      "title": "Godown space for storage and distribution",
+      "description": "Compare published access, area, specifications, price or rate, availability, and lease terms across the portfolio.",
+      "zoneLabel": "Mlolongo and Syokimau records",
+      "mapLabel": "Godown zones",
+      "primaryActionLabel": "Browse locations",
+      "primaryActionLink": "/locations",
+      "highlights": [
+        { "label": "Compare", "value": "Storage and distribution space" },
+        { "label": "Next step", "value": "Request a viewing" }
+      ]
+    },
+    {
+      "key": "business-parks",
+      "title": "Business-park units with published commercial facts",
+      "description": "Review published area, price or rate, location, availability, and terms for each commercial unit.",
+      "zoneLabel": "Baba Dogo and named parks",
+      "mapLabel": "Business-park zones",
+      "primaryActionLabel": "Browse locations",
+      "primaryActionLink": "/locations",
+      "highlights": [
+        { "label": "Compare", "value": "Commercial facts and terms" },
+        { "label": "Next step", "value": "Arrange a viewing" }
+      ]
+    },
+    {
+      "key": "apartments",
+      "title": "Apartments with published prices and sale terms",
+      "description": "Review bedrooms, bathrooms, area, price, availability, and published sale terms before arranging a visit.",
+      "zoneLabel": "Flame Tree Park Estate, Thika",
+      "mapLabel": "Apartment zones",
+      "primaryActionLabel": "Browse locations",
+      "primaryActionLink": "/locations",
+      "highlights": [
+        { "label": "Compare", "value": "Published sale facts" },
+        { "label": "Next step", "value": "Arrange a visit" }
+      ]
+    }
   ]
 }
