@@ -143,6 +143,18 @@ export type SplitBlock = Extract<PageBlock, { __typename: 'PageBlocksSplit' }>;
 export type PropertyCardBlock = Extract<PageBlock, { __typename: 'PageBlocksPropertyCard' }>;
 export type PropertyListBlock = Extract<PageBlock, { __typename: 'PageBlocksPropertyList' }>;
 
+export type GalleryBlock = {
+	__typename?: 'PageBlocksGallery';
+	title?: string | null;
+	description?: string | null;
+	items?: Array<{
+		image?: { src?: string | null; alt?: string | null } | null;
+		caption?: string | null;
+		kind?: string | null;
+		sourceUrl?: string | null;
+	} | null> | null;
+};
+
 export type CmsConfigNav = NonNullable<NonNullable<CmsConfig['nav']>[number]>;
 export type CmsConfigContactLink = NonNullable<NonNullable<CmsConfig['contactLinks']>[number]>;
 export type CmsConfigSeo = NonNullable<CmsConfig['seo']>;

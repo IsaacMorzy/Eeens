@@ -4,9 +4,8 @@ import { tinaField } from '@tinacms/astro/tina-field';
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
-import ContextualVisual from '../ui/ContextualVisual.astro';
-import { getPageHeroVisual } from '../../lib/contextual-images';
 import type { Action, HeroBlock } from '../../lib/data';
+import { getPageHeroVisual } from '../../lib/contextual-images';
 import { getPexelsSource } from '../../lib/pexels-images';
 
 interface Props { data: HeroBlock; slug?: string }
@@ -25,81 +24,98 @@ const heroLabels: Record<string, string> = {
 	contact: 'CONTACT DESK',
 	locations: 'OPERATING ZONES',
 	'lease-terms': 'TERMS OF TRADE',
+	events: 'EVENTS REGISTER',
+	gallery: 'VISUAL REGISTER',
+	awards: 'ACCOLADES REGISTER',
 };
 const heroLabel = heroLabels[slug] ?? 'EENS LIMITED';
 const showProofRail = slug === '' || slug === 'home';
 ---
 
-<Section class="relative overflow-hidden">
-	<div class="reveal-on-scroll-stagger mx-auto max-w-7xl text-left">
-		<div class="max-w-3xl">
-		<p class="reveal-on-scroll font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{heroLabel}</p>
-		{data.headline && (
-			<h1
-				data-tina-field={tinaField(data, 'headline')}
-				class="reveal-on-scroll mt-4 max-w-[16ch] text-balance font-display text-4xl font-semibold leading-[1.06] tracking-[-1.8px] md:text-6xl md:tracking-[-2.4px]"
-			>
-				{data.headline}
-			</h1>
-		)}
-		{data.tagline && (
-			<p
-				data-tina-field={tinaField(data, 'tagline')}
-				class="reveal-on-scroll mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground"
-			>
-				{data.tagline}
-			</p>
-		)}
-		{actions.length > 0 && (
-			<div class="reveal-on-scroll mt-8 flex flex-col items-start gap-2 sm:flex-row">
-				{actions.map((action: Action) => (
-					<div data-tina-field={tinaField(action)}>
-						<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
-							{action.icon && <Icon name={action.icon} class="size-4" />}
-							<span class="text-nowrap">{action.label}</span>
-						</Button>
+<Section class="overflow-hidden">
+	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-center lg:gap-16">
+		<div class="reveal-on-scroll-stagger max-w-3xl">
+			<p class="reveal-on-scroll font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{heroLabel}</p>
+			{data.headline && (
+				<h1
+					data-tina-field={tinaField(data, 'headline')}
+					class="reveal-on-scroll mt-4 max-w-[16ch] text-balance font-display text-4xl font-semibold leading-[1.06] tracking-[-1.8px] md:text-6xl md:tracking-[-2.4px]"
+				>
+					{data.headline}
+				</h1>
+			)}
+			{data.tagline && (
+				<p
+					data-tina-field={tinaField(data, 'tagline')}
+					class="reveal-on-scroll mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground"
+				>
+					{data.tagline}
+				</p>
+			)}
+			{actions.length > 0 && (
+				<div class="reveal-on-scroll mt-8 flex flex-col items-start gap-2 sm:flex-row">
+					{actions.map((action: Action) => (
+						<div data-tina-field={tinaField(action)}>
+							<Button href={action.link} size="lg" variant={action.type === 'link' ? 'ghost' : 'default'}>
+								{action.icon && <Icon name={action.icon} class="size-4" />}
+								<span class="text-nowrap">{action.label}</span>
+							</Button>
+						</div>
+					))}
+				</div>
+			)}
+			{showProofRail && (
+				<div class="reveal-on-scroll mt-10 grid max-w-2xl grid-cols-3 border-y border-hairline-steel/60 py-4 text-left">
+					<div class="pr-3">
+						<div class="font-mono text-[13px] text-foreground">Address</div>
+						<div class="mt-1 text-xs text-muted-foreground">published</div>
 					</div>
-				))}
-			</div>
-		)}
-		{showProofRail && <div class="reveal-on-scroll mt-10 grid max-w-2xl grid-cols-3 border-y border-hairline-steel/60 py-4 text-left">
-			<div class="pr-3">
-				<div class="font-mono text-[13px] text-foreground">Address</div>
-				<div class="mt-1 text-xs text-muted-foreground">published</div>
-			</div>
-			<div class="border-l border-hairline-steel/60 px-3">
-				<div class="font-mono text-[13px] text-foreground">Area</div>
-				<div class="mt-1 text-xs text-muted-foreground">in sq ft</div>
-			</div>
-			<div class="border-l border-hairline-steel/60 pl-3">
-				<div class="font-mono text-[13px] text-foreground">Terms</div>
-				<div class="mt-1 text-xs text-muted-foreground">before contact</div>
-			</div>
-		</div>}
+					<div class="border-l border-hairline-steel/60 px-3">
+						<div class="font-mono text-[13px] text-foreground">Area</div>
+						<div class="mt-1 text-xs text-muted-foreground">in sq ft</div>
+					</div>
+					<div class="border-l border-hairline-steel/60 pl-3">
+						<div class="font-mono text-[13px] text-foreground">Terms</div>
+						<div class="mt-1 text-xs text-muted-foreground">before contact</div>
+					</div>
+				</div>
+			)}
 		</div>
 
-	{data.image?.src ? (
-		<div data-tina-field={tinaField(data, 'image')} class="full-bleed-media relative mt-12 overflow-hidden rounded-xl border border-hairline-steel bg-secondary lg:mt-16">
-			<Image
-				src={data.image.src}
-				alt={data.image.alt ?? ''}
-				width={1920}
-				height={1080}
-				sizes="100vw"
-				format="webp"
-				quality={80}
-				fetchpriority="high"
-				loading="eager"
-				decoding="async"
-				class="image-outline aspect-[21/9] size-full object-cover transition-transform duration-500 ease-out motion-safe:hover:scale-[1.02]"
-			/>
-			{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
-		</div>
-	) : contextualVisual ? (
-		<div class="relative mt-12">
-			<ContextualVisual visual={contextualVisual} priority />
-		</div>
-	) : null}
-	{contextualVisual && !data.image?.src && <p class="mx-auto mt-3 max-w-7xl font-mono text-xs text-muted-foreground">Contextual image. The published listing facts remain the source of truth.</p>}
+		{data.image?.src ? (
+			<figure data-tina-field={tinaField(data, 'image')} class="reveal-on-scroll group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+				<Image
+					src={data.image.src}
+					alt={data.image.alt ?? ''}
+					width={1600}
+					height={1200}
+					sizes="(min-width: 1024px) 58vw, 100vw"
+					format="webp"
+					quality={80}
+					fetchpriority="high"
+					loading="eager"
+					decoding="async"
+					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+				/>
+				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
+			</figure>
+		) : contextualVisual ? (
+			<figure class="reveal-on-scroll group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+				<img
+					src={contextualVisual.src}
+					alt={contextualVisual.alt}
+					width="1600"
+					height="1200"
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+				/>
+				<figcaption class="flex items-center justify-between gap-4 border-t border-hairline-steel/40 bg-background px-3 py-2 font-mono text-[11px] text-muted-foreground">
+					<span>{contextualVisual.label}</span>
+					<a href={contextualVisual.sourceUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>
+				</figcaption>
+			</figure>
+		) : null}
 	</div>
 </Section>
