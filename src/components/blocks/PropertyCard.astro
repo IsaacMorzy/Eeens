@@ -12,6 +12,7 @@
  * PageBlocks inline card and category directory listings can render
  * the same component with the same data interface.
  */
+import { Image } from 'astro:assets';
 import { tinaField } from '@tinacms/astro/tina-field';
 import AvailabilityBadge from '../ui/AvailabilityBadge.astro';
 import LocationPin from '../ui/LocationPin.astro';
@@ -79,30 +80,36 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 
 <article
 	class:list={[
-		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-[transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover',
-		featured ? 'bg-secondary' : 'bg-background',
+		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-[background-color,transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover',
+		featured ? 'bg-secondary' : 'bg-card',
 	]}
 	{...rest}
 >		{resolvedImageSrc && (
 			<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
 				{viewHref ? (
 					<a href={viewHref} aria-label={`View ${data.title ?? 'property'}`} class="block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50">
-						<img
-							src={resolvedImageSrc}
-							alt={resolvedImageAlt}
-							width={1280}
-							height={720}
-							loading="lazy"
-							decoding="async"
-							class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
-						/>
+							<Image
+								src={resolvedImageSrc}
+								alt={resolvedImageAlt}
+								width={1280}
+								height={720}
+								sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+								format="webp"
+								quality={75}
+								loading="lazy"
+								decoding="async"
+								class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+							/>
 					</a>
 				) : (
-					<img
+					<Image
 						src={resolvedImageSrc}
 						alt={resolvedImageAlt}
 						width={1280}
 						height={720}
+						sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+						format="webp"
+						quality={75}
 						loading="lazy"
 						decoding="async"
 						class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
@@ -123,7 +130,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{data.title && (
-			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
+			<h3 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="text-balance font-display text-[22px] font-medium leading-[1.25] tracking-[-0.4px] text-foreground">
 				{viewHref ? (
 					<a href={viewHref} class="transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">{data.title}</a>
 				) : data.title}
@@ -155,10 +162,10 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 					<div data-tina-field={tinaField(data as { price?: unknown }, 'price')}>
 						<span class="block font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Price / rate</span>
 						{data.price.ksh && (
-							<span class="mt-1 block font-display text-base font-semibold tracking-[-0.2px] text-foreground">KSH {data.price.ksh}</span>
+							<span class="mt-1 block font-display text-base font-semibold tabular-nums tracking-[-0.2px] text-foreground">KSH {data.price.ksh}</span>
 						)}
 						{data.price.perSqft && (
-							<span class="mt-1 block font-mono text-[13px] text-muted-foreground">KSH {data.price.perSqft} / sq ft</span>
+							<span class="mt-1 block font-mono text-[13px] tabular-nums text-muted-foreground">KSH {data.price.perSqft} / sq ft</span>
 						)}
 					</div>
 				)}

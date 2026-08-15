@@ -1,10 +1,10 @@
 # Matt Pocock engineering skills
 
-Verified: 2026-08-09
+Verified: 2026-08-15
 
 Upstream: https://github.com/mattpocock/skills
 
-The upstream README is the source of truth for the active catalog. The bundle is installed under `$HOME/.agents/skills/` for this runtime. Freebuff can load the verified skill names through its skill loader, but it cannot register skills with external PromptScript agents; never claim external global registration.
+The upstream README is the source of truth for the active catalog. The complete package is installed for Codex-compatible agents under `.agents/skills/` and pinned by `skills-lock.json`. The installation contains 25 active Engineering/Productivity skills plus 10 upstream in-progress/misc support skills. Freebuff's built-in skill loader is a separate runtime and may reject user-invoked skills; never claim that local files bypass `disable-model-invocation: true`.
 
 ## Strict first-step routing
 
@@ -88,20 +88,28 @@ The broader `$HOME/.agents/skills` directory contains Freebuff and community ski
 
 ## Installation and verification
 
-The upstream README documents these entry points:
+The repository uses the editable Codex-compatible install because the skill files are reviewable and pinned in the project:
 
 ```bash
-# Editable files for Codex and other agents
-npx skills@latest add mattpocock/skills
+# Install the complete upstream package for Codex in this repository
+npx skills@latest add mattpocock/skills --skill '*' -a codex --copy -y
 
-# Managed Claude Code plugin
+# Refresh intentionally adopted upstream versions
+npx skills@latest update
+
+# Verify the repository bundle
+find .agents/skills -maxdepth 2 -name SKILL.md -print | sort
+```
+
+The managed Claude Code plugin is a separate option and should not be installed alongside the editable package unless a human explicitly chooses the duplicate installation model:
+
+```bash
 claude plugins install mattpocock-skills
 ```
 
-For this Freebuff runtime, verify local files with:
+Availability is split by upstream invocation contract:
 
-```bash
-find "$HOME/.agents/skills" -maxdepth 2 -name SKILL.md -print | sort
-```
+- **User-invoked:** `ask-matt`, `grill-with-docs`, `triage`, `improve-codebase-architecture`, `setup-matt-pocock-skills`, `to-spec`, `to-tickets`, `implement`, `wayfinder`, `grill-me`, `handoff`, `teach`, `to-questionnaire`, and `wait-what`. A human must start these flows.
+- **Model-invoked:** `prototype`, `diagnosing-bugs`, `research`, `tdd`, `domain-modeling`, `codebase-design`, `code-review`, `resolving-merge-conflicts`, `wizard`, `grilling`, and `writing-for-agents`. Compatible agents may select these when their documented conditions match.
 
-The final external PromptScript registration step is unsupported here. Local skill files are available to the Freebuff skill loader; external agents must be configured separately by their own tooling.
+Freebuff and Codex-compatible agents do not share the same loader. Repository-local availability means Codex can discover `.agents/skills/`; it does not make Freebuff's user-only skills automatically runnable. Preserve each upstream `SKILL.md` frontmatter and use `AGENTS.md` as the repository routing source.

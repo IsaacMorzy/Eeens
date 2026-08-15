@@ -15,9 +15,49 @@ The core product is not a generic real-estate brochure. It is a clear property r
 - Astro 7.2 with MDX pages and static `.astro` routes deployed through Vercel.
 - TinaCMS content in `src/content/` and schemas in `tina/collections/`.
 - Tailwind CSS 4 through `src/styles/global.css`.
-- Vitest tests live beside utilities in `src/lib/`.
+- Vitest tests live in `tests/`; test imports target utilities in `src/lib/`.
 - Use the existing dependencies and components before adding anything new.
 - Typical checks: `pnpm exec astro check`, `pnpm test`, and `pnpm build`.
+
+## Agent skills
+
+The repository vendors the Matt Pocock bundle for Codex-compatible agents at `.agents/skills/` and locks its source hashes in `skills-lock.json`.
+
+- **25 active Matt Pocock skills** are installed: the Engineering and Productivity skills listed in `docs/matt-pocock-skills.md`.
+- **10 upstream support skills** are also present because the installer copied the complete source package. They are in-progress or miscellaneous skills, not part of the mandatory routing catalog.
+- **User-invoked skills** have `disable-model-invocation: true` and must be started by an explicit human command such as `/triage`, `/wayfinder`, or `/implement`. Their files being present does not authorize an agent to silently run them.
+- **Model-invoked skills** may be selected automatically when their documented condition matches, such as `/tdd`, `/code-review`, `/diagnosing-bugs`, or `/writing-for-agents`.
+- Read `docs/matt-pocock-skills.md` before choosing a route. Do not edit vendored upstream skill files directly; update them with the locked installer when a new upstream version is intentionally adopted.
+
+Update the bundle with:
+
+```bash
+npx skills@latest update
+```
+
+The Freebuff `skill` tool and Codex skill discovery are separate runtimes. A local file is available to Codex-compatible agents through `.agents/skills/`; it does not guarantee that Freebuff can agent-invoke a user-only skill. Preserve the upstream invocation boundary rather than removing `disable-model-invocation` to force automatic execution.
+
+## Agent onboarding contract
+
+`AGENTS.md` is the always-loaded routing index. Use progressive disclosure instead of loading the whole repository:
+
+1. Read this file and `docs/matt-pocock-skills.md`.
+2. Read `loop-constraints.md`, `docs/safety.md`, `LOOP.md`, and `STATE.md` for any repository, GitHub, content, loop, or deployment task.
+3. Read `DESIGN.md` for visual or copy work.
+4. Read `docs/agents/project-map.md` for the current product model, architecture seams, build truth, task routing, and iteration protocol.
+5. Read `docs/github-content-workflow.md` for Tina/GitHub content changes.
+6. Read only the target source, its tests, its schema/types, and one existing example before editing.
+
+Current source-of-truth order:
+
+- **Runtime behavior:** current `src/`, `tina/`, `public/`, and tests.
+- **Build/deploy behavior:** `package.json`, `astro.config.mjs`, and `vercel.json`.
+- **Design language:** `DESIGN.md`.
+- **Content transport:** `docs/github-content-workflow.md` and checked-in `src/content/**`.
+- **Safety and iteration:** `loop-constraints.md`, `docs/safety.md`, `LOOP.md`, and `STATE.md`.
+- **Historical rationale:** `plan.md`, useful for context but not authoritative when it conflicts with current code or config.
+
+The default improvement loop is: orient -> classify one smallest change -> trace the source path -> apply Ponytail -> implement one slice -> run the smallest check -> run project verification -> independent review -> report evidence -> wait for human Git/production approval. The detailed version is in `docs/agents/project-map.md`.
 
 ## Site map
 
@@ -28,7 +68,9 @@ The core product is not a generic real-estate brochure. It is a clear property r
 - `/lease-terms` — published industrial lease and residential sale terms.
 - `/contact` — viewing requests and office contact details.
 - `/about` — operator, publishing principles, and footprint.
+- `/events`, `/gallery`, `/awards`, `/careers`, `/upcoming-projects` — published operator and editorial pages.
 - `/blog` — practical notes on locations, specifications, and leasing.
+- `/admin` — Tina editor surface; treat it as a tool for editing checked-in content, not public site content.
 
 ## Navigation language
 
@@ -110,7 +152,8 @@ The content policy is explicit: this site already tracks content in GitHub throu
 
 ### 3. Choose the smallest implementation
 
-- Load `ponytail` for every implementation request by default. Apply its ladder: delete speculative work, prefer platform features, reuse installed dependencies, then write the minimum code.
+- Load `ponytail` for every implementation, design, refactor, dependency, or review request by default. Apply its ladder: question whether the work needs to exist, reuse existing code, prefer the standard library or native platform, then write the minimum code.
+- Keep Ponytail active for the whole response unless the user says `stop ponytail` or `normal mode`. It does not override security, accessibility, validation, error handling, tests, or an explicit request for the full version.
 - Load `minimal-fix` for one explicit bug, reviewer comment, typo, or CI failure. It is one problem per run and never a drive-by refactor.
 - Load `ponytail-review` after a focused diff when the question is “what can we delete?” It reports only over-engineering findings and does not edit.
 - Load `ponytail-audit` for a whole-repository simplification audit. It reports ranked deletions and does not edit.
@@ -130,14 +173,14 @@ For this Eens site, the design gate means: tokens from `DESIGN.md`, one restrain
 
 ### 5. Implement
 
-- Make the smallest relevant edit with existing Astro components, Tina schemas, CSS tokens, and native HTML where possible.
+Use `docs/agents/project-map.md` as the implementation contract. Keep one coherent slice across source, schema, renderer, and tests. Make the smallest relevant edit with existing Astro components, Tina schemas, CSS tokens, and native HTML where possible.
 - Keep native `<details>/<summary>`, semantic landmarks, ordinary links, and CSS ahead of a new JavaScript abstraction.
 - Keep live features separate from future ideas. A menu item may link to an existing contact route, but must not imply an online rent portal, keycard service, dock calendar, COI upload, job board, or other system that is not implemented.
 - Mark intentional shortcuts with `ponytail:` only when the limitation and upgrade condition matter.
 
 ### 6. Review and verify
 
-Use a maker/checker split for non-trivial changes:
+Use a maker/checker split for non-trivial changes. A result without runnable evidence is `ESCALATE_HUMAN`, not approval:
 
 1. Implementer edits the files.
 2. `code-reviewer-luna` reviews the diff for correctness and scope.
@@ -151,6 +194,8 @@ Use a maker/checker split for non-trivial changes:
 6. Report exact commands and whether each passed, failed, or was blocked by the environment. Never claim a check passed when the terminal or browser was unavailable.
 
 ### 7. Browser verification with Microsoft Playwright CLI
+
+For browser-facing work, use the isolated Playwright workflow below and record the actual server URL, route status, snapshot structure, console, network, viewport, and screenshots. Do not convert a blocked browser run into a pass.
 
 Use the installed repository skill at `.agents/skills/playwright-cli/SKILL.md` for browser-facing website features. The CLI is installed globally as `playwright-cli` (`@playwright/cli`):
 
@@ -203,15 +248,26 @@ A Playwright smoke pass is green only when the server used for the test is confi
 
 ### 8. Loop Engineering installation and invocation
 
-Loop Engineering is report-only during its first week. Do not enable unattended fixes, auto-merge, or schedules without explicit human approval and a healthy doctor result. The verified global CLI in this environment is `loop` v0.1.2, installed from `@cobusgreyling/loop`.
+Loop Engineering is installed globally at `loop` v0.1.2 and scaffolded for this repository under `.codex/`. It is active only as Daily Triage L1 report-only. Do not enable unattended fixes, auto-merge, push, issue closure, schedules, or production actions without explicit human approval, an updated `loop-constraints.md`, and a healthy doctor result. Read `docs/safety.md` with the binding constraints before any loop action.
 
 #### Installation and verification
 
 ```bash
 npm install -g @cobusgreyling/loop
 loop --help
+loop doctor . --json
+loop status . --json
 # Source: https://github.com/cobusgreyling/loop-engineering
 ```
+
+This repository's Codex scaffold is already present:
+
+- `.codex/skills/loop-triage/SKILL.md`
+- `.codex/skills/loop-budget/SKILL.md`
+- `.codex/skills/loop-constraints/SKILL.md`
+- `.codex/agents/verifier.toml`
+
+The authoritative local setup files are `LOOP.md`, `STATE.md`, `loop-budget.md`, `loop-run-log.md`, `loop-constraints.md`, and `docs/safety.md`.
 
 The documented `npx` front door avoids depending on a global binary:
 
@@ -224,7 +280,7 @@ npx @cobusgreyling/loop cost --pattern daily-triage --level L1 --cadence 1d
 
 #### Current Eens baseline
 
-The repository now has a scaffolded Codex `daily-triage` loop. The post-scaffold readiness audit on 2026-08-09 reported `100/100`, level `L3`, with `STATE.md`, `LOOP.md`, `loop-budget.md`, `loop-run-log.md`, `loop-constraints.md`, `.codex/skills/loop-triage`, `.codex/skills/loop-budget`, `.codex/skills/loop-constraints`, and `.codex/agents/verifier.toml`. The loop itself remains `L1 report-only` until a deliberate, separately reviewed change promotes it.
+The post-scaffold readiness audit on 2026-08-15 reported `100/100`, level `L3`, with `STATE.md`, `LOOP.md`, `loop-budget.md`, `loop-run-log.md`, `loop-constraints.md`, `docs/safety.md`, `.codex/skills/loop-triage`, `.codex/skills/loop-budget`, `.codex/skills/loop-constraints`, and `.codex/agents/verifier.toml`. Readiness is not permission to automate: the loop remains L1 report-only until a deliberate, separately reviewed change promotes it.
 
 Verified read-only checks:
 
@@ -240,24 +296,25 @@ The L1 daily-triage budget is configured at `100k tokens/day`, with a maximum of
 #### Safe operating sequence
 
 1. Run `loop doctor . --json` and `loop audit . --suggest` before changing the loop.
-2. Review `STATE.md`, `LOOP.md`, `loop-budget.md`, `loop-constraints.md`, `.codex/skills/*`, and `.codex/agents/verifier.toml` before using the scaffold.
+2. Review `STATE.md`, `LOOP.md`, `loop-budget.md`, `loop-constraints.md`, `docs/safety.md`, `.codex/skills/*`, and `.codex/agents/verifier.toml` before using the scaffold.
 3. Start at L1 report-only with `Run $loop-triage. Read STATE.md. Report only.`
 4. Keep L1 at 100k tokens/day, 2 runs/day maximum, and 0 sub-agent spawns per run.
-5. Use `loop status . --json` and `loop cost --pattern daily-triage --level L1 --cadence 1d` for day-2 checks and budget review.
-6. Never enable auto-fix, auto-merge, or scheduling beyond this report-only cadence without explicit human approval, updated constraints, and a healthy doctor result.
+5. Use `loop status . --json` and `loop cost --pattern daily-triage --level L1 --cadence 1d` for budget review.
+6. Apply Ponytail to any proposed implementation: first ask whether the action is necessary, then choose the smallest reversible change.
+7. Never enable auto-fix, auto-merge, push, scheduling, or production action beyond report-only without explicit human approval, updated constraints, a healthy doctor result, and verifier approval.
 
 ### 9. Skill invocation contract
 
 - Skills are loaded by exact name with the `skill` tool, for example `skill frontend-ui-engineering` or `skill anti-slop`.
 - Agent types are different from skills. Spawn `file-picker`, `code-searcher`, `basher`, `code-reviewer-luna`, or `thinker-with-files-gemini` only when their job is needed; do not pretend a missing agent type exists.
-- The `mattpocock/skills` catalog below is documented from upstream. In this runtime, its files are installed under `$HOME/.agents/skills/`, but global registration with PromptScript is unsupported; do not claim full external-agent registration.
+- The `mattpocock/skills` catalog below is documented from upstream. The repository copy is installed under `.agents/skills/` and pinned by `skills-lock.json`; a separate global install may exist under `$HOME/.agents/skills/`, but neither path makes Freebuff's user-only skills agent-invokable.
 - If a requested skill is unavailable, state that clearly and use the closest verified skill. Never fabricate a skill name, output format, or command.
 
 ### Verified skill catalog for this repo
 
 These existing Freebuff skills are available to this agent:
 
-- **Loop controls:** `loop-constraints`, `loop-budget`, `loop-triage`, `loop-verifier`, `minimal-fix`, `install-loop`.
+- **Loop controls:** `loop-constraints`, `loop-budget`, `loop-triage`, `loop-verifier`, `minimal-fix`.
 - **Design system and UI:** `frontend-ui-engineering`, `design-taste-frontend`, `design-system`, `ui-styling`, `baseline-ui`, `make-interfaces-feel-better`, `fixing-accessibility`, `fixing-motion-performance`, `design`, `anti-slop`.
 - **Writing and copy:** `brand`, `anti-slop`.
 - **Simplicity and code reduction:** `ponytail`, `ponytail-review`, `ponytail-audit`.
@@ -271,7 +328,7 @@ The exact verified catalog and strict first-step routing contract live in `docs/
 
 **Upstream:** [mattpocock/skills](https://github.com/mattpocock/skills). The singular `mattpocock/skill` URL is not the active upstream repository.
 
-**Verification status (2026-08-09):** the upstream README was checked directly and the active Engineering/Productivity catalog is recorded in `docs/matt-pocock-skills.md`. The installer placed matching local files under `$HOME/.agents/skills/`. The final external PromptScript registration step is not supported by this Freebuff runtime; treat local files as available to Freebuff, but never claim external global registration.
+**Verification status (2026-08-15):** the upstream README was checked directly and the active Engineering/Productivity catalog is recorded in `docs/matt-pocock-skills.md`. The complete source package is installed for Codex under `.agents/skills/` and pinned by `skills-lock.json`; 25 active catalog skills plus 10 upstream in-progress/misc support skills are present. Freebuff can load its own verified runtime skills, while Codex-compatible agents can discover the repository-local bundle. Do not claim that Freebuff can automatically invoke a skill marked `disable-model-invocation: true`.
 
 Verified installation command:
 
@@ -286,9 +343,9 @@ find "$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.codex/skills" \\
   -maxdepth 3 -name SKILL.md -print 2>/dev/null | sort
 ```
 
-The active upstream bundle includes the exact Engineering/Productivity names listed in `docs/matt-pocock-skills.md`, including `ask-matt`, `setup-matt-pocock-skills`, `implement`, `triage`, `wayfinder`, `to-spec`, `to-tickets`, `code-review`, `tdd`, and `writing-for-agents`. Use the exact name and load only the smallest useful set for a task.
+The active upstream bundle includes the exact Engineering/Productivity names listed in `docs/matt-pocock-skills.md`, including `ask-matt`, `setup-matt-pocock-skills`, `implement`, `triage`, `wayfinder`, `to-spec`, `to-tickets`, `code-review`, `tdd`, and `writing-for-agents`. Use the exact name and load only the smallest useful set for a task. User-invoked entries remain human-gated by upstream design; model-invoked entries are the agent-side reusable disciplines.
 
-The `setup-matt-pocock-skills` skill is available under `$HOME/.agents/skills/`, but repository setup is not complete. Run it only after the human confirms the issue tracker and docs layout. It is prompt-driven and may write project documentation; do not claim setup is complete or substitute it for the read-only Loop audit above.
+The `setup-matt-pocock-skills` skill is available under `.agents/skills/`, but repository setup is not complete. Run it only after the human confirms the issue tracker and docs layout. It is prompt-driven and may write project documentation; do not claim setup is complete or substitute it for the read-only Loop audit above.
 
 ## Astro 7.2 upgrade notes
 
@@ -310,9 +367,28 @@ Astro's relative `logger.entrypoint` support is available but unused: this repo 
 
 ### Global skill installation boundary
 
-The Matt Pocock bundle remains installed under `$HOME/.agents/skills/`; Freebuff cannot register skills with external PromptScript agents. `design-bridge` and `accessibility-tester` are agent markdown files in VoltAgent's `awesome-claude-code-subagents`, not native `SKILL.md` packages. If copied globally, preserve their upstream source and treat them as external agent references, not verified Freebuff skills. `opendesign` is a separate npm project (`opendesign`, https://github.com/opendesigndev/open-design-framework), not a Freebuff skill. Never claim these names are loadable through the `skill` tool unless exact `SKILL.md` files are present and verified.
+The Matt Pocock bundle is installed for Codex both locally under `.agents/skills/` and globally under `$HOME/.agents/skills/`, with the repository copy pinned by `skills-lock.json`. The approved community bundle is installed globally under `$HOME/.agents/skills/` for compatible agents and is loadable in this runtime by exact skill name.
+
+Verified global community skills for Eens:
+
+- `design-lab` from `0xdesign/design-plugin` for disposable, feedback-driven visual exploration.
+- `accessibility-audit`, `accessibility-fix`, `accessibility-scan`, `accessibility-inspect`, and `accessibility-diff` from `AccessLint/claude-marketplace` for WCAG 2.2 audit, remediation, automated scans, hands-on inspection, and regression diffs.
+- `web-quality-audit` from `addyosmani/web-quality-skills` for Lighthouse-aligned performance, accessibility, SEO, and best-practice review.
+- `unocss` from `antfu/skills` for UnoCSS-specific projects only. Eens uses Tailwind CSS 4, so do not add or mix UnoCSS without a separate architecture decision.
+- `frontend-design` from `anthropics/skills` for distinctive, intentional visual direction.
+- `simple-english` from `AminBlg/SimpleEnglish` for agent-facing technical documentation and plain operational copy.
+- `seo` from `iannuttall/seo` for evidence-backed SEO and Core Web Vitals work.
+
+The following requested names are not exported by their stated repositories and are not aliases:
+
+- `audit-and-fix`: use `accessibility-audit` to locate issues, then `accessibility-fix` to remediate them.
+- `contrast-checker`, `use-of-color`, and `link-purpose`: use `accessibility-scan` and the WCAG audit flow; record contrast and link-purpose findings by rule and selector.
+
+Do not fabricate unavailable names, wrappers, or reports. Verify global availability with `test -f "$HOME/.agents/skills/<name>/SKILL.md"` or `npx skills ls -g`. Ponytail is a verified Freebuff runtime skill and is routed by name in this file; no separate upstream package is assumed. `design-bridge` and `accessibility-tester` are agent markdown files in VoltAgent's `awesome-claude-code-subagents`, not native `SKILL.md` packages. If copied globally, preserve their upstream source and treat them as external agent references, not verified Freebuff skills. `opendesign` is a separate npm project (`opendesign`, https://github.com/opendesigndev/open-design-framework), not a Freebuff skill. Never claim a name is loadable through the `skill` tool unless an exact `SKILL.md` file is present and verified.
 
 ## Design-polish triage
+
+For any design or quality pass, route to the smallest verified set. Use `design-lab` only when comparing materially different directions. Use `frontend-design` for the visual plan, `web-quality-audit` for the cross-axis audit, `accessibility-scan` for a live-page worklist, `accessibility-fix` only for supplied or confirmed mechanical findings, and `seo` for search/CWV evidence. Keep `unocss` out of this Tailwind project.
 
 For a visual, SEO, accessibility, performance, or copy pass, read `DESIGN.md`, load `frontend-ui-engineering`, `design-taste-frontend`, `baseline-ui`, `make-interfaces-feel-better`, `fixing-accessibility`, `fixing-motion-performance`, `fixing-metadata`, and `anti-slop`, then record evidence in `docs/page-quality-audit-YYYY-MM-DD.md` before editing. Use existing contextual imagery before diagrams or new dependencies. Treat Pexels assets as contextual stock unless the operator confirms the image is the listed property. Keep literal address, area, price, availability, specifications, and terms separate from image interpretation. Remove decorative diagrams, gradients, blur, and scroll-tied motion when they compete with property evidence. Prefer shared fixes in `BaseHead`, `Base`, global CSS, and primitive components before route-specific changes. When the user invokes the Matt Pocock fix workflow, use `minimal-fix` for one explicit defect or `implement` for an approved multi-file slice, then use a separate checker review. Validate with `git diff --check`, `pnpm exec astro check`, `pnpm test`, and `pnpm build` when route assembly changes. Use the actual Tina build variables ephemerally; never write or print secrets. If browser automation is unavailable, mark runtime visual verification as blocked rather than claiming it passed.
 

@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import type { ContextualVisual } from '../../lib/contextual-images';
 
 interface Props {
@@ -13,11 +14,14 @@ const { visual, class: className, loading = 'lazy', priority = false } = Astro.p
 
 <figure class:list={['contextual-visual full-bleed-media group w-full overflow-hidden rounded-xl border border-hairline-steel bg-secondary', className]}>
 
-	<img
+	<Image
 		src={visual.src}
 		alt={visual.alt}
-		width="1920"
-		height="820"
+		width={1920}
+		height={820}
+		sizes="100vw"
+		format="webp"
+		quality={75}
 		loading={priority ? 'eager' : loading}
 		fetchpriority={priority ? 'high' : undefined}
 		decoding="async"
