@@ -25,3 +25,16 @@
 - [x] Run the Tina Cloud build with `.env` loaded ephemerally; never print credential values. Feature branch passed; `main` remains stale until review/merge.
 - [ ] Update the draft PR only after telling the human; do not force-merge or deploy.
 - [x] Keep Frappe, Gunicorn, Socket.IO, Supervisor, and detached mosh processes untouched.
+
+## Phase 6: register-first property discovery
+
+- [x] Audit category routes, property model, Tina collections, and existing zone schematic.
+- [x] Research modern listing UX patterns and approve the register-first direction.
+- [x] Write, self-review, and commit the approved register/map design spec (`037e9f5`).
+- [x] Create the implementation plan for Tina context, query filters, and lightweight map/list.
+- [x] Add failing tests for filter parsing, filtering, reset links, and context selection; focused and full suites pass (117 tests).
+- [x] Add Tina-editable directory contexts for all five categories.
+- [x] Render progressive filter rails, active states, result counts, and richer context sections.
+- [x] Add the static schematic zone map/list split with accessible text links and mobile disclosure.
+- [x] Run full verification, static browser smoke, and independent review; Tina Cloud remains blocked until remote schema indexing.
+- [ ] Tell the human before pushing and create/update the draft PR through normal gates.

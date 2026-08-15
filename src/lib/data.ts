@@ -15,6 +15,7 @@ import type { TinaRichTextContent } from '@tinacms/astro';
 import { requestWithMetadata } from '@tinacms/astro/data';
 import client from '../../tina/__generated__/client';
 import { isPublicProperty } from './property-visibility';
+import type { DirectoryContext } from './directory-context';
 
 /**
  * Hand-typed property shape used for the new `property` collection.
@@ -120,7 +121,9 @@ export async function listProperties(): Promise<PropertyNode[]> {
 	});
 }
 
-export type CmsConfig = Awaited<ReturnType<typeof getConfig>>['data']['config'];
+export type CmsConfig = Awaited<ReturnType<typeof getConfig>>['data']['config'] & {
+	directoryContexts?: Array<DirectoryContext | null> | null;
+};
 export type CmsPage = Awaited<ReturnType<typeof getPage>>['data']['page'];
 export type CmsBlog = Awaited<ReturnType<typeof getBlog>>['data']['blog'];
 export type CmsProperty = Awaited<ReturnType<typeof getProperty>>['data']['property'];
