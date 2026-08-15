@@ -63,6 +63,10 @@ Expose the three routes in the shared navigation and footer without changing exi
 - Future award entries require title, issuer, year, source URL, and image before publication.
 - All visible copy remains concrete and avoids hype, unsupported claims, and SaaS language.
 
+## Careers follow-up
+
+The approved email workflow adds a Tina-backed `/careers` page and a reusable `CareersForm` page block. Editors can change the page copy, role status, form title, description, submit label, subject prefix, and privacy note in Tina. The form uses a native `mailto:` action with URL-encoded fields and does not upload files, persist submissions, or expose applicant data to the site. Applicants provide a CV or portfolio URL instead. No Frappe service is stopped or changed.
+
 ## Validation
 
 Run:

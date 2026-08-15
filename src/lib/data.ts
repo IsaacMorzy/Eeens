@@ -155,6 +155,15 @@ export type GalleryBlock = {
 	} | null> | null;
 };
 
+export type CareersFormBlock = {
+	__typename?: 'PageBlocksCareersForm';
+	title?: string | null;
+	description?: string | null;
+	submitLabel?: string | null;
+	subjectPrefix?: string | null;
+	privacyNote?: string | null;
+};
+
 export type CmsConfigNav = NonNullable<NonNullable<CmsConfig['nav']>[number]>;
 export type CmsConfigContactLink = NonNullable<NonNullable<CmsConfig['contactLinks']>[number]>;
 export type CmsConfigSeo = NonNullable<CmsConfig['seo']>;

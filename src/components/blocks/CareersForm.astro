@@ -1,0 +1,71 @@
+---
+import { tinaField } from '@tinacms/astro/tina-field';
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { contactEmail, getConfig } from '../../lib/data';
+
+interface CareersFormData {
+	title?: string | null;
+	description?: string | null;
+	submitLabel?: string | null;
+	subjectPrefix?: string | null;
+	privacyNote?: string | null;
+}
+
+interface Props { data: CareersFormData }
+
+const { data } = Astro.props;
+const config = (await getConfig()).data?.config ?? null;
+const subject = encodeURIComponent(data.subjectPrefix || 'Job application');
+const tinaData = data as unknown as Record<string, unknown>;
+---
+
+<Section class="bg-secondary">
+	<div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+		<div class="max-w-xl">
+			{data.title && <h2 data-tina-field={tinaField(tinaData, 'title')} class="text-balance font-display text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1px]">{data.title}</h2>}
+			{data.description && <p data-tina-field={tinaField(tinaData, 'description')} class="mt-4 max-w-lg text-pretty leading-relaxed text-muted-foreground">{data.description}</p>}
+			<div class="mt-8 flex items-start gap-3 border-t border-hairline-steel/60 pt-4 text-sm text-muted-foreground">
+				<Icon name="mail" class="mt-0.5 size-4 shrink-0 text-primary" />
+				<p>Applications open in your email client and are sent to the configured Eens office address.</p>
+			</div>
+		</div>
+
+		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+			<div class="grid gap-5 sm:grid-cols-2">
+				<div class="grid gap-2">
+					<label for="career-full-name" class="text-sm font-medium text-foreground">Full name</label>
+					<input id="career-full-name" name="full_name" type="text" autocomplete="name" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for="career-email" class="text-sm font-medium text-foreground">Email address</label>
+					<input id="career-email" name="email" type="email" autocomplete="email" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for="career-role" class="text-sm font-medium text-foreground">Role or area</label>
+					<input id="career-role" name="role_or_area" type="text" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for="career-phone" class="text-sm font-medium text-foreground">Phone <span class="font-normal text-muted-foreground">(optional)</span></label>
+					<input id="career-phone" name="phone" type="tel" autocomplete="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2 sm:col-span-2">
+					<label for="career-cv" class="text-sm font-medium text-foreground">CV or portfolio link</label>
+					<input id="career-cv" name="cv_or_portfolio_link" type="url" required placeholder="https://" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2 sm:col-span-2">
+					<label for="career-message" class="text-sm font-medium text-foreground">Message</label>
+					<textarea id="career-message" name="message" rows="5" required class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
+				</div>
+			</div>
+			<div class="mt-6 flex flex-col items-start gap-4 border-t border-hairline-steel/60 pt-5 sm:flex-row sm:items-center sm:justify-between">
+				{data.privacyNote && <p data-tina-field={tinaField(tinaData, 'privacyNote')} class="max-w-md text-xs leading-relaxed text-muted-foreground">{data.privacyNote}</p>}
+				<Button type="submit" size="lg">
+					<Icon name="mail-forward" class="size-4" />
+					<span>{data.submitLabel || 'Open email application'}</span>
+				</Button>
+			</div>
+		</form>
+	</div>
+</Section>
