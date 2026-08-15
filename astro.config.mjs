@@ -7,6 +7,11 @@ import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import tailwindcss from '@tailwindcss/vite';
 
+const isVercelBuild = process.env.VERCEL === '1' || Boolean(process.env.VERCEL_ENV);
+const outputDirectory = isVercelBuild
+	? './dist/'
+	: '../eens_app/public/astro_pages';
+
 // https://astro.build/config
 export default defineConfig({
 	// Public origin served by Tailscale Funnel (funnel :10000 -> nginx :8081 ->
@@ -17,9 +22,10 @@ export default defineConfig({
 	// Astro 7.2: this site has no session state, so keep the session runtime
 	// out of adapter output and reuse unchanged prerendered pages.
 	session: false,
-	// Canonical Frappe-bench public path consumed by deploy.sh, which copies
-	// this build into sites/eensbpark.ke/public for nginx to serve.
-	outDir: '../eens_app/public/astro_pages',
+	// Vercel must keep output inside its checkout; its filesystem uses a
+	// different device for the external Frappe path. Local builds continue
+	// writing to the canonical path consumed by deploy.sh.
+	outDir: outputDirectory,
 	redirects: { '/home': '/' },
 	integrations: [mdx(), sitemap(), icon(), tina()],
 	build: {
