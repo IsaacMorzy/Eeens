@@ -11,6 +11,8 @@ import {
 	groupByType,
 	zonesInUse,
 	linkWith,
+	parseDirectoryFilters,
+	activeFilterCount,
 	getIllustrationSrc,
 	type PropertyFilters,
 } from './property-filters';
@@ -146,6 +148,31 @@ describe('zonesInUse', () => {
 	it('drops null zones', () => {
 		const list: PropertyNode[] = [property({ zone: null }), property({ zone: 'Thika' })];
 		expect(zonesInUse(list)).toEqual(['Thika']);
+	});
+});
+
+describe('parseDirectoryFilters', () => {
+	it('accepts supported zone and tier values', () => {
+		expect(parseDirectoryFilters(new URLSearchParams('zone=Syokimau&minSqft=9000&minKva=200'), ['Mlolongo', 'Syokimau'])).toEqual({
+			zone: 'Syokimau',
+			minSqft: 9000,
+			minKva: 200,
+		});
+	});
+
+	it('ignores unknown zones and unsupported numeric values', () => {
+		expect(parseDirectoryFilters(new URLSearchParams('zone=Unknown&minSqft=1234&minKva=-2'), ['Mlolongo'])).toEqual({
+			zone: null,
+			minSqft: null,
+			minKva: null,
+		});
+	});
+});
+
+describe('activeFilterCount', () => {
+	it('counts only active filter values', () => {
+		expect(activeFilterCount({ zone: 'Mlolongo', minSqft: 9000, minKva: null })).toBe(2);
+		expect(activeFilterCount({ zone: null, minSqft: null, minKva: null })).toBe(0);
 	});
 });
 

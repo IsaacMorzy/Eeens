@@ -50,6 +50,27 @@ export interface PropertyFilters {
 	zone: string | null;
 }
 
+const parseTier = (value: string | null, tiers: readonly number[]): number | null => {
+	if (!value || !/^\d+$/.test(value)) return null;
+	const parsed = Number(value);
+	return tiers.includes(parsed) ? parsed : null;
+};
+
+export const parseDirectoryFilters = (
+	searchParams: URLSearchParams,
+	supportedZones: readonly string[],
+): PropertyFilters => {
+	const zone = searchParams.get('zone');
+	return {
+		zone: zone && supportedZones.includes(zone) ? zone : null,
+		minSqft: parseTier(searchParams.get('minSqft'), SQFT_TIERS),
+		minKva: parseTier(searchParams.get('minKva'), KVA_TIERS),
+	};
+};
+
+export const activeFilterCount = (filters: PropertyFilters): number =>
+	[filters.zone, filters.minSqft, filters.minKva].filter((value) => value !== null).length;
+
 export const applyFilters = (
 	properties: readonly PropertyNode[],
 	filters: PropertyFilters,
