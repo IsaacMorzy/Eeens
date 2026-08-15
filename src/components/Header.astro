@@ -34,6 +34,8 @@ const loginHref = '/login';
 const configuredNav = (config?.nav ?? []).filter((item) => item !== null);
 const groupHref = (group: MenuGroup): string =>
 	configuredNav.find((item) => item.title === group.label)?.link ?? group.href;
+const groupIsCurrent = (group: MenuGroup): boolean =>
+	group.items.some((item) => item.href.startsWith('/') && isCurrentPath(Astro.url.pathname, item.href));
 
 // Keep the menu tied to pages and actions that exist in this repository.
 // This is an operational directory, not a list of fictional tenant systems.
@@ -96,29 +98,31 @@ const menuGroups: MenuGroup[] = [
 		<div class="hidden items-center gap-1 xl:flex">
 			{menuGroups.map((group) => (
 				<details class="group relative">
-					<summary class="flex min-h-10 cursor-pointer list-none items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground group-open:bg-accent group-open:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
+					<summary class:list={["flex min-h-10 cursor-pointer list-none items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground group-open:bg-accent group-open:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden", groupIsCurrent(group) && 'text-foreground']}>
 						<span>{group.label}</span>
 						<Icon name="chevron-down" class="size-3.5 transition-transform duration-200 group-open:rotate-180" />
 					</summary>
-					<div class="absolute right-0 top-[calc(100%+0.65rem)] z-30 max-h-[min(34rem,calc(100vh-7rem))] w-[min(48rem,calc(100vw-3rem))] overflow-y-auto overscroll-contain rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
-						<div class="border-b border-hairline-steel/60 border-t-2 border-t-primary px-3 pb-3 pt-3">
-							<p class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">{group.label}</p>
-							<p class="mt-1 max-w-xl text-sm text-muted-foreground">{group.intro}</p>
-							<a href={groupHref(group)} class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-								<span>{group.linkLabel}</span>
-								<Icon name="arrow-up-right" class="size-3.5" />
-							</a>
-						</div>
-						<div class="grid gap-1 p-2 sm:grid-cols-2">
-							{group.items.map((item) => (
-								<a href={item.href} class:list={["group/item flex min-h-14 items-start gap-3 rounded-lg border border-transparent p-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-hairline-steel/60 hover:bg-secondary aria-[current=page]:border-primary/60 aria-[current=page]:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", item.href === '/business-parks/eens' && 'bg-secondary/60']} aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined}>
-									{item.icon && <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-hairline-steel/60 text-primary"><Icon name={item.icon} class="size-4" /></span>}
-									<span class:list={['min-w-0', !item.icon && 'pl-1']}>
-										<span class="block text-sm font-medium text-foreground group-hover/item:text-primary-hover">{item.label}</span>
-										{item.detail && <span class="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{item.detail}</span>}
-									</span>
+					<div class="absolute right-0 top-[calc(100%+0.65rem)] z-30 max-h-[min(34rem,calc(100vh-7rem))] w-[min(52rem,calc(100vw-3rem))] overflow-y-auto overscroll-contain rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
+						<div class="grid gap-4 lg:grid-cols-[minmax(12rem,0.85fr)_minmax(0,1.5fr)]">
+							<div class="border-b-2 border-primary px-3 pb-4 pt-1 lg:border-b-0 lg:border-r lg:border-hairline-steel/60 lg:pr-5">
+								<p class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">{group.label}</p>
+								<p class="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">{group.intro}</p>
+								<a href={groupHref(group)} class="mt-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+									<span>{group.linkLabel}</span>
+									<Icon name="arrow-up-right" class="size-3.5" />
 								</a>
-							))}
+							</div>
+							<div class="grid gap-1 sm:grid-cols-2">
+								{group.items.map((item) => (
+									<a href={item.href} class:list={["group/item flex min-h-14 items-start gap-3 rounded-lg border border-transparent p-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-hairline-steel/60 hover:bg-secondary aria-[current=page]:border-primary/60 aria-[current=page]:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", item.href === '/business-parks/eens' && 'bg-secondary/60']} aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined}>
+										{item.icon && <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-hairline-steel/60 text-primary"><Icon name={item.icon} class="size-4" /></span>}
+										<span class:list={['min-w-0', !item.icon && 'pl-1']}>
+											<span class="block text-sm font-medium text-foreground group-hover/item:text-primary-hover">{item.label}</span>
+											{item.detail && <span class="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{item.detail}</span>}
+										</span>
+									</a>
+								))}
+							</div>
 						</div>
 					</div>
 				</details>
@@ -169,9 +173,12 @@ const menuGroups: MenuGroup[] = [
 							</a>
 							<div class="grid gap-1 sm:grid-cols-2">
 							{group.items.map((item) => (
-								<a href={item.href} class="flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-									{item.icon && <Icon name={item.icon} class="size-4 shrink-0 text-primary" />}
-									<span>{item.label}</span>
+								<a href={item.href} aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined} class="group/item flex min-h-11 items-start gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground aria-[current=page]:bg-secondary aria-[current=page]:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+									{item.icon && <Icon name={item.icon} class="mt-0.5 size-4 shrink-0 text-primary" />}
+									<span>
+										<span class="block">{item.label}</span>
+										{item.detail && <span class="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{item.detail}</span>}
+									</span>
 								</a>
 							))}
 							</div>
