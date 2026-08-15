@@ -43,6 +43,20 @@ const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent
 		</div>
 	</Section>
 
+	<nav aria-label="Property directories" class="border-y border-hairline-steel/50 bg-secondary">
+		<div class="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
+			{Object.values(DIRECTORY_DEFINITIONS).map((directory) => (
+				<a
+					href={`/${directory.key}`}
+					aria-current={directory.key === category ? 'page' : undefined}
+					class="inline-flex min-h-10 shrink-0 items-center rounded-md border border-transparent px-3 text-sm text-muted-foreground transition-[border-color,color,background-color] hover:border-hairline-steel hover:bg-background hover:text-foreground aria-[current=page]:border-primary/60 aria-[current=page]:bg-background aria-[current=page]:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+				>
+					{directory.label}
+				</a>
+			))}
+		</div>
+	</nav>
+
 	{category === 'shops' && (
 		<Section class="bg-secondary">
 			<div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.5fr] lg:items-end">

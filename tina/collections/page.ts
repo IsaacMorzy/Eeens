@@ -9,6 +9,8 @@ import { contentBlockSchema } from '../../src/components/blocks/content.template
 import { videoBlockSchema } from '../../src/components/blocks/video.template';
 import { splitBlockSchema } from '../../src/components/blocks/split.template';
 import { propertyCardBlockSchema, propertyListBlockSchema, ctaBannerBlockSchema } from '../../src/components/blocks/property.template';
+import { galleryBlockSchema } from '../../src/components/blocks/gallery.template';
+import { careersFormBlockSchema } from '../../src/components/blocks/careers-form.template';
 
 export const PageCollection: Collection = {
 	name: 'page',
@@ -49,6 +51,8 @@ export const PageCollection: Collection = {
 				splitBlockSchema,
 				propertyCardBlockSchema,
 				propertyListBlockSchema,
+				galleryBlockSchema,
+				careersFormBlockSchema,
 			],
 		},
 	],

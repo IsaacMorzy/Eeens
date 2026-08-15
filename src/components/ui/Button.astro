@@ -52,15 +52,16 @@ const button = tv({
 type Props = VariantProps<typeof button> &
 	Omit<HTMLAttributes<'a'>, 'href'> &
 	Omit<HTMLAttributes<'button'>, 'type'> & {
-		href?: string | null;
-	};
+	href?: string | null;
+	type?: 'button' | 'submit' | 'reset';
+};
 
-const { variant, size, href, class: className, ...rest } = Astro.props;
+const { variant, size, href, type = 'button', class: className, ...rest } = Astro.props;
 const classes = cn(button({ variant, size }), className);
 ---
 
 {href ? (
 	<a href={href} class={classes} {...rest as HTMLAttributes<'a'>}><slot /></a>
 ) : (
-	<button class={classes} {...rest as HTMLAttributes<'button'>}><slot /></button>
+	<button type={type} class={classes} {...rest as HTMLAttributes<'button'>}><slot /></button>
 )}

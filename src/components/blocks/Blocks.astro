@@ -5,6 +5,8 @@ import Content from './Content.astro';
 import Cta from './Cta.astro';
 import CtaBanner from './CTABanner.astro';
 import Features from './Features.astro';
+import CareersForm from './CareersForm.astro';
+import Gallery from './Gallery.astro';
 import Hero from './Hero.astro';
 import PropertyCard from './PropertyCard.astro';
 import PropertyList from './PropertyList.astro';
@@ -12,7 +14,7 @@ import Split from './Split.astro';
 import Stats from './Stats.astro';
 import Testimonial from './Testimonial.astro';
 import Video from './Video.astro';
-import type { CmsPage } from '../../lib/data';
+import type { CareersFormBlock, CmsPage, GalleryBlock } from '../../lib/data';
 
 interface Props {
 	data?: CmsPage | null;
@@ -31,6 +33,12 @@ const firstHeadingIndex = blocks.findIndex((block) => {
 ---
 
 {blocks.map((block, i) => {
+	if ((block as { __typename?: string }).__typename === 'PageBlocksGallery') {
+		return <div data-tina-field={tinaField(block)}><Gallery data={block as unknown as GalleryBlock} /></div>;
+	}
+	if ((block as { __typename?: string }).__typename === 'PageBlocksCareersForm') {
+		return <div data-tina-field={tinaField(block)}><CareersForm data={block as unknown as CareersFormBlock} /></div>;
+	}
 	const rendered = (() => {
 		switch (block.__typename) {
 			case 'PageBlocksCallout': return <Callout data={block} />;

@@ -1,13 +1,17 @@
 {
-  "name": "Eens Limited",
+  "name": "Eens Business Park",
   "short_name": "Eens",
+  "lang": "en-KE",
+  "dir": "ltr",
   "description": "Published property listings, locations, and leasing information from Eens Limited.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#fafaf9",
   "theme_color": "#fafaf9",
+  "categories": ["business", "real estate"],
   "icons": [
     {
       "src": "/pwa-192.png",
@@ -20,6 +24,36 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop units",
+      "short_name": "Shops",
+      "description": "Browse published shop units.",
+      "url": "/shops",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Warehouses",
+      "short_name": "Warehouses",
+      "description": "Browse published warehouse listings.",
+      "url": "/warehouses",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Eens Business Park",
+      "short_name": "Business Park",
+      "description": "Open the Syokimau park overview.",
+      "url": "/business-parks/eens",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Contact Eens",
+      "short_name": "Contact",
+      "description": "Arrange a viewing or ask about availability.",
+      "url": "/contact",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

@@ -79,7 +79,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 
 <article
 	class:list={[
-		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover hover:shadow-sm',
+		'group relative flex flex-col overflow-hidden rounded-xl border border-hairline-steel transition-[transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-hover',
 		featured ? 'bg-secondary' : 'bg-background',
 	]}
 	{...rest}
@@ -143,18 +143,24 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 				<span>{data.development}</span>
 			</div>
 		)}
-		{data.sqft && (
-			<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')} class="font-mono tabular-nums text-[13px] text-foreground/80">
-				{data.sqft}
-			</div>
-		)}
-		{data.price && (data.price.ksh || data.price.perSqft) && (
-			<div data-tina-field={tinaField(data as { price?: unknown }, 'price')} class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-				{data.price.ksh && (
-					<span class="font-display text-base font-semibold tracking-[-0.2px] text-foreground">KSH {data.price.ksh}</span>
+		{(data.sqft || (data.price && (data.price.ksh || data.price.perSqft))) && (
+			<div class="grid gap-3 border-y border-hairline-steel/60 py-3 sm:grid-cols-2">
+				{data.sqft && (
+					<div data-tina-field={tinaField(data as { sqft?: unknown }, 'sqft')}>
+						<span class="block font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Area</span>
+						<span class="mt-1 block font-mono tabular-nums text-[13px] text-foreground/80">{data.sqft}</span>
+					</div>
 				)}
-				{data.price.perSqft && (
-					<span class="font-mono text-[13px] text-muted-foreground">KSH {data.price.perSqft} / sq ft</span>
+				{data.price && (data.price.ksh || data.price.perSqft) && (
+					<div data-tina-field={tinaField(data as { price?: unknown }, 'price')}>
+						<span class="block font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Price / rate</span>
+						{data.price.ksh && (
+							<span class="mt-1 block font-display text-base font-semibold tracking-[-0.2px] text-foreground">KSH {data.price.ksh}</span>
+						)}
+						{data.price.perSqft && (
+							<span class="mt-1 block font-mono text-[13px] text-muted-foreground">KSH {data.price.perSqft} / sq ft</span>
+						)}
+					</div>
 				)}
 			</div>
 		)}
@@ -176,7 +182,7 @@ const sourceUrl = getPexelsSource(resolvedImageSrc);
 			</div>
 		)}
 		{viewHref && (
-			<div class="mt-auto flex items-center justify-end pt-4">
+			<div class="mt-auto flex items-center justify-end border-t border-hairline-steel/40 pt-4">
 				<Button href={viewHref} variant="secondary" size="sm">
 					<span>{viewLabel}</span>
 					<Icon name="arrow-up-right" class="size-3.5" />

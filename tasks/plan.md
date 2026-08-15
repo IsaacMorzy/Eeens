@@ -61,3 +61,59 @@ Expose canonical focused asset directories for shops, warehouses, godowns, busin
 - Build: `pnpm build` with Tina variables supplied ephemerally; report missing credentials or remote schema blockers explicitly.
 - Browser: real Tina + Astro server, isolated Playwright session, category routes at 390x844 and 1440x900, no overflow, no console errors, one H1 and one main landmark.
 - State: report local branch/HEAD and remote SHA separately. Do not treat dirty local work as remote state.
+
+## Phase 5: TinaCMS and PWA hardening
+
+Source spec: `docs/superpowers/specs/2026-08-15-eens-tina-pwa-design.md`
+Status: Implementation complete locally; feature-branch cloud build is green and main remains review-gated.
+
+### Task 1: Tina editability parity audit
+
+- **Description:** Add the smallest repository-owned audit that verifies page/property content paths, registered Tina blocks, and `Blocks.astro` render dispatch stay aligned.
+- **Acceptance criteria:**
+  - `Gallery` and `CareersForm` are registered in `PageCollection` and dispatched in `Blocks.astro`.
+  - Events, Gallery, Awards, and Careers page files are present.
+  - Property content remains covered by `PropertyCollection`.
+- **Verification:** Run the audit, `pnpm exec astro check`, and `pnpm test`.
+- **Dependencies:** None.
+- **Files likely touched:** `scripts/`, `package.json`, and focused tests if the existing conventions require them.
+- **Estimated scope:** Small.
+
+### Task 2: PWA static correctness checks
+
+- **Description:** Validate the existing manifest and service worker without adding a dependency or changing public routes.
+- **Acceptance criteria:**
+  - Manifest parses, required icons exist, shortcuts target real routes, and scope/start URL remain `/`.
+  - Service worker parses, uses the current versioned cache, excludes Tina/admin/API paths, and preserves truthful offline behavior.
+- **Verification:** Run manifest assertions, `node --check public/sw.js`, and `git diff --check`.
+- **Dependencies:** Task 1 is not a code dependency, but run after the parity audit is green.
+- **Files likely touched:** `scripts/` and only the PWA files if a verified defect is found.
+- **Estimated scope:** Small.
+
+### Checkpoint: Tina/PWA local verification
+
+- [x] Editability parity audit passes.
+- [x] `pnpm exec astro check` passes.
+- [x] `pnpm test` passes.
+- [x] Local production assembly passes with the documented 4 GB heap setting.
+- [x] Manifest and service-worker checks pass.
+
+### Task 3: Tina Cloud verification and release report
+
+The Vercel build command now uses `build:cloud` rather than `build:local`, so branch previews and production builds perform Tina's remote schema check before Astro assembly.
+
+- **Description:** Run the cloud-checked Tina build with `frontend/.env` loaded ephemerally and record the exact remote-schema result without exposing credentials.
+- **Acceptance criteria:**
+  - Credentials are not printed, written, or committed.
+  - A successful build proves remote schema parity; a mismatch names the missing type and remains a release blocker.
+  - PR #20 is updated only after the human-approved push gate, and remains draft unless separately approved.
+- **Verification:** Run the cloud Tina build and inspect PR checks read-only.
+- **Dependencies:** Tasks 1 and 2.
+- **Files likely touched:** No runtime files unless the audit identifies a real mismatch.
+- **Estimated scope:** Small.
+
+### Explicitly out of scope for Phase 5
+
+- Frappe, Gunicorn, Socket.IO, Supervisor, mosh, or host process management.
+- Force-merging, bypassing review, marking the PR ready, production deployment, or changing credentials.
+- Page-by-page visual redesign or new content records.
