@@ -367,6 +367,14 @@
 	}
 }
 
+/* Let the browser skip layout and paint for sections below the viewport while
+   retaining a stable placeholder size. This reduces mobile main-thread work
+   on long register pages without hiding content from the accessibility tree. */
+.section-render {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 720px;
+}
+
 /* Keep a quiet edge around photographs so media does not disappear into
    adjacent surfaces. The outline follows the theme without adding a shadow. */
 .image-outline {

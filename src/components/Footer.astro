@@ -40,16 +40,18 @@ const directoryLinks = [
 	{ title: 'Tenant profiles', href: '/contact' },
 	{ title: 'About Eens', href: '/about' },
 ];
-const informationLinks = [
+const visitLinks = [
 	{ title: 'Lease terms', href: '/lease-terms' },
+	{ title: 'Contact Eens', href: '/contact' },
+	{ title: 'Login', href: loginHref },
+];
+const journalLinks = [
 	{ title: 'Upcoming projects', href: '/upcoming-projects' },
 	{ title: 'Events', href: '/events' },
 	{ title: 'Gallery', href: '/gallery' },
 	{ title: 'Awards and accolades', href: '/awards' },
 	{ title: 'Careers', href: '/careers' },
 	{ title: 'News', href: '/blog' },
-	{ title: 'Login', href: loginHref },
-	{ title: 'Contact Eens', href: '/contact' },
 ];
 ---
 
@@ -128,18 +130,29 @@ const informationLinks = [
 					</ul>
 				</section>
 
-				<section aria-label="Information">
+				<section aria-label="Visit and resources">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">
-						Information
+						Visit
 					</h3>
 					<ul class="mt-4 space-y-2 text-sm">
-						{informationLinks.map((l) => (
+						{visitLinks.map((l) => (
 							<li>
 								<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
 									{l.title}
 								</a>
 							</li>
-						))}							</ul>
+						))}
+					</ul>
+					<p class="mt-8 text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">Journal</p>
+					<ul class="mt-3 space-y-2 text-sm">
+						{journalLinks.map((l) => (
+							<li>
+								<a href={l.href} aria-current={isCurrentPath(Astro.url.pathname, l.href) ? 'page' : undefined} class="inline-flex min-h-10 items-center text-ink-dark/80 transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark aria-[current=page]:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+									{l.title}
+								</a>
+							</li>
+						))}
+					</ul>
 				</section>
 
 				<section aria-label="Contact">
