@@ -13,7 +13,7 @@
  *   1. NODE_OPTIONS=--max-old-space-size=6144
  *   2. node scripts/smoke-env.mjs        (exits 1 if env preflight fails)
  *   3. pnpm audit --prod --audit-level=critical
- *   4. pnpm build:local                  (Astro is Tina's child here)
+ *   4. pnpm build:cloud                  (Tina Cloud schema check + Astro build)
  *   5. pnpm build:search                 (non-fatal, like vercel.json)
  */
 
@@ -35,7 +35,7 @@ function step(label, cmd, args, { continueOnError = false } = {}) {
 
 step('smoke-env', 'node', ['scripts/smoke-env.mjs']);
 step('audit', 'pnpm', ['audit', '--prod', '--audit-level=critical']);
-step('build:local', 'pnpm', ['build:local']);
+step('build:cloud', 'pnpm', ['build:cloud']);
 step('build:search', 'pnpm', ['build:search'], { continueOnError: true });
 
 console.log('\n[ci:vercel] ✓ matched vercel.json buildCommand shape');
