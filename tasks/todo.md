@@ -36,5 +36,5 @@
 - [x] Add Tina-editable directory contexts for all five categories.
 - [x] Render progressive filter rails, active states, result counts, and richer context sections.
 - [x] Add the static schematic zone map/list split with accessible text links and mobile disclosure.
-- [x] Run full verification, static browser smoke, and independent review; Tina Cloud remains blocked until remote schema indexing.
-- [ ] Tell the human before pushing and create/update the draft PR through normal gates.
+- [x] Run full verification, static browser smoke, and independent review; Tina Cloud/Vercel pass after the Tina lock refresh.
+- [x] Tell the human before pushing and create/update draft PR #21 through normal gates.

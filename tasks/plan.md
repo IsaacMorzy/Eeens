@@ -175,7 +175,7 @@ Status: Implemented locally; Tina Cloud indexing remains pending the branch upda
 
 - [x] Focused tests were red before implementation and are green after each slice; 117 tests pass.
 - [x] `pnpm verify` passes.
-- [ ] Tina Cloud build passes with the new context schema; currently blocked until the remote `main` schema indexes `directoryContexts`.
+- [x] Tina Cloud/Vercel build passes with the new context schema after regenerating and pushing `tina/tina-lock.json`.
 - [x] Static-output category smoke passes at mobile/desktop widths without overflow or console errors; the Tina+Astro dev server did not expose its documented ports and is recorded as blocked.
 - [x] Independent checker review completed; only the remote schema gate remains.
 
