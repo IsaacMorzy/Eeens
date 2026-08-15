@@ -106,7 +106,7 @@ const menuGroups: MenuGroup[] = [
 						<span>{group.label}</span>
 						<Icon name="chevron-down" class="size-3.5 transition-transform duration-200 group-open:rotate-180" />
 					</summary>
-					<div class="absolute right-0 top-[calc(100%+0.65rem)] z-30 max-h-[min(34rem,calc(100vh-7rem))] w-[min(52rem,calc(100vw-3rem))] overflow-y-auto overscroll-contain rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
+					<div class="mega-panel z-30 rounded-xl border border-hairline-steel bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
 						<div class="grid gap-4 lg:grid-cols-[minmax(12rem,0.85fr)_minmax(0,1.5fr)]">
 							<div class="border-b-2 border-primary px-3 pb-4 pt-1 lg:border-b-0 lg:border-r lg:border-hairline-steel/60 lg:pr-5">
 								<p class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">{group.label}</p>
@@ -156,7 +156,7 @@ const menuGroups: MenuGroup[] = [
 		</div>
 	</nav>
 
-	<div id="mobile-menu-panel" hidden class="border-t-2 border-primary bg-background xl:hidden">
+	<div id="mobile-menu-panel" hidden class="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t-2 border-primary bg-background xl:hidden">
 		<div class="mx-auto flex max-w-7xl flex-col px-6 py-4">
 			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
 			<a href="/upcoming-projects" aria-current={isCurrentPath(Astro.url.pathname, '/upcoming-projects') ? 'page' : undefined} class="mb-2 flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-primary-hover aria-[current=page]:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
@@ -212,6 +212,24 @@ const menuGroups: MenuGroup[] = [
 	#mobile-menu-toggle[aria-expanded="true"] .icon-close { display: block; }
 	details > summary { scrollbar-width: none; }
 	details > summary::marker { display: none; }
+
+	/* Anchor the desktop mega panel to the viewport, not the trigger item.
+	   A fixed, centered panel cannot spill past the first or last nav item. */
+	.mega-panel {
+		position: fixed;
+		top: 4.25rem;
+		left: 50%;
+		width: min(52rem, calc(100vw - 2rem));
+		max-height: min(34rem, calc(100dvh - 5.25rem));
+		overflow-y: auto;
+		overflow-x: hidden;
+		overscroll-behavior: contain;
+		transform: translateX(-50%);
+	}
+
+	@media (max-width: 1279px) {
+		.mega-panel { display: none; }
+	}
 </style>
 
 <script is:inline>
