@@ -44,12 +44,31 @@ reduced-motion safe), hero/section recomposition on the park pages.
 ## Copy voice
 
 Unchanged — property-register voice preserved. New labels are factual
-("View listing", "Photo source").
+("View listing", "Photo source").## Lighthouse CI — live verification (2026-08-17)
+
+The workflow runs end-to-end on PRs: `vercel/wait-for-deployment-action`
+resolves the preview URL (Vercel GitHub integration confirmed, 30 prior
+deployments), LHCI collects 3 mobile runs, asserts, and uploads the median LHR.
+
+**Blocker found:** the Vercel project has **Deployment Protection (Vercel
+Authentication) enabled for all environments** — both preview AND production
+URLs 302 to `vercel.com/sso-api`, so Lighthouse measures the login wall, not
+the site (perf/seo/LCP/TBT all fail on the SSO page). This is a Vercel
+dashboard setting (Project → Settings → Deployment Protection), not a repo
+issue; only the account owner can change it. Once previews are public
+(or a deployment-protection bypass / shared link is used), the same workflow
+measures the real site against the Google CWV gates.
+
+Two fixes also landed during verification: `lighthouserc` must be `.cjs`
+(project is ESM), and the invalid `settings.preset: "default"` was dropped
+(the LHCI default is already mobile emulation with 4x CPU throttle).
 
 ## Watch items
 
-- CLS 0.185 observed once on `/warehouses` (single noisy run, not locatable in
-  Lighthouse 13 debugdata) — now covered by the CI CLS <= 0.1 gate.
+- CLS 0.185 observed once on `/warehouses` (single noisy run, not locatable in Lighthouse 13 debugdata) — now covered by the CI CLS <= 0.1 gate.
 - Vercel preview requires the repo's Vercel GitHub integration (already linked
   via `.vercel/project.json`) and the Tina env vars configured in the Vercel
   project (they were present for the Aug 15 build attempts).
+- **Action for the owner:** disable Deployment Protection for previews in the
+  Vercel dashboard (or configure a bypass) so Lighthouse CI can reach the
+  real site; then re-run the `lighthouse` check on PR #30.
