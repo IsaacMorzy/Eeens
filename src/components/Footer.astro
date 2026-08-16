@@ -60,6 +60,7 @@ const journalLinks = [
 	aria-labelledby="footer-title"
 	class="relative overflow-hidden border-t-2 border-primary-dark/70 bg-canvas-dark text-ink-dark"
 >
+	<div aria-hidden="true" class="footer-texture pointer-events-none absolute inset-0"></div>
 	<div class="relative mx-auto max-w-6xl px-6 pt-section pb-12">
 		<div class="grid min-w-0 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
 			<!-- Identity block: glyph + wordmark + tagline + CTA -->
@@ -77,7 +78,7 @@ const journalLinks = [
 				<p class="mt-3 max-w-md text-pretty text-sm text-ink-dark/60">
 					Listings show the address, area, price or rate, availability, and terms. Viewings are by appointment.
 				</p>
-				<a href="/business-parks/eens" class="group/featured mt-6 block min-w-0 max-w-md rounded-lg border border-primary-dark/40 bg-canvas-dark/60 p-4 transition-[border-color,transform] duration-200 hover:-translate-y-px hover:border-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
+				<a href="/business-parks/eens" class="group/featured glass-dark mt-6 block min-w-0 max-w-md rounded-xl p-4 transition-[border-color,transform,background-color] duration-200 hover:-translate-y-px hover:border-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70">
 					<span class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary-dark">Featured location</span>
 					<span class="mt-1 flex min-w-0 items-center justify-between gap-3 font-display text-lg font-medium text-ink-dark">
 						<span class="min-w-0 break-words">Eens Business Park, Syokimau</span>
@@ -155,7 +156,7 @@ const journalLinks = [
 					</ul>
 				</section>
 
-				<section aria-label="Contact">
+				<section aria-label="Contact" class="glass-dark self-start rounded-xl p-4 sm:p-5">
 					<h3 class="text-[13px] font-medium uppercase tracking-[0.4px] text-ink-dark/70">Contact</h3>
 					<ul class="mt-4 space-y-2 text-sm">
 						{contactLinks.map((link) => (

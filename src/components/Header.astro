@@ -50,7 +50,6 @@ const menuGroups: MenuGroup[] = [
 			{ label: 'Warehouses', href: '/warehouses', detail: 'Published industrial specifications', icon: 'building-warehouse' },
 			{ label: 'Godowns', href: '/godowns', detail: 'Storage and distribution space', icon: 'package' },
 			{ label: 'Apartments', href: '/apartments', detail: 'Published prices and sale terms', icon: 'building' },
-			{ label: 'Locations', href: '/locations', detail: 'Browse the operating zones', icon: 'map-pin' },
 		],
 	},
 	{
@@ -78,12 +77,12 @@ const menuGroups: MenuGroup[] = [
 		],
 	},
 	{
-		label: 'News',
+		label: 'Journal',
 		href: '/blog',
-		linkLabel: 'Read the news',
+		linkLabel: 'Read the journal',
 		intro: 'Practical notes on locations, specifications, and leasing.',
 		items: [
-			{ label: 'Latest news', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
+			{ label: 'News', href: '/blog', detail: 'Read the latest Eens updates', icon: 'book-2' },
 			{ label: 'Events', href: '/events', detail: 'Published events and viewing days', icon: 'calendar-event' },
 			{ label: 'Gallery', href: '/gallery', detail: 'Project material and visual context', icon: 'photo' },
 			{ label: 'Awards and accolades', href: '/awards', detail: 'Published recognition and evidence', icon: 'award' },
@@ -93,10 +92,10 @@ const menuGroups: MenuGroup[] = [
 ];
 ---
 
-<header class="fixed top-0 z-20 w-full border-b border-hairline-steel/60 bg-background">
+<header class="fixed top-0 z-20 w-full border-b border-hairline-steel/50 bg-background backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
 	<nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3" aria-label="Primary navigation">
 		<a href="/" class="flex min-w-max items-center gap-3 font-display font-semibold text-foreground" data-tina-field={seo ? tinaField(seo, 'title') : undefined}>
-			<img src={seo?.logo ?? '/logo-enns.png'} alt="Eens Limited" width="76" height="28" decoding="async" class="h-7 w-auto dark:invert" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
+			<img src={seo?.logo ?? '/logo-enns.png'} alt="Eens Limited" width="76" height="28" decoding="sync" fetchpriority="high" class="h-7 w-auto dark:invert" data-tina-field={seo?.logo ? tinaField(seo, 'logo') : undefined} />
 		</a>
 
 		<div class="hidden items-center gap-1 xl:flex">
@@ -106,14 +105,23 @@ const menuGroups: MenuGroup[] = [
 						<span>{group.label}</span>
 						<Icon name="chevron-down" class="size-3.5 transition-transform duration-200 group-open:rotate-180" />
 					</summary>
-					<div class="mega-panel z-30 rounded-xl border border-hairline-steel border-t-2 border-t-primary bg-card p-3 text-card-foreground shadow-lg ring-1 ring-foreground/5">
-						<div class="grid gap-4 lg:grid-cols-[minmax(12rem,0.85fr)_minmax(0,1.5fr)]">
-							<div class="rounded-lg bg-secondary/40 px-3 pb-4 pt-3 lg:border-b-0 lg:border-r lg:border-hairline-steel/60 lg:pr-5">
+					<div class="mega-panel z-30 rounded-2xl border border-hairline-steel/60 bg-card text-card-foreground shadow-2xl shadow-canvas-dark/10 ring-1 ring-foreground/5 backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
+						<div class="accent-hairline h-px w-full" aria-hidden="true"></div>
+						<div class="grid gap-5 p-3 lg:grid-cols-[minmax(12rem,0.85fr)_minmax(0,1.5fr)] lg:gap-6 lg:p-4">
+							<div class="flex flex-col rounded-xl border border-hairline-steel/50 bg-secondary/50 px-4 pb-4 pt-4 lg:border-r lg:border-hairline-steel/60">
 								<p class="font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">{group.label}</p>
 								<p class="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">{group.intro}</p>
 								<a href={groupHref(group)} class="mt-4 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
 									<span>{group.linkLabel}</span>
 									<Icon name="arrow-up-right" class="size-3.5" />
+								</a>
+								<a href="/business-parks/eens" class="group/park mt-auto hidden min-w-0 rounded-lg border border-hairline-steel/50 bg-canvas-dark p-3 text-ink-dark transition-[border-color,transform] duration-200 hover:-translate-y-px hover:border-primary-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70 lg:block">
+									<span class="font-mono text-[10px] font-medium uppercase tracking-[0.4px] text-primary-dark">Featured park</span>
+									<span class="mt-1 flex min-w-0 items-center justify-between gap-2 font-display text-sm font-medium text-ink-dark">
+										<span class="min-w-0 break-words">Eens Business Park, Syokimau</span>
+										<Icon name="arrow-up-right" class="size-3.5 shrink-0 transition-transform duration-200 group-hover/park:translate-x-0.5" />
+									</span>
+									<span class="mt-0.5 block text-xs leading-relaxed text-ink-dark/70">Park overview and published shop register.</span>
 								</a>
 							</div>
 							<div class="grid gap-1 sm:grid-cols-2">
@@ -127,6 +135,13 @@ const menuGroups: MenuGroup[] = [
 									</a>
 								))}
 							</div>
+						</div>
+						<div class="flex flex-wrap items-center justify-between gap-3 border-t border-hairline-steel/60 px-4 py-2.5">
+							<p class="font-mono text-[11px] text-muted-foreground">Send the listing reference. Replies within one business day.</p>
+							<a href={viewingHref} class="inline-flex min-h-10 items-center gap-1.5 rounded-md bg-action px-3 text-sm font-medium text-action-foreground transition-[background-color] hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-action-dark dark:text-action-foreground dark:hover:bg-action-hover">
+								<Icon name="calendar" class="size-3.5" />
+								<span>Schedule a viewing</span>
+							</a>
 						</div>
 					</div>
 				</details>
@@ -156,7 +171,7 @@ const menuGroups: MenuGroup[] = [
 		</div>
 	</nav>
 
-	<div id="mobile-menu-panel" hidden class="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t-2 border-primary bg-background xl:hidden">
+	<div id="mobile-menu-panel" hidden class="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t-2 border-primary bg-background backdrop-blur-md supports-[backdrop-filter]:bg-background/90 xl:hidden">
 		<div class="mx-auto flex max-w-7xl flex-col px-6 py-4">
 			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
 			<a href="/upcoming-projects" aria-current={isCurrentPath(Astro.url.pathname, '/upcoming-projects') ? 'page' : undefined} class="mb-2 flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-primary-hover aria-[current=page]:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
@@ -247,7 +262,7 @@ const menuGroups: MenuGroup[] = [
 	}
 </style>
 
-<script is:inline>
+<script is:inline type="module">
 	if (!window.__mobileMenuBound) {
 		window.__mobileMenuBound = true;
 		const setOpen = (open) => {

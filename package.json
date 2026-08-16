@@ -8,7 +8,7 @@
   "packageManager": "pnpm@11.8.0",
   "scripts": {
     "dev": "tinacms dev --datalayer-port 9106 -c \"astro dev\"",
-    "build": "tinacms build --datalayer-port 9106 --content=local --skip-cloud-checks && astro build",
+    "build": "export NODE_OPTIONS=${NODE_OPTIONS:-\"--max-old-space-size=4096\"} && tinacms build --datalayer-port 9106 && astro build",
     "build:local": "tinacms build --datalayer-port 9106 --local --skip-cloud-checks -c \"astro build\"",
     "build:cloud": "tinacms build --datalayer-port 9106 -c \"astro build\"",
     "build:search": "tinacms search-index",

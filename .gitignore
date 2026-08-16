@@ -83,3 +83,6 @@ dist
 # Dev-box error log (Phase debug sessions overwrite; broader glob
 # catches error.log/error.md/error.json if the logger target changes)
 error.*
+
+# Playwright CLI page-snapshot artifacts (local test runs)
+.playwright-cli/

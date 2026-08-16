@@ -11,7 +11,7 @@ import Icon from './ui/Icon.astro';
 	<Icon name="sun" class="hidden size-5 dark:block" />
 	<Icon name="moon" class="block size-5 dark:hidden" />
 </button>
-<script is:inline>
+<script is:inline type="module">
 	(() => {
 		// Delegate from document so the handler survives DOM swaps from
 		// Astro's ClientRouter and Tina's visual-editor re-renders.

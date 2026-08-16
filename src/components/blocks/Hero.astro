@@ -84,7 +84,7 @@ const showProofRail = slug === '' || slug === 'home';
 		</div>
 
 		{data.image?.src ? (
-			<figure data-tina-field={tinaField(data, 'image')} class="reveal-on-scroll group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+			<figure data-tina-field={tinaField(data, 'image')} class="group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
 				<Image
 					src={data.image.src}
 					alt={data.image.alt ?? ''}
@@ -101,7 +101,7 @@ const showProofRail = slug === '' || slug === 'home';
 				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
 			</figure>
 		) : contextualVisual ? (
-			<figure class="reveal-on-scroll group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+			<figure class="group relative overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
 				<img
 					src={contextualVisual.src}
 					alt={contextualVisual.alt}

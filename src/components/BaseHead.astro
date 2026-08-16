@@ -4,15 +4,23 @@
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 
+// Preload the two latin display/body font subsets so first paint is not
+// blocked on font discovery. Stable URLs from public/fonts/ (the latin
+// subsets of the pinned @fontsource packages, copied at build source).
+const interLatin = '/fonts/inter-latin.woff2';
+const pjsLatin = '/fonts/plus-jakarta-sans-latin.woff2';
+
 interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	/** Header logo URL (the fixed header logo is the first-paint candidate). */
+	logo?: string | null;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = '/photography/pexels-photo-9716363.jpeg' } = Astro.props;
+const { title, description, image = '/photography/pexels-photo-9716363.jpeg', logo = null } = Astro.props;
 const imageURL = new URL(image, Astro.url).toString();
 const descriptionText = description || 'Published property listings, locations, and leasing information from Eens Limited.';
 const breadcrumbLabels: Record<string, string> = {
@@ -67,8 +75,10 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 		function reveal() {
 			const elements = document.querySelectorAll('.reveal-on-scroll');
 			if (!elements.length) return;
+			// Reveal-on-scroll must never hide above-the-fold content from the
+			// first paint (LCP). Only elements already below the viewport get
+			// the hidden state; the rest stay visible with no transition.
 			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || typeof IntersectionObserver === 'undefined') {
-				elements.forEach((element) => element.classList.add('is-visible'));
 				return;
 			}
 			const observer = new IntersectionObserver((entries) => {
@@ -79,14 +89,20 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 				});
 			}, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
 			elements.forEach((element) => {
-				if (!element.classList.contains('is-visible')) observer.observe(element);
+				if (element.classList.contains('is-visible')) return;
+				const rect = element.getBoundingClientRect();
+				if (rect.top > window.innerHeight) {
+					element.setAttribute('data-reveal', 'below-fold');
+					observer.observe(element);
+				}
 			});
 		}
 		apply();
 		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reveal, { once: true });
 		else reveal();
-		// ClientRouter swaps in the SSR'd <html> (no .dark) on navigation,
-		// so re-apply the persisted theme and bind new page reveals.
+		// If Astro view transitions (ClientRouter) are reintroduced, it swaps in
+		// the SSR'd <html> (no .dark) on navigation, so re-apply the persisted
+		// theme and bind new page reveals. Kept as no-ops without ClientRouter.
 		document.addEventListener('astro:after-swap', apply);
 		document.addEventListener('astro:page-load', reveal);
 		if ('serviceWorker' in navigator && window.isSecureContext) {
@@ -98,6 +114,12 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 		}
 	})();
 </script>
+
+<!-- Preload the two body/display font subsets used in the first viewport. -->
+<link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href={pjsLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+<!-- The fixed header logo is the first-paint candidate on every page. -->
+{logo && <link rel="preload" as="image" href={logo} fetchpriority="high" />}
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
