@@ -20,9 +20,8 @@ module.exports = {
 		collect: {
 			url: [previewUrl],
 			numberOfRuns: 3,
-			settings: {
-				preset: 'default', // mobile emulation, 4x CPU throttle
-			},
+			// No settings.preset: the LHCI default is mobile emulation with 4x
+			// CPU throttle, which is the hard target this gate enforces.
 		},
 		assert: {
 			assertions: {
