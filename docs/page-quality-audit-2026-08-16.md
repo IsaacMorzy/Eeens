@@ -22,10 +22,11 @@ Changes:
 1. **Removed unused `ClientRouter`** (no view transitions are used anywhere — no `transition:` directives in pages) plus its dead `astro:after-swap` / `astro:page-load` listeners. Removes ~16 KB of script + eval per page.
 2. **Hero section opts out of `content-visibility`** (new `.section-render-visible` utility): the LCP image lives in the hero; `content-visibility: auto` on its ancestor can defer its paint.
 3. **Hero LCP image now `decoding="sync"`** (was `async`): for the LCP element, async decode deprioritizes the paint — the textbook anti-pattern. Sync decode lets it paint with the first layout.
+4. **Hero is image-first on mobile** (`order-first lg:order-none`): on mobile the photo stacks above the copy (real-estate norm) instead of sitting at the bottom edge of the viewport — the LCP element is now above the fold on phones.
 
 After (this box, 6 mobile runs): perf 70–91 (median ~83, host contention), LCP 3.0–3.1 s, FCP 1.8–2.3 s, TBT 110–1020 ms (heavy variance), CLS 0 on home. LCP breakdown confirms the image loads in ~100 ms; the residual delay is pre-paint HTML/CSS parse (212 KB HTML, 88 KB inlined CSS) under 4x CPU throttle **on a contended shared VPS** — run-to-run variance (±10 points) exceeds the effect size of these fixes. Desktop remains 99.
 
-**Honest caveat:** this measurement environment (local python http server on a box running MariaDB, frappe workers, and other sessions) cannot demonstrate the 95 mobile target reliably; Lighthouse mobile emulation here is a worst case. On the Vercel/CDN production path the site already scores 99 desktop with a clean critical path, and these changes reduce LCP work further.
+**Honest caveat:** this measurement environment (local python http server on a box running MariaDB, frappe workers, and other sessions) cannot demonstrate the 95 mobile target reliably; Lighthouse mobile emulation here is a worst case. LCP stayed ~3.0 s across every variant tested (content-visibility opt-out, sync decode, image-first ordering) with element-render-delay swinging 446–2170 ms between identical runs — the residual gap is HTML/CSS parse under 4x CPU throttle on a contended host, not the critical path. On the Vercel/CDN production path the site already scores 99 desktop with a clean critical path, and these changes reduce LCP work further. Verifying the 95 mobile bar requires a clean runner (Vercel preview + Lighthouse CI) — flagged for approval.
 
 ## Copy voice
 
