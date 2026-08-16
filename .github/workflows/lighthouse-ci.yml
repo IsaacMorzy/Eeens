@@ -42,8 +42,8 @@ jobs:
           cache: pnpm
 
       # LCP and perf are asserted against Google's CWV thresholds in
-      # lighthouserc.js (perf >= 0.95, LCP <= 2500ms, CLS <= 0.1, TBT <= 200ms).
+      # lighthouserc.cjs (perf >= 0.95, LCP <= 2500ms, CLS <= 0.1, TBT <= 200ms).
       - name: Run Lighthouse CI
-        run: pnpm dlx @lhci/cli@0.15.1 autorun --config=./lighthouserc.js
+        run: pnpm dlx @lhci/cli@0.15.1 autorun --config=./lighthouserc.cjs
         env:
           LHCI_URL: ${{ steps.deployment.outputs.deployment-url }}
