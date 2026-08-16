@@ -407,6 +407,14 @@
 	contain-intrinsic-size: auto 720px;
 }
 
+/* Opt a section back out of content-visibility. The hero (LCP element) must
+   render on the first paint — content-visibility: auto on its ancestor can
+   delay the LCP image by deferring the section's layout/paint. Declared after
+   .section-render so the later rule wins for the same property. */
+.section-render-visible {
+	content-visibility: visible;
+}
+
 /* Keep a quiet edge around photographs so media does not disappear into
    adjacent surfaces. The outline follows the theme without adding a shadow. */
 .image-outline {

@@ -2,7 +2,6 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 
 // Preload the two latin display/body font subsets so first paint is not
 // blocked on font discovery. Stable URLs from public/fonts/ (the latin
@@ -100,11 +99,6 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 		apply();
 		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reveal, { once: true });
 		else reveal();
-		// If Astro view transitions (ClientRouter) are reintroduced, it swaps in
-		// the SSR'd <html> (no .dark) on navigation, so re-apply the persisted
-		// theme and bind new page reveals. Kept as no-ops without ClientRouter.
-		document.addEventListener('astro:after-swap', apply);
-		document.addEventListener('astro:page-load', reveal);
 		if ('serviceWorker' in navigator && window.isSecureContext) {
 			const registerServiceWorker = () => {
 				void navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => undefined);
@@ -164,5 +158,3 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 <meta name="twitter:image:alt" content={title} />
 
 <!-- TinaCMS visual editing is wired by the tina() integration in astro.config.mjs; its middleware only touches edit-mode responses, so there's nothing to add here. -->
-
-<ClientRouter />
