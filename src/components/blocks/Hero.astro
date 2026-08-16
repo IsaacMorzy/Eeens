@@ -33,7 +33,7 @@ const heroLabel = heroLabels[slug] ?? 'EENS LIMITED';
 const showProofRail = slug === '' || slug === 'home';
 ---
 
-<Section class="overflow-hidden">
+<Section class="overflow-hidden section-render-visible">
 	<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)] lg:items-center lg:gap-16">
 		<div class="reveal-on-scroll-stagger max-w-3xl">
 			<p class="reveal-on-scroll font-mono text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{heroLabel}</p>
@@ -95,7 +95,7 @@ const showProofRail = slug === '' || slug === 'home';
 					quality={80}
 					fetchpriority="high"
 					loading="eager"
-					decoding="async"
+					decoding="sync"
 					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
 				/>
 				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
@@ -109,7 +109,7 @@ const showProofRail = slug === '' || slug === 'home';
 					height="1200"
 					loading="eager"
 					fetchpriority="high"
-					decoding="async"
+					decoding="sync"
 					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
 				/>
 				<figcaption class="flex items-center justify-between gap-4 border-t border-hairline-steel/40 bg-background px-3 py-2 font-mono text-[11px] text-muted-foreground">

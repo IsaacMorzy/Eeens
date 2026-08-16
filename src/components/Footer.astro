@@ -86,11 +86,18 @@ const journalLinks = [
 					</span>
 					<span class="mt-1 block text-sm text-ink-dark/60">Open the park overview and published shop register.</span>
 				</a>
-				<div class="mt-4">
+				<div class="mt-4 flex flex-wrap items-center gap-3">
 					<Button href={viewingHref} variant="inverse" size="lg">
 						<Icon name="calendar" class="size-4" />
 						<span>Schedule a viewing</span>
 					</Button>
+					<a
+						href="/locations"
+						class="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-primary-dark transition-[color,transform] duration-200 ease-out hover:translate-x-0.5 hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark/70"
+					>
+						<span>Browse all listings</span>
+						<Icon name="arrow-up-right" class="size-4" />
+					</a>
 				</div>
 			</div>
 

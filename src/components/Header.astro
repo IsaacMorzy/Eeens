@@ -105,7 +105,7 @@ const menuGroups: MenuGroup[] = [
 						<span>{group.label}</span>
 						<Icon name="chevron-down" class="size-3.5 transition-transform duration-200 group-open:rotate-180" />
 					</summary>
-					<div class="mega-panel z-30 rounded-2xl border border-hairline-steel/60 bg-card text-card-foreground shadow-2xl shadow-canvas-dark/10 ring-1 ring-foreground/5 backdrop-blur-xl supports-[backdrop-filter]:bg-card/85">
+					<div class="mega-panel glass z-30 rounded-2xl text-card-foreground shadow-2xl shadow-canvas-dark/10 ring-1 ring-foreground/5">
 						<div class="accent-hairline h-px w-full" aria-hidden="true"></div>
 						<div class="grid gap-5 p-3 lg:grid-cols-[minmax(12rem,0.85fr)_minmax(0,1.5fr)] lg:gap-6 lg:p-4">
 							<div class="flex flex-col rounded-xl border border-hairline-steel/50 bg-secondary/50 px-4 pb-4 pt-4 lg:border-r lg:border-hairline-steel/60">
@@ -127,7 +127,7 @@ const menuGroups: MenuGroup[] = [
 							<div class="grid gap-1 sm:grid-cols-2">
 								{group.items.map((item) => (
 									<a href={item.href} class:list={["group/item flex min-h-14 items-start gap-3 rounded-lg border border-transparent p-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-hairline-steel/60 hover:bg-secondary aria-[current=page]:border-primary/60 aria-[current=page]:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50", item.href === '/business-parks/eens' && 'bg-secondary/60']} aria-current={isCurrentPath(Astro.url.pathname, item.href) ? 'page' : undefined}>
-										{item.icon && <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-hairline-steel/60 text-primary"><Icon name={item.icon} class="size-4" /></span>}
+										{item.icon && <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-hairline-steel/60 text-primary transition-[background-color,border-color,color] duration-200 group-hover/item:border-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground"><Icon name={item.icon} class="size-4" /></span>}
 										<span class:list={['min-w-0', !item.icon && 'pl-1']}>
 											<span class="block text-sm font-medium text-foreground group-hover/item:text-primary-hover">{item.label}</span>
 											{item.detail && <span class="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{item.detail}</span>}
@@ -171,7 +171,7 @@ const menuGroups: MenuGroup[] = [
 		</div>
 	</nav>
 
-	<div id="mobile-menu-panel" hidden class="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t-2 border-primary bg-background backdrop-blur-md supports-[backdrop-filter]:bg-background/90 xl:hidden">
+	<div id="mobile-menu-panel" hidden class="glass max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t-2 border-primary xl:hidden">
 		<div class="mx-auto flex max-w-7xl flex-col px-6 py-4">
 			<p class="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.4px] text-primary">Eens property register</p>
 			<a href="/upcoming-projects" aria-current={isCurrentPath(Astro.url.pathname, '/upcoming-projects') ? 'page' : undefined} class="mb-2 flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-primary-hover aria-[current=page]:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
