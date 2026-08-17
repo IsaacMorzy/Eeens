@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eens-pwa-v2';
+const CACHE_NAME = 'eens-pwa-v3';
 const STATIC_ASSETS = [
 	'/',
 	'/shops',
