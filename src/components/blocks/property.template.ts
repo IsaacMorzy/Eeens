@@ -30,6 +30,7 @@ const AVAILABILITY_OPTIONS = [
 	{ label: 'Upcoming', value: 'Upcoming' },
 ];
 
+
 const ZONE_OPTIONS = [
 	{ label: 'Mlolongo', value: 'Mlolongo' },
 	{ label: 'Syokimau', value: 'Syokimau' },
@@ -105,6 +106,16 @@ export const propertyListBlockSchema: Template = {
 			options: [{ label: 'All', value: 'ALL' }, ...TYPE_OPTIONS],
 		},
 		{ name: 'filterZone', label: 'Filter by zone', type: 'string', options: ZONE_OPTIONS },
+		{
+			name: 'filterAvailability',
+			label: 'Filter by availability',
+			type: 'string',
+			options: [
+				{ label: 'Any availability', value: 'ALL' },
+				...AVAILABILITY_OPTIONS,
+			],
+			description: 'Show only For Rent, For Sale, or Upcoming records. Leave on Any for the full published set.',
+		},
 		{
 			name: 'layout', label: 'Layout',
 			type: 'string',

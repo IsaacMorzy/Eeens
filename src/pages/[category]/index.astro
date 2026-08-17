@@ -43,6 +43,12 @@ const filters = parseDirectoryFilters(Astro.url.searchParams, zoneNames);
 const filteredListings = applyFilters(allListings, filters);
 const hasPowerFilter = category === 'warehouses' || category === 'godowns' || category === 'business-parks';
 const filterCount = activeFilterCount(filters);
+const availabilityOptions = [
+	{ label: 'Any availability', value: '' },
+	{ label: 'For Rent', value: 'ForRent' },
+	{ label: 'For Sale', value: 'ForSale' },
+	{ label: 'Upcoming', value: 'Upcoming' },
+];
 ---
 
 <Base title={`${definition.label} | Eens Business Park`} description={definition.description}>
@@ -120,6 +126,12 @@ const filterCount = activeFilterCount(filters);
 								{zoneNames.map((zone) => <option value={zone} selected={filters.zone === zone}>{zone}</option>)}
 							</select>
 						</label>
+						<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`availability-${category}`}>
+							<span>Availability</span>
+							<select id={`availability-${category}`} name="availability" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+								{availabilityOptions.map((option) => <option value={option.value} selected={filters.availability === option.value}>{option.label}</option>)}
+							</select>
+						</label>
 						<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`area-${category}`}>
 							<span>Minimum area</span>
 							<select id={`area-${category}`} name="minSqft" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
@@ -146,9 +158,9 @@ const filterCount = activeFilterCount(filters);
 				</form>
 
 				{allListings.length > 0 ? (
-					<div data-listing-grid class="grid gap-8 sm:grid-cols-2">
+					<div data-listing-grid class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{allListings.map((property) => (
-							<div data-directory-card data-zone={property.zone ?? ''} data-sqft={parseSqft(property.sqft)} data-kva={parseKva(property)}>
+							<div data-directory-card data-zone={property.zone ?? ''} data-sqft={parseSqft(property.sqft)} data-kva={parseKva(property)} data-availability={property.availability ?? ''}>
 								<PropertyCardFeatured
 									data={{
 										type: property.type ?? null,
@@ -218,15 +230,18 @@ const filterCount = activeFilterCount(filters);
 		const zones = new Set(['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika']);
 		const sqftTiers = new Set([4000, 9000, 18000]);
 		const kvaTiers = new Set([50, 200]);
+		const availabilityValues = new Set(['ForRent', 'ForSale', 'Upcoming']);
 		const validTier = (value: string | null, tiers: Set<number>) => {
 			const parsed = Number(value);
 			return value && tiers.has(parsed) ? parsed : 0;
 		};
 		const rawZone = params.get('zone');
+		const rawAvailability = params.get('availability');
 		const values = {
 			zone: rawZone && zones.has(rawZone) ? rawZone : '',
 			minSqft: validTier(params.get('minSqft'), sqftTiers),
 			minKva: validTier(params.get('minKva'), kvaTiers),
+			availability: rawAvailability && availabilityValues.has(rawAvailability) ? rawAvailability : '',
 		};
 		const select = (name: string): HTMLSelectElement | null => form.querySelector(`[name="${name}"]`);
 		for (const [name, value] of Object.entries(values)) {
@@ -238,11 +253,12 @@ const filterCount = activeFilterCount(filters);
 			for (const card of cards) {
 				const match = (!values.zone || card.dataset.zone === values.zone)
 					&& (!values.minSqft || Number(card.dataset.sqft) >= values.minSqft)
-					&& (!values.minKva || Number(card.dataset.kva) >= values.minKva);
+					&& (!values.minKva || Number(card.dataset.kva) >= values.minKva)
+					&& (!values.availability || card.dataset.availability === values.availability);
 				card.hidden = !match;
 				if (match) matches += 1;
 			}
-			const active = Boolean(values.zone || values.minSqft || values.minKva);
+			const active = Boolean(values.zone || values.minSqft || values.minKva || values.availability);
 			if (count) count.textContent = `${matches} of ${cards.length} published listing${cards.length === 1 ? '' : 's'}`;
 			if (status) status.textContent = active ? `${matches} match${matches === 1 ? '' : 'es'}` : `${cards.length} record${cards.length === 1 ? '' : 's'}`;
 			if (empty) empty.hidden = !active || matches > 0;
@@ -257,6 +273,7 @@ const filterCount = activeFilterCount(filters);
 			values.zone = next.get('zone') ?? '';
 			values.minSqft = Number(next.get('minSqft') ?? 0);
 			values.minKva = Number(next.get('minKva') ?? 0);
+			values.availability = next.get('availability') ?? '';
 			apply();
 		});
 		window.addEventListener('popstate', () => window.location.reload());

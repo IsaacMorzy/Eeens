@@ -47,7 +47,7 @@ const firstHeadingIndex = blocks.findIndex((block) => {
 			case 'PageBlocksCtaBanner': return <CtaBanner data={block} />;
 			case 'PageBlocksFeatures': return <Features data={block} />;
 			case 'PageBlocksHero': return <Hero data={block} slug={slug} />;
-			case 'PageBlocksPropertyCard': return <PropertyCard data={block} />;
+			case 'PageBlocksPropertyCard': return <PropertyCard data={block as unknown as import('./PropertyCard.astro').PropertyCardData} />;
 			case 'PageBlocksPropertyList': return <PropertyList data={block} />;
 			case 'PageBlocksSplit': return <Split data={block} slug={slug} headingLevel={i === firstHeadingIndex ? 'h1' : 'h2'} />;
 			case 'PageBlocksStats': return <Stats data={block} />;

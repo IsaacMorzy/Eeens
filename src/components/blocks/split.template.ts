@@ -16,7 +16,7 @@ export const splitBlockSchema: Template = {
 		},
 		{
 			type: 'object', label: 'Actions', name: 'actions', list: true,
-			ui: { defaultItem: { label: 'Learn more', type: 'button', link: '/' }, itemProps: (i: Action) => ({ label: i.label ?? '' }) },
+			ui: { defaultItem: { label: 'Browse listings', type: 'button', link: '/warehouses' }, itemProps: (i: Action) => ({ label: i.label ?? '' }) },
 			fields: [
 				{ type: 'string', label: 'Label', name: 'label' },
 				{ type: 'string', label: 'Type', name: 'type', options: [{ label: 'Button', value: 'button' }, { label: 'Link', value: 'link' }] },
@@ -27,8 +27,8 @@ export const splitBlockSchema: Template = {
 	],
 	ui: {
 		defaultItem: {
-			title: 'A headline that sits beside your image',
-			body: 'Describe the feature or story here, with a supporting image right alongside it.',
+			title: 'A property register built for decisions.',
+			body: 'State the address, area, price, and terms that this section publishes.',
 		},
 	},
 };

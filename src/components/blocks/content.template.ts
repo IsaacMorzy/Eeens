@@ -19,7 +19,7 @@ export const contentBlockSchema: Template = {
 	],
 	ui: {
 		defaultItem: {
-			title: 'Add a section title',
+			title: 'Section title',
 			description: 'State the decision or detail this section helps a visitor understand.',
 			body: 'Add the supporting facts here.',
 		},

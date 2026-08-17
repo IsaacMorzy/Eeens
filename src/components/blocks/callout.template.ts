@@ -8,6 +8,6 @@ export const calloutBlockSchema: Template = {
 		{ type: 'string', label: 'Url', name: 'url' },
 	],
 	ui: {
-		defaultItem: { url: 'https://tina.io/editorial-workflow', text: 'Support for live editing and editorial workflow' },
+		defaultItem: { url: '/contact', text: 'Viewing fee: zero. Send the listing reference and we reply within one business day.' },
 	},
 };

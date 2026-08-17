@@ -23,6 +23,7 @@ interface PropertyListBlockData {
 	limit?: number | null;
 	filterType?: string | null;
 	filterZone?: string | null;
+	filterAvailability?: string | null;
 	layout?: 'grid' | 'strip' | null;
 	display?: 'featured' | 'standard' | null;
 	actions?: Action[] | null;
@@ -41,6 +42,7 @@ const filtered: PropertyNode[] = all
 	.filter((p: PropertyNode): boolean => {
 		if (data.filterType && data.filterType !== 'ALL' && p.type !== data.filterType) return false;
 		if (data.filterZone && p.zone !== data.filterZone) return false;
+		if (data.filterAvailability && data.filterAvailability !== 'ALL' && p.availability !== data.filterAvailability) return false;
 		return true;
 	})
 	.slice(0, limit);
@@ -48,17 +50,29 @@ const filtered: PropertyNode[] = all
 
 <Section>
 	<div class="mx-auto w-full">
-		{(data.title || data.description) && (
-			<header class="mx-auto mb-8 max-w-2xl md:mb-10">
-				{data.title && (
-					<h2 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">
-						{data.title}
-					</h2>
-				)}
-				{data.description && (
-					<p data-tina-field={tinaField(data as { description?: unknown }, 'description')} class="mt-4 max-w-2xl text-pretty text-base text-muted-foreground">
-						{data.description}
-					</p>
+		{(data.title || data.description || blockActions.length > 0) && (
+			<header class="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
+				<div class="max-w-2xl">
+					{data.title && (
+						<h2 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">
+							{data.title}
+						</h2>
+					)}
+					{data.description && (
+						<p data-tina-field={tinaField(data as { description?: unknown }, 'description')} class="mt-3 text-pretty text-base text-muted-foreground">
+							{data.description}
+						</p>
+					)}
+				</div>
+				{blockActions.length > 0 && (
+					<div class="flex shrink-0 flex-wrap items-center gap-3">
+						{blockActions.map((action: Action) => (
+							<Button href={action.link} variant={action.type === 'link' ? 'ghost' : 'default'} size="lg">
+								{action.icon && <Icon name={action.icon} class="size-4" />}
+								<span>{action.label}</span>
+							</Button>
+						))}
+					</div>
 				)}
 			</header>
 		)}
@@ -86,15 +100,5 @@ const filtered: PropertyNode[] = all
 				</div>
 			))}
 		</div>
-		{blockActions.length > 0 && (
-			<div class="mt-8 flex flex-wrap items-center gap-3 md:mt-10">
-				{blockActions.map((action: Action) => (
-					<Button href={action.link} variant={action.type === 'link' ? 'ghost' : 'default'} size="lg">
-						{action.icon && <Icon name={action.icon} class="size-4" />}
-						<span>{action.label}</span>
-					</Button>
-				))}
-			</div>
-		)}
 	</div>
 </Section>

@@ -10,7 +10,7 @@ export const ctaBlockSchema: Template = {
 		{
 			type: 'object', label: 'Actions', name: 'actions', list: true,
 			ui: {
-				defaultItem: { label: 'Get Started', type: 'button', link: '/' },
+				defaultItem: { label: 'Browse listings', type: 'button', link: '/warehouses' },
 				itemProps: (item: Action) => ({ label: item.label ?? '' }),
 			},
 			fields: [
@@ -24,11 +24,11 @@ export const ctaBlockSchema: Template = {
 	],
 	ui: {
 		defaultItem: {
-			title: 'Start Building',
-			description: 'Get started with TinaCMS today and take your content management to the next level.',
+			title: 'Ready to inspect a unit?',
+			description: 'Send the listing reference. We reply within one business day with available time slots.',
 			actions: [
-				{ label: 'Get Started', type: 'button', link: '/' },
-				{ label: 'Book Demo', type: 'link', link: '/' },
+				{ label: 'Browse listings', type: 'button', link: '/warehouses' },
+				{ label: 'Contact Eens', type: 'link', link: '/contact' },
 			],
 		},
 	},

@@ -404,8 +404,23 @@ Micro-interactions are restrained and always gated on `motion-safe` / `prefers-r
 
 ### Cards
 
-- **property-card** (NEW) — `surface-1-light` background, 1px hairline, 16px outer padding, 16px imagery tile, 12px eyebrow tag (cyan-teal uppercase, e.g. "GODOWN", "WAREHOUSE", "APARTMENT"), 22px card title (Plus Jakarta Sans), 16px body, mono sq-ft annotation (13px JetBrains Mono, e.g. `9,000 sq ft`), 14px price row ("KSH 35 / sq ft"). Right rail: cyan-teal `button-secondary` "View property".
-- **property-card-featured** (NEW) — surface-2-light background, otherwise same structure. Plus cyan-teal `availability-badge` at top-right ("For Rent" / "For Sale" / "Upcoming").
+- **property-card** (NEW, price-forward) — the standard modern real-estate listing card. `surface-1-light` background, 1px hairline, 16px radius, hover lifts 1px and tints the border to primary-hover. Structure top-to-bottom:
+  1. **Photo-led 16:9 tile** — `surface-2-light` placeholder, lazy-loaded WebP, `image-outline`, hover scale 1.02. The `availability-badge` sits top-right on a frosted chip; the photo source link sits bottom-right in mono.
+  2. **Type eyebrow + reference** — 12px cyan-teal uppercase type label (`SHOP UNIT`, `WAREHOUSE`…) with a Tabler glyph, reference code (mono, e.g. `EE-MLO-014`) right-aligned.
+  3. **Title** — 22px Plus Jakarta Sans, links to the listing.
+  4. **Address** — 14px muted with a `map-pin` glyph.
+  5. **Price as the anchor** — a hairline-divided row: "PRICE / RATE" label (mono, 11px) over a prominent 20px display KSH figure, with the per-sq-ft rate (mono) right-aligned. The price is the first thing the eye lands on after the photo.
+  6. **Mono spec rail** — a 3-cell hairline-divided `dl`: Area · Zone · Term, each labelled in mono 10px with a glyph and the fact in 13px mono. This is the single source of facts; zone is NOT repeated elsewhere on the card.
+  7. **Footer row** — development/park name (mono, truncated) on the left, one clear `button-secondary` "View property" CTA with `arrow-up-right` on the right.
+- **property-card-featured** (NEW) — `surface-2-light` background, otherwise identical structure. Used for directory grids and the "Current listings" sections.
+
+### Modern listing-site patterns (applied across all pages)
+
+- **Availability filter rail** — every category directory filters by zone, minimum area, minimum power (industrial only), AND availability (For Rent / For Sale / Upcoming). The availability param is `?availability=ForRent` and is persisted alongside the other filters by `linkWith`.
+- **PropertyList block** — editors set `filterType`, `filterZone`, and `filterAvailability` in Tina; the block renders the published records that match, never fabricating availability.
+- **Price-forward cards** — the price or rate is the anchor of every listing card and the sticky aside on every detail page. Mono figures (`tabular-nums`) for every measured fact.
+- **Directory map** — a schematic SVG zone map on directory pages links to the zone-filtered register; marked "not to scale".
+- **Spec sheets** — industrial listings render power/water/parking/floor-loading/clear-height as a hairline grid on the detail page; apartments render bedrooms/bathrooms instead.
 - **pricing-card** — kept from Linear, re-keyed: `surface-1-light` background + hairline + 12px radius, 24px padding. Featured = surface-2-light.
 - **feature-card** — kept, same spec as property-card but without imagery.
 - **testimonial-card** — kept with 32px padding, navy ink, optional owner-avatar at 32px radius-full circle.
@@ -464,8 +479,10 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 - Reserve cyan-teal `#0e7490` for: brand mark, ordinary primary actions, focus ring, link emphasis, eyebrow, and secondary CTAs. Use the navy/cyan-teal action pair for the one high-priority conversion action.
 - Reserve the navy/cyan-teal action pair for: primary "Schedule a viewing" CTAs only. One per section maximum.
 - Always show property sq-ft in JetBrains Mono.
-- Always lead a property card with a 16:9 photograph and a 12px cyan-teal eyebrow tag.
+- Always lead a property card with a 16:9 photograph, an availability badge, and the price as the visual anchor.
 - Always include the literal address on every property detail screen.
+- Keep every measured fact (area, zone, term, price) in the mono spec rail — one place per card, never duplicated.
+- Filter by availability with the published values only (ForRent / ForSale / Upcoming); never infer availability from a photo or a listing count.
 - Use `surface-1-light` cards on a `#FAFAF9` canvas.
 - Reserve glass for chrome surfaces — header, mega menu, mobile panel, theme toggle, footer contact card — with blur ≤14px, gated on `backdrop-filter` support.
 

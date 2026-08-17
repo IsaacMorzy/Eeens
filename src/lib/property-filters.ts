@@ -44,10 +44,14 @@ export const parseSqft = (s: string | null | undefined): number => firstInteger(
 export const parseKva = (p: PropertyNode | null | undefined): number =>
 	firstInteger(p?.specSheet?.power);
 
+export const AVAILABILITY_OPTIONS = ['ForRent', 'ForSale', 'Upcoming'] as const;
+export type AvailabilityKey = (typeof AVAILABILITY_OPTIONS)[number];
+
 export interface PropertyFilters {
 	minSqft: number | null;
 	minKva: number | null;
 	zone: string | null;
+	availability: AvailabilityKey | null;
 }
 
 const parseTier = (value: string | null, tiers: readonly number[]): number | null => {
@@ -55,6 +59,16 @@ const parseTier = (value: string | null, tiers: readonly number[]): number | nul
 	const parsed = Number(value);
 	return tiers.includes(parsed) ? parsed : null;
 };
+
+/**
+ * Parse the availability query param. Only the three published values are
+ * accepted (ForRent / ForSale / Upcoming); anything else is treated as no
+ * filter so the directory never fabricates an availability claim.
+ */
+const parseAvailability = (value: string | null): AvailabilityKey | null =>
+	value && (AVAILABILITY_OPTIONS as readonly string[]).includes(value)
+		? (value as AvailabilityKey)
+		: null;
 
 export const parseDirectoryFilters = (
 	searchParams: URLSearchParams,
@@ -65,11 +79,12 @@ export const parseDirectoryFilters = (
 		zone: zone && supportedZones.includes(zone) ? zone : null,
 		minSqft: parseTier(searchParams.get('minSqft'), SQFT_TIERS),
 		minKva: parseTier(searchParams.get('minKva'), KVA_TIERS),
+		availability: parseAvailability(searchParams.get('availability')),
 	};
 };
 
 export const activeFilterCount = (filters: PropertyFilters): number =>
-	[filters.zone, filters.minSqft, filters.minKva].filter((value) => value !== null).length;
+	[filters.zone, filters.minSqft, filters.minKva, filters.availability].filter((value) => value !== null).length;
 
 export const applyFilters = (
 	properties: readonly PropertyNode[],
@@ -79,6 +94,7 @@ export const applyFilters = (
 		if (filters.minSqft !== null && parseSqft(p.sqft) < filters.minSqft) return false;
 		if (filters.minKva !== null && parseKva(p) < filters.minKva) return false;
 		if (filters.zone && p.zone !== filters.zone) return false;
+		if (filters.availability && p.availability !== filters.availability) return false;
 		return true;
 	});
 
@@ -119,6 +135,7 @@ export const linkWith = (
 	if (filters.minSqft !== null) next.set('minSqft', String(filters.minSqft));
 	if (filters.minKva !== null) next.set('minKva', String(filters.minKva));
 	if (filters.zone) next.set('zone', filters.zone);
+	if (filters.availability) next.set('availability', filters.availability);
 	for (const [k, v] of Object.entries(overrides)) {
 		if (v === null) next.delete(k);
 		else next.set(k, v);

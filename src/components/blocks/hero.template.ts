@@ -9,7 +9,7 @@ export const heroBlockSchema: Template = {
 		{ type: 'string', label: 'Tagline', name: 'tagline' },
 		{
 			type: 'object', label: 'Actions', name: 'actions', list: true,
-			ui: { defaultItem: { label: 'Get Started', type: 'button', link: '/' }, itemProps: (i: Action) => ({ label: i.label ?? '' }) },
+			ui: { defaultItem: { label: 'Browse listings', type: 'button', link: '/warehouses' }, itemProps: (i: Action) => ({ label: i.label ?? '' }) },
 			fields: [
 				{ type: 'string', label: 'Label', name: 'label' },
 				{ type: 'string', label: 'Type', name: 'type', options: [{ label: 'Button', value: 'button' }, { label: 'Link', value: 'link' }] },
@@ -27,8 +27,8 @@ export const heroBlockSchema: Template = {
 	],
 	ui: {
 		defaultItem: {
-			tagline: "Here's some text above the other text",
-			headline: 'Astro + TinaCMS, ready to ship',
+			tagline: 'State the address, area, price, and terms that the page publishes.',
+			headline: 'Space for the operation you are running.',
 		},
 	},
 };

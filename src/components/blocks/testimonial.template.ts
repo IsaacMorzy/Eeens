@@ -9,7 +9,7 @@ export const testimonialBlockSchema: Template = {
 		{ type: 'string', label: 'Description', name: 'description', ui: { component: 'textarea' } },
 		{
 			type: 'object', list: true, label: 'Testimonials', name: 'testimonials',
-			ui: { defaultItem: { quote: 'There are only two hard things in Computer Science: cache invalidation and naming things.', author: 'Phil Karlton' }, itemProps: (i: TestimonialItem) => ({ label: `${i.quote ?? ''} - ${i.author ?? ''}` }) },
+			ui: { defaultItem: { quote: 'The listing carried the address, area, and terms before we called.', author: 'Eens tenant' }, itemProps: (i: TestimonialItem) => ({ label: `${i.quote ?? ''} - ${i.author ?? ''}` }) },
 			fields: [
 				{ type: 'string', label: 'Quote', name: 'quote', ui: { component: 'textarea' } },
 				{ type: 'string', label: 'Author', name: 'author' },
@@ -20,8 +20,8 @@ export const testimonialBlockSchema: Template = {
 	],
 	ui: {
 		defaultItem: {
-			title: 'Loved by developers',
-			testimonials: [ { quote: 'There are only two hard things in Computer Science: cache invalidation and naming things.', author: 'Phil Karlton' } ],
+			title: 'What tenants say',
+			testimonials: [ { quote: 'The listing carried the address, area, and terms before we called.', author: 'Eens tenant' } ],
 		},
 	},
 };

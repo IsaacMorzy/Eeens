@@ -91,28 +91,53 @@ describe('applyFilters', () => {
 	];
 
 	it('returns all when no filter active', () => {
-		const out = applyFilters(list, { minSqft: null, minKva: null, zone: null });
+		const out = applyFilters(list, { minSqft: null, minKva: null, zone: null, availability: null });
 		expect(out).toHaveLength(list.length);
 	});
 
 	it('filters by minSqft (preserves order)', () => {
-		const out = applyFilters(list, { minSqft: 9000, minKva: null, zone: null });
+		const out = applyFilters(list, { minSqft: 9000, minKva: null, zone: null, availability: null });
 		expect(out.map((p) => p._sys?.filename)).toEqual(['a', 'c']);
 	});
 
 	it('filters by minKva', () => {
-		const out = applyFilters(list, { minSqft: null, minKva: 200, zone: null });
+		const out = applyFilters(list, { minSqft: null, minKva: 200, zone: null, availability: null });
 		expect(out.map((p) => p._sys?.filename)).toEqual(['a', 'c']);
 	});
 
 	it('filters by zone', () => {
-		const out = applyFilters(list, { minSqft: null, minKva: null, zone: 'Mlolongo' });
+		const out = applyFilters(list, { minSqft: null, minKva: null, zone: 'Mlolongo', availability: null });
 		expect(out.map((p) => p._sys?.filename)).toEqual(['a']);
 	});
 
 	it('composes all three filters (AND)', () => {
-		const out = applyFilters(list, { minSqft: 9000, minKva: 200, zone: 'Mlolongo' });
+		const out = applyFilters(list, { minSqft: 9000, minKva: 200, zone: 'Mlolongo', availability: null });
 		expect(out.map((p) => p._sys?.filename)).toEqual(['a']);
+	});
+
+	it('filters by availability (ForRent)', () => {
+		const rentList: PropertyNode[] = [
+			property({ sqft: '9,000 sq ft', availability: 'ForRent', _sys: { filename: 'r1' } }),
+			property({ sqft: '9,000 sq ft', availability: 'ForSale', _sys: { filename: 'r2' } }),
+			property({ sqft: '9,000 sq ft', availability: null, _sys: { filename: 'r3' } }),
+		];
+		const out = applyFilters(rentList, { minSqft: null, minKva: null, zone: null, availability: 'ForRent' });
+		expect(out.map((p) => p._sys?.filename)).toEqual(['r1']);
+	});
+
+	it('composes availability with zone (AND)', () => {
+		const mixed: PropertyNode[] = [
+			property({ zone: 'Mlolongo', availability: 'ForRent', _sys: { filename: 'm1' } }),
+			property({ zone: 'Mlolongo', availability: 'ForSale', _sys: { filename: 'm2' } }),
+			property({ zone: 'Thika', availability: 'ForRent', _sys: { filename: 'm3' } }),
+		];
+		const out = applyFilters(mixed, { minSqft: null, minKva: null, zone: 'Mlolongo', availability: 'ForRent' });
+		expect(out.map((p) => p._sys?.filename)).toEqual(['m1']);
+	});
+
+	it('ignores a null availability filter', () => {
+		const listWithNull: PropertyNode[] = [property({ availability: null, _sys: { filename: 'n1' } })];
+		expect(applyFilters(listWithNull, { minSqft: null, minKva: null, zone: null, availability: null })).toHaveLength(1);
 	});
 });
 
@@ -157,6 +182,7 @@ describe('parseDirectoryFilters', () => {
 			zone: 'Syokimau',
 			minSqft: 9000,
 			minKva: 200,
+			availability: null,
 		});
 	});
 
@@ -165,19 +191,39 @@ describe('parseDirectoryFilters', () => {
 			zone: null,
 			minSqft: null,
 			minKva: null,
+			availability: null,
+		});
+	});
+
+	it('parses a supported availability value', () => {
+		expect(parseDirectoryFilters(new URLSearchParams('availability=ForSale'), ['Mlolongo'])).toEqual({
+			zone: null,
+			minSqft: null,
+			minKva: null,
+			availability: 'ForSale',
+		});
+	});
+
+	it('ignores an unsupported availability value', () => {
+		expect(parseDirectoryFilters(new URLSearchParams('availability=ForLease'), ['Mlolongo'])).toEqual({
+			zone: null,
+			minSqft: null,
+			minKva: null,
+			availability: null,
 		});
 	});
 });
 
 describe('activeFilterCount', () => {
 	it('counts only active filter values', () => {
-		expect(activeFilterCount({ zone: 'Mlolongo', minSqft: 9000, minKva: null })).toBe(2);
-		expect(activeFilterCount({ zone: null, minSqft: null, minKva: null })).toBe(0);
+		expect(activeFilterCount({ zone: 'Mlolongo', minSqft: 9000, minKva: null, availability: null })).toBe(2);
+		expect(activeFilterCount({ zone: null, minSqft: null, minKva: null, availability: null })).toBe(0);
+		expect(activeFilterCount({ zone: null, minSqft: null, minKva: null, availability: 'Upcoming' })).toBe(1);
 	});
 });
 
 describe('linkWith (chip URL composer)', () => {
-	const base: PropertyFilters = { minSqft: 9000, minKva: null, zone: 'Mlolongo' };
+	const base: PropertyFilters = { minSqft: 9000, minKva: null, zone: 'Mlolongo', availability: null };
 
 	it('preserves sibling params when overriding one to null (delete)', () => {
 		expect(linkWith(base, { minSqft: null })).toBe('/warehouses?zone=Mlolongo');
@@ -188,17 +234,23 @@ describe('linkWith (chip URL composer)', () => {
 	});
 
 	it('returns the bare category path when all filters are cleared', () => {
-		expect(linkWith({ minSqft: null, minKva: null, zone: null }, {})).toBe('/warehouses');
+		expect(linkWith({ minSqft: null, minKva: null, zone: null, availability: null }, {})).toBe('/warehouses');
 	});
 
 	it('adds a new param without dropping siblings', () => {
-		// Insertion order: base filters first (minSqft, zone — minKva is null and
-		// skipped), then the override. URLSearchParams preserves insertion order
-		// in `toString()`, so the override lands after the base keys it didn't
-		// replace.
 		expect(linkWith(base, { minKva: '200' })).toBe(
 			'/warehouses?minSqft=9000&zone=Mlolongo&minKva=200',
 		);
+	});
+
+	it('preserves an active availability param', () => {
+		const withAvail: PropertyFilters = { minSqft: null, minKva: null, zone: 'Thika', availability: 'ForSale' };
+		expect(linkWith(withAvail, {})).toBe('/warehouses?zone=Thika&availability=ForSale');
+	});
+
+	it('deletes an availability param when overridden to null', () => {
+		const withAvail: PropertyFilters = { minSqft: null, minKva: null, zone: 'Thika', availability: 'ForSale' };
+		expect(linkWith(withAvail, { availability: null })).toBe('/warehouses?zone=Thika');
 	});
 });
 
