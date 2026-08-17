@@ -145,6 +145,7 @@ export type VideoBlock = Extract<PageBlock, { __typename: 'PageBlocksVideo' }>;
 export type SplitBlock = Extract<PageBlock, { __typename: 'PageBlocksSplit' }>;
 export type PropertyCardBlock = Extract<PageBlock, { __typename: 'PageBlocksPropertyCard' }>;
 export type PropertyListBlock = Extract<PageBlock, { __typename: 'PageBlocksPropertyList' }>;
+export type ListingSearchBlock = Extract<PageBlock, { __typename: 'PageBlocksListingSearch' }>;
 
 export type GalleryBlock = {
 	__typename?: 'PageBlocksGallery';

@@ -416,7 +416,8 @@ Micro-interactions are restrained and always gated on `motion-safe` / `prefers-r
 
 ### Modern listing-site patterns (applied across all pages)
 
-- **Availability filter rail** — every category directory filters by zone, minimum area, minimum power (industrial only), AND availability (For Rent / For Sale / Upcoming). The availability param is `?availability=ForRent` and is persisted alongside the other filters by `linkWith`.
+- **Listing search bar** — a `ListingSearch` block (Tina-editable) renders a single search surface with three controls: property type, zone, and availability, plus one action. On submit it resolves the target directory from the chosen type (falling back to the configured all-types link, default `/locations`) and carries `?zone=` + `?availability=` through, so the visitor lands on the published register already filtered. All visible copy is editable in Tina; the option vocabulary stays in sync with the property collection.
+- **Availability toggle** — every category directory filters by availability with a segmented pill toggle (Any / For Rent / For Sale / Upcoming), alongside zone, minimum area, and minimum power (industrial only). The param is `?availability=ForRent` and is persisted by `linkWith`. The toggle uses the `action` (navy/cyan-teal) treatment for the selected segment — the same high-priority pair as the primary CTA.
 - **PropertyList block** — editors set `filterType`, `filterZone`, and `filterAvailability` in Tina; the block renders the published records that match, never fabricating availability.
 - **Price-forward cards** — the price or rate is the anchor of every listing card and the sticky aside on every detail page. Mono figures (`tabular-nums`) for every measured fact.
 - **Directory map** — a schematic SVG zone map on directory pages links to the zone-filtered register; marked "not to scale".

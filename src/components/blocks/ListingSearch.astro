@@ -1,0 +1,130 @@
+---
+/**
+ * ListingSearch - modern real-estate listing search bar.
+ *
+ * A single search surface with three controls (property type, zone,
+ * availability) and one clear action. On submit it resolves the target
+ * directory from the chosen type (falling back to the configured
+ * all-types link) and carries the zone + availability params through, so
+ * the visitor lands on the published register already filtered.
+ *
+ * All visible copy is Tina-editable; the option vocabulary (types, zones,
+ * availability) is kept in sync with the property collection so the
+ * search never offers a value the register cannot produce.
+ */
+import { tinaField } from '@tinacms/astro/tina-field';
+import Section from '../ui/Section.astro';
+import Icon from '../ui/Icon.astro';
+
+export interface ListingSearchData {
+	title?: string | null;
+	description?: string | null;
+	typeLabel?: string | null;
+	zoneLabel?: string | null;
+	availabilityLabel?: string | null;
+	searchLabel?: string | null;
+	allTypesLabel?: string | null;
+	allZonesLabel?: string | null;
+	anyAvailabilityLabel?: string | null;
+	allTypesLink?: string | null;
+	hint?: string | null;
+}
+
+interface Props { data: ListingSearchData }
+
+const { data } = Astro.props as Props & Record<string, unknown>;
+const tinaData = data as unknown as Record<string, unknown>;
+const typeOptions = [
+	{ value: '', label: data.allTypesLabel ?? 'All property types' },
+	{ value: 'SHOP', label: 'Shop units' },
+	{ value: 'WAREHOUSE', label: 'Warehouses' },
+	{ value: 'GODOWN', label: 'Godowns' },
+	{ value: 'BUSINESS_PARK', label: 'Business parks' },
+	{ value: 'APARTMENT', label: 'Apartments' },
+];
+const zoneOptions = [
+	{ value: '', label: data.allZonesLabel ?? 'All zones' },
+	{ value: 'Mlolongo', label: 'Mlolongo' },
+	{ value: 'Syokimau', label: 'Syokimau' },
+	{ value: 'Baba Dogo', label: 'Baba Dogo' },
+	{ value: 'Thika', label: 'Thika' },
+];
+const availabilityOptions = [
+	{ value: '', label: data.anyAvailabilityLabel ?? 'Any availability' },
+	{ value: 'ForRent', label: 'For Rent' },
+	{ value: 'ForSale', label: 'For Sale' },
+	{ value: 'Upcoming', label: 'Upcoming' },
+];
+const allTypesLink = data.allTypesLink ?? '/locations';
+const searchLabel = data.searchLabel ?? 'Search listings';
+---
+
+
+<Section class="bg-background">
+	<div class="reveal-on-scroll mx-auto w-full max-w-5xl">
+		{(data.title || data.description) && (
+			<div class="mb-6 max-w-2xl">
+				{data.title && (
+					<h2 data-tina-field={tinaField(tinaData, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">{data.title}</h2>
+				)}
+				{data.description && (
+					<p data-tina-field={tinaField(tinaData, 'description')} class="mt-3 text-pretty text-base text-muted-foreground">{data.description}</p>
+				)}
+			</div>
+		)}
+		<form data-listing-search method="get" action={allTypesLink} class="grid gap-3 rounded-xl border border-hairline-steel bg-secondary p-4 sm:p-5 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
+			<label class="grid gap-2 text-sm font-medium" for="ls-type">
+				<span data-tina-field={tinaField(tinaData, 'typeLabel')}>{data.typeLabel ?? 'Property type'}</span>
+				<select id="ls-type" name="type" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+					{typeOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+				</select>
+			</label>
+			<label class="grid gap-2 text-sm font-medium" for="ls-zone">
+				<span data-tina-field={tinaField(tinaData, 'zoneLabel')}>{data.zoneLabel ?? 'Zone'}</span>
+				<select id="ls-zone" name="zone" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+					{zoneOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+				</select>
+			</label>
+			<label class="grid gap-2 text-sm font-medium" for="ls-availability">
+				<span data-tina-field={tinaField(tinaData, 'availabilityLabel')}>{data.availabilityLabel ?? 'Availability'}</span>
+				<select id="ls-availability" name="availability" class="h-11 rounded-md border border-hairline-steel bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+					{availabilityOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+				</select>
+			</label>
+			<button type="submit" class="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-action px-6 text-sm font-medium text-action-foreground transition-[background-color,transform] hover:bg-action-hover motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-action-dark dark:text-action-foreground dark:hover:bg-action-hover">
+				<Icon name="search" class="size-4" aria-hidden="true" />
+				<span data-tina-field={tinaField(tinaData, 'searchLabel')} class="text-nowrap">{searchLabel}</span>
+			</button>
+		</form>
+		{data.hint && (
+			<p data-tina-field={tinaField(tinaData, 'hint')} class="mt-3 font-mono text-[12px] text-muted-foreground">{data.hint}</p>
+		)}
+	</div>
+</Section>
+
+<script>
+	const form = document.querySelector('[data-listing-search]');
+	if (form instanceof HTMLFormElement) {
+		const typeSelect = form.querySelector<HTMLSelectElement>('[name="type"]');
+		const zoneSelect = form.querySelector<HTMLSelectElement>('[name="zone"]');
+		const availabilitySelect = form.querySelector<HTMLSelectElement>('[name="availability"]');
+		const allTypesLink = form.getAttribute('action') ?? '/locations';
+		const directoryForType: Record<string, string> = {
+			SHOP: 'shops',
+			WAREHOUSE: 'warehouses',
+			GODOWN: 'godowns',
+			BUSINESS_PARK: 'business-parks',
+			APARTMENT: 'apartments',
+		};
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const type = typeSelect?.value ?? '';
+			const base = type && directoryForType[type] ? `/${directoryForType[type]}` : allTypesLink;
+			const params = new URLSearchParams();
+			if (zoneSelect?.value) params.set('zone', zoneSelect.value);
+			if (availabilitySelect?.value) params.set('availability', availabilitySelect.value);
+			const qs = params.toString();
+			window.location.assign(qs ? `${base}?${qs}` : base);
+		});
+	}
+</script>

@@ -10,6 +10,7 @@ import Gallery from './Gallery.astro';
 import Hero from './Hero.astro';
 import PropertyCard from './PropertyCard.astro';
 import PropertyList from './PropertyList.astro';
+import ListingSearch from './ListingSearch.astro';
 import Split from './Split.astro';
 import Stats from './Stats.astro';
 import Testimonial from './Testimonial.astro';
@@ -49,6 +50,7 @@ const firstHeadingIndex = blocks.findIndex((block) => {
 			case 'PageBlocksHero': return <Hero data={block} slug={slug} />;
 			case 'PageBlocksPropertyCard': return <PropertyCard data={block as unknown as import('./PropertyCard.astro').PropertyCardData} />;
 			case 'PageBlocksPropertyList': return <PropertyList data={block} />;
+			case 'PageBlocksListingSearch': return <ListingSearch data={block as unknown as import('./ListingSearch.astro').ListingSearchData} />;
 			case 'PageBlocksSplit': return <Split data={block} slug={slug} headingLevel={i === firstHeadingIndex ? 'h1' : 'h2'} />;
 			case 'PageBlocksStats': return <Stats data={block} />;
 			case 'PageBlocksTestimonial': return <Testimonial data={block} />;

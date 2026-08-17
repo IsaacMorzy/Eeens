@@ -11,6 +11,7 @@ import { splitBlockSchema } from '../../src/components/blocks/split.template';
 import { propertyCardBlockSchema, propertyListBlockSchema, ctaBannerBlockSchema } from '../../src/components/blocks/property.template';
 import { galleryBlockSchema } from '../../src/components/blocks/gallery.template';
 import { careersFormBlockSchema } from '../../src/components/blocks/careers-form.template';
+import { listingSearchBlockSchema } from '../../src/components/blocks/listing-search.template';
 
 export const PageCollection: Collection = {
 	name: 'page',
@@ -51,6 +52,7 @@ export const PageCollection: Collection = {
 				splitBlockSchema,
 				propertyCardBlockSchema,
 				propertyListBlockSchema,
+				listingSearchBlockSchema,
 				galleryBlockSchema,
 				careersFormBlockSchema,
 			],
