@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
 import Button from '../../components/ui/Button.astro';
 import ContextualVisual from '../../components/ui/ContextualVisual.astro';
+import Icon from '../../components/ui/Icon.astro';
 import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { getPropertyVisual } from '../../lib/contextual-images';
@@ -69,18 +70,18 @@ const cardProps = (property: PropertyNode) => ({
 					<h2 class="mt-3 font-display text-3xl font-semibold tracking-[-0.6px]">Location and corridor.</h2>
 					<p class="mt-4 max-w-md text-muted-foreground">Public property descriptions place the park in this corridor. Confirm current access, amenities, and unit membership with the Eens office before acting.</p>
 				</div>
-				<div class="space-y-4">
+				<div class="grid gap-4">
 					<div class="rounded-xl border border-hairline-steel bg-background p-5">
-						<span class="font-mono text-[13px] font-medium text-primary">LOCATION</span>
-						<p class="mt-2 font-mono text-sm text-foreground">Quiver Mombasa Road, Syokimau.</p>
+						<div class="flex items-center gap-2"><Icon name="map-pin" class="size-4 text-primary" /><span class="font-mono text-[13px] font-medium text-primary">LOCATION</span></div>
+						<p class="mt-3 font-mono text-sm text-foreground">Quiver Mombasa Road, Syokimau.</p>
 					</div>
 					<div class="rounded-xl border border-hairline-steel bg-background p-5">
-						<span class="font-mono text-[13px] font-medium text-primary">CORRIDOR</span>
-						<p class="mt-2 font-mono text-sm text-foreground">Mombasa Road commercial corridor.</p>
+						<div class="flex items-center gap-2"><Icon name="building-community" class="size-4 text-primary" /><span class="font-mono text-[13px] font-medium text-primary">CORRIDOR</span></div>
+						<p class="mt-3 font-mono text-sm text-foreground">Mombasa Road commercial corridor.</p>
 					</div>
 					<div class="rounded-xl border border-hairline-steel bg-background p-5">
-						<span class="font-mono text-[13px] font-medium text-primary">PARK SCOPE</span>
-						<p class="mt-2 text-sm text-muted-foreground">The overview focuses on the named park. Other Eens listings stay in their type directories until a verified record establishes compound membership.</p>
+						<div class="flex items-center gap-2"><Icon name="building" class="size-4 text-primary" /><span class="font-mono text-[13px] font-medium text-primary">PARK SCOPE</span></div>
+						<p class="mt-3 text-sm text-muted-foreground">The overview focuses on the named park. Other Eens listings stay in their type directories until a verified record establishes compound membership.</p>
 					</div>
 				</div>
 			</div>
@@ -141,13 +142,13 @@ const cardProps = (property: PropertyNode) => ({
 			)}
 			<div class="mt-8 grid gap-4 md:grid-cols-3">
 				{[
-					['01', 'Location', 'Read the literal address, zone, and access context before comparing spaces.'],
-					['02', 'Features', 'Check the published amenities and technical details; unknown features remain unpublished.'],
-					['03', 'Next step', 'Check the stated price or rate, availability, term, and viewing route before making contact.'],
-				].map(([number, title, text]) => (
-					<div class="rounded-xl border border-hairline-steel bg-background p-5">
-						<span class="font-mono text-[13px] text-primary">{number}</span>
-						<h3 class="mt-6 font-display text-xl font-medium">{title}</h3>
+					{ icon: 'map-pin', title: 'Location', text: 'Read the literal address, zone, and access context before comparing spaces.' },
+					{ icon: 'building-warehouse', title: 'Features', text: 'Check the published amenities and technical details; unknown features remain unpublished.' },
+					{ icon: 'arrow-up-right', title: 'Next step', text: 'Check the stated price or rate, availability, term, and viewing route before making contact.' },
+				].map(({ icon, title, text }) => (
+					<div class="rounded-xl border border-hairline-steel bg-background p-5 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary">
+						<Icon name={icon} class="size-5 text-primary" />
+						<h3 class="mt-5 font-display text-xl font-medium">{title}</h3>
 						<p class="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
 					</div>
 				))}
@@ -210,15 +211,16 @@ const cardProps = (property: PropertyNode) => ({
 			</div>
 			<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				{[
-					['Shop units', '/shops', 'Published shop records'],
-					['Warehouses', '/warehouses', 'Industrial specifications'],
-					['Godowns', '/godowns', 'Storage and distribution space'],
-					['Apartments', '/apartments', 'Residential sale listings'],
-				].map(([label, href, description]) => (
-					<a href={href} class="rounded-xl border border-hairline-steel bg-background p-5 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-						<h3 class="font-display text-xl font-medium">{label}</h3>
+					{ icon: 'building-store', label: 'Shop units', href: '/shops', description: 'Published shop records' },
+					{ icon: 'building-warehouse', label: 'Warehouses', href: '/warehouses', description: 'Industrial specifications' },
+					{ icon: 'package', label: 'Godowns', href: '/godowns', description: 'Storage and distribution space' },
+					{ icon: 'building', label: 'Apartments', href: '/apartments', description: 'Residential sale listings' },
+				].map(({ icon, label, href, description }) => (
+					<a href={href} class="group rounded-xl border border-hairline-steel bg-background p-5 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+						<Icon name={icon} class="size-5 text-primary" />
+						<h3 class="mt-5 font-display text-xl font-medium">{label}</h3>
 						<p class="mt-2 text-sm text-muted-foreground">{description}</p>
-						<span class="mt-5 inline-flex min-h-10 items-center text-sm font-medium text-primary">View directory <span aria-hidden="true" class="ml-1">→</span></span>
+						<span class="mt-5 inline-flex min-h-10 items-center gap-1 text-sm font-medium text-primary">View directory <Icon name="arrow-up-right" class="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" /></span>
 					</a>
 				))}
 			</div>

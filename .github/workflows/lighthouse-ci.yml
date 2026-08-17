@@ -1,0 +1,49 @@
+name: Lighthouse CI (Vercel preview)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  deployments: read
+  statuses: read
+  pull-requests: write
+
+concurrency:
+  group: lhci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Wait for Vercel's GitHub-integration deployment to be ready, then
+      # expose its URL. No Vercel token needed: the action polls GitHub's
+      # Deployments API (Vercel's integration publishes statuses there).
+      - name: Wait for Vercel preview deployment
+        id: deployment
+        uses: vercel/wait-for-deployment-action@0e2b0c5c5cce31f1648108aeec56467187aca037
+        with:
+          environment: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+          timeout: 600
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.8.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # LCP and perf are asserted against Google's CWV thresholds in
+      # lighthouserc.cjs (perf >= 0.95, LCP <= 2500ms, CLS <= 0.1, TBT <= 200ms).
+      - name: Run Lighthouse CI
+        run: pnpm dlx @lhci/cli@0.15.1 autorun --config=./lighthouserc.cjs
+        env:
+          LHCI_URL: ${{ steps.deployment.outputs.deployment-url }}
