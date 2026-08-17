@@ -1,5 +1,7 @@
-name: Lighthouse CI (Vercel preview)
+name: Lighthouse CI (Vercel preview + main)
 
+# Gates every pull request against the Vercel preview deployment AND verifies
+# main itself after each merge (against the production deployment).
 on:
   pull_request:
   push:
@@ -25,7 +27,8 @@ jobs:
       # Wait for Vercel's GitHub-integration deployment to be ready, then
       # expose its URL. No Vercel token needed: the action polls GitHub's
       # Deployments API (Vercel's integration publishes statuses there).
-      - name: Wait for Vercel preview deployment
+      # PRs wait on the preview deployment; pushes to main wait on production.
+      - name: Wait for Vercel deployment
         id: deployment
         uses: vercel/wait-for-deployment-action@0e2b0c5c5cce31f1648108aeec56467187aca037
         with:

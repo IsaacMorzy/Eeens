@@ -1,6 +1,7 @@
 /**
- * Lighthouse CI configuration — runs against the Vercel preview deployment
- * URL (injected as LHCI_URL by .github/workflows/lighthouse-ci.yml).
+ * Lighthouse CI configuration — runs against the Vercel deployment URL
+ * (injected as LHCI_URL by .github/workflows/lighthouse-ci.yml): the preview
+ * deployment on pull requests, the production deployment on pushes to main.
  *
  * Gates (aligned with Google's Core Web Vitals "good" thresholds and the
  * project's perf bar in docs/agents/project-map.md):
