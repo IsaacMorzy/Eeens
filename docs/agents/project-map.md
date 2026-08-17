@@ -112,7 +112,7 @@ Every improvement follows this loop:
 2. **Classify**: choose one smallest change. Use `triage` for an incoming queue, `diagnosing-bugs` for a hard regression, `wayfinder` for a genuinely multi-session map, and `implement` only after an approved spec or ticket.
 3. **Trace**: read the target file, its tests, its schema/types, and one existing example of the same pattern. Search every reference before changing an exported symbol or route.
 4. **Simplify**: load Ponytail. Prefer deletion, existing helpers, native HTML/CSS, and installed dependencies before adding abstractions or packages.
-5. **Design**: for visual work, preserve `DESIGN.md`: warm off-white, navy structure, one cyan-teal accent, mono facts, hairlines, restrained motion, no decorative gradients, glows, or glass surfaces.
+5. **Design**: for visual work, preserve `DESIGN.md`: warm off-white, navy structure, one cyan-teal accent, mono facts, hairlines, restrained motion, glass on chrome surfaces only (never on property evidence), no decorative gradients or glows.
 6. **Implement one slice**: keep source, schema, renderer, and tests coherent. Do not mix unrelated cleanup into the slice.
 7. **Verify**: run the smallest relevant check first, then `pnpm verify`; run a build when content, schema, routing, or production assembly changes. For browser work, use an isolated real browser and report runtime blockers honestly.
 8. **Review**: use a separate checker for scope, correctness, security, accessibility, performance, and over-engineering. Reject missing tests or unverifiable claims.

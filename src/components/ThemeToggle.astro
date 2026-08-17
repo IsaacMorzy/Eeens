@@ -6,11 +6,51 @@ import Icon from './ui/Icon.astro';
 	type="button"
 	aria-label="Toggle color theme"
 	aria-pressed="false"
-	class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.98] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+	class="glass inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.96] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
 >
-	<Icon name="sun" class="hidden size-5 dark:block" />
-	<Icon name="moon" class="block size-5 dark:hidden" />
+	<span class="relative grid size-5 place-items-center">
+		<Icon name="sun" class="theme-sun size-5" />
+		<Icon name="moon" class="theme-moon size-5" />
+	</span>
 </button>
+
+<style>
+	/* Sun ↔ moon crossfade: both icons stay in the DOM (same grid cell) and
+	   swap via opacity + rotate/scale, so the change animates both ways.
+	   Reduced-motion drops the transform and transition entirely.
+	   :global() — the icons are rendered by the child Icon component, which
+	   carries its own Astro scope, so the selectors must not be scoped. */
+	:global(.theme-sun),
+	:global(.theme-moon) {
+		grid-area: 1 / 1;
+		transition:
+			opacity 260ms ease,
+			transform 420ms cubic-bezier(0.2, 0, 0, 1);
+	}
+	:global(.theme-sun) {
+		opacity: 1;
+		transform: rotate(0deg) scale(1);
+	}
+	:global(.theme-moon) {
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.25);
+	}
+	:global(.dark) :global(.theme-sun) {
+		opacity: 0;
+		transform: rotate(90deg) scale(0.25);
+	}
+	:global(.dark) :global(.theme-moon) {
+		opacity: 1;
+		transform: rotate(0deg) scale(1);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		:global(.theme-sun),
+		:global(.theme-moon) {
+			transition: none;
+			transform: none;
+		}
+	}
+</style>
 <script is:inline type="module">
 	(() => {
 		// Delegate from document so the handler survives DOM swaps from
