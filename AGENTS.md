@@ -89,7 +89,7 @@ Read `DESIGN.md` before changing visuals. Use its tokens and component shapes ra
 
 - warm off-white canvas, navy structural ink, cyan-teal wayfinding accent, navy primary actions on light surfaces, and cyan-teal primary actions in dark mode;
 - Plus Jakarta Sans for display, Inter for body copy, JetBrains Mono for references, area, prices, addresses, and technical values;
-- hairline borders and restrained motion; no decorative gradients, glows, starfields, or glass surfaces;
+- hairline borders and restrained motion; glass on chrome surfaces only (header, mega menu, mobile panel, theme toggle, footer contact card), never on property evidence; no decorative gradients, glows, or starfields;
 - preserve visible keyboard focus, 44px touch targets, reduced-motion support, and dark-mode readability;
 - keep one clear primary action per section and make property facts easy to scan.
 
@@ -169,7 +169,7 @@ For any visual or copy change, use this sequence:
 4. **Inclusive UI:** load `fixing-accessibility` for keyboard navigation, focus states, screen readers, WCAG, contrast, touch targets, forms, or responsive interaction changes. Load `fixing-motion-performance` for animation or scroll-reveal changes. The name `accessibility-tester` is not a verified skill in this runtime.
 5. **Visual assets:** use the project’s existing local photo system first. Historical project references to `visual-asset-generator`, `mermaid-diagrams`, `excalidraw`, `c4-architecture`, `ui-designer`, or `humanizer` are not assumed installed; verify with the skill loader before invoking them.
 
-For this Eens site, the design gate means: tokens from `DESIGN.md`, one restrained cyan-teal accent, navy high-priority actions on light surfaces, cyan-teal high-priority actions in dark mode, no gradients/glows/glass, contextual photography with provenance rather than decorative filler, factual mono treatment for property numbers, and reduced-motion support.
+For this Eens site, the design gate means: tokens from `DESIGN.md`, one restrained cyan-teal accent, navy high-priority actions on light surfaces, cyan-teal high-priority actions in dark mode, glass chrome-only per DESIGN.md, no decorative gradients or glows, contextual photography with provenance rather than decorative filler, factual mono treatment for property numbers, and reduced-motion support.
 
 ### 5. Implement
 

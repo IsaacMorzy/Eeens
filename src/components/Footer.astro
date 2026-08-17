@@ -7,15 +7,16 @@ import Button from './ui/Button.astro';
 import IconLink from './IconLink.astro';
 import { isCurrentPath } from '../lib/path';
 
-// Use the shared public glyph so the footer and header keep one logo source.
-const EensGlyph = '/eens-glyph.svg';
-
 interface Props {
 	config?: CmsConfig | null;
 }
 
 const { config } = Astro.props;
 const seo = config?.seo ?? null;
+// The header logo lockup (config.seo.logo, /logo-enns.png) is the single brand
+// source; the footer inverts it for the navy canvas, matching the header's
+// dark-mode treatment.
+const footerLogo = seo?.logo ?? '/logo-enns.png';
 const contactLinks = (config?.contactLinks ?? []).filter(
 	(item): item is CmsConfigContactLink => item !== null,
 );
@@ -67,7 +68,7 @@ const journalLinks = [
 			<div class="min-w-0">
 				<p id="footer-title" class="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.5px] text-primary-dark">EENS PROPERTY REGISTER</p>
 				<div class="flex items-center gap-3">
-					<img src={EensGlyph} alt="" aria-hidden="true" class="size-7" />
+					<img src={footerLogo} alt="Eens Limited" width="76" height="28" class="h-7 w-auto invert" />
 					<span class="font-display text-2xl font-semibold tracking-[-0.6px] text-ink-dark">
 						Eens Business Park
 					</span>

@@ -164,9 +164,11 @@ const menuGroups: MenuGroup[] = [
 				<span>Schedule a viewing</span>
 			</a>
 			<div class="hidden lg:block"><ThemeToggle /></div>
-			<button id="mobile-menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu-panel" aria-expanded="false" class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.98] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 xl:hidden">
-				<Icon name="menu-2" class="icon-open size-5" />
-				<Icon name="x" class="icon-close size-5" />
+			<button id="mobile-menu-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu-panel" aria-expanded="false" class="inline-flex size-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-[background-color,color,transform] motion-safe:active:scale-[0.96] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 xl:hidden">
+				<span class="relative block size-5" aria-hidden="true">
+					<span class="hamburger-line hamburger-line-top absolute left-0 top-[9px] h-0.5 w-5 rounded-full bg-current"></span>
+					<span class="hamburger-line hamburger-line-bottom absolute left-0 top-[15px] h-0.5 w-5 rounded-full bg-current"></span>
+				</span>
 			</button>
 		</div>
 	</nav>
@@ -222,9 +224,19 @@ const menuGroups: MenuGroup[] = [
 </header>
 
 <style>
-	#mobile-menu-toggle .icon-close { display: none; }
-	#mobile-menu-toggle[aria-expanded="true"] .icon-open { display: none; }
-	#mobile-menu-toggle[aria-expanded="true"] .icon-close { display: block; }
+	/* Two-line hamburger that morphs into an X when the panel is open. */
+	.hamburger-line {
+		transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
+	}
+	#mobile-menu-toggle[aria-expanded="true"] .hamburger-line-top {
+		transform: translateY(3px) rotate(45deg);
+	}
+	#mobile-menu-toggle[aria-expanded="true"] .hamburger-line-bottom {
+		transform: translateY(-3px) rotate(-45deg);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hamburger-line { transition: none; }
+	}
 	details > summary { scrollbar-width: none; }
 	details > summary::marker { display: none; }
 
@@ -271,6 +283,8 @@ const menuGroups: MenuGroup[] = [
 			if (!btn || !panel) return;
 			btn.setAttribute('aria-expanded', open ? 'true' : 'false');
 			panel.hidden = !open;
+			// Lock background scroll while the panel is open; the panel scrolls itself.
+			document.documentElement.style.overflow = open ? 'hidden' : '';
 		};		document.addEventListener('click', (event) => {
 			const target = event.target;
 			if (!(target instanceof Element)) return;
@@ -280,6 +294,8 @@ const menuGroups: MenuGroup[] = [
 				return;
 			}
 			if (target.closest('#mobile-menu-panel a')) setOpen(false);
+			// Tapping anywhere outside the header dismisses the mobile panel too.
+			if (!target.closest('header')) setOpen(false);
 			if (!target.closest('header details')) {
 				document.querySelectorAll('header details[open]').forEach((menu) => menu.removeAttribute('open'));
 			}
@@ -297,6 +313,12 @@ const menuGroups: MenuGroup[] = [
 			setOpen(false);
 			document.querySelectorAll('header details[open]').forEach((menu) => menu.removeAttribute('open'));
 			if (openSummary instanceof HTMLElement) openSummary.focus();
+		});
+		// The panel is desktop-hidden at the xl breakpoint; reset state when crossing it.
+		let lastWidth = window.innerWidth;
+		window.addEventListener('resize', () => {
+			if (window.innerWidth >= 1280 && lastWidth < 1280) setOpen(false);
+			lastWidth = window.innerWidth;
 		});
 	}
 </script>

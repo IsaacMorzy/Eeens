@@ -341,6 +341,36 @@ The warm off-white canvas IS the whitespace. Sections separate by lift onto a `s
 
 The navy `#0F172A` does double duty — in dark mode it's the canvas; in light mode it appears as the **structural ink** (body type, eyebrows) and as a rare INVERSE surface for "Back to dark" callouts.
 
+## Glassmorphism & Micro-interactions
+
+Glass is a **chrome treatment only**. It reads like tinted curtain-wall on the fixed header, mega menu, mobile panel, and floating controls, and like a frosted contact sheet on the footer card — never on property evidence. The direction is sleek architectural: sharp navy structure, moody dark glass in dark mode, restrained light frosted panels on the warm canvas. Micro-interactions are hover/click-driven (no scroll-jacking), and every motion is reduced-motion aware.
+
+### Glass tokens
+
+- `.glass` — light-mode frosted panel: `--card` at 72% fill + `blur(14px) saturate(1.4)` + hairline border. Dark mode drops the fill to 58% for a moodier pane.
+- `.glass-dark` — dark-surface frosted panel (footer, dark chrome): `--canvas-dark` at 55% + `blur(14px) saturate(1.2)`.
+- Both are gated on `backdrop-filter` support with a solid fallback, so unsupported browsers get an opaque panel, never a see-through one.
+- `.accent-hairline` — cyan-teal gradient hairline for the mega-menu top accent. Decorative only on chrome.
+
+### Where glass is allowed
+
+- **Allowed:** fixed header, desktop mega menu, mobile nav panel, theme-toggle chip, footer contact card, featured-park cards.
+- **Never:** property cards, spec sheets, imagery, or any surface that carries a price, area, availability, or lease term.
+
+### Why glass works here (and where it fails)
+
+Glass is a stabilizer: it keeps text readable over busy photography without hiding the image. That is exactly the chrome job — the header and menus float over scrolling property photos. On a factual register, a blurred surface behind a price or sq-ft figure would fight the evidence, so property surfaces stay opaque. Blur is also a paint cost: `backdrop-filter` over large areas can hurt LCP/INP on low-end devices, so blur stays ≤14px, glass surfaces stay small, and nothing glassy sits on the LCP image path.
+
+### Micro-interaction patterns
+
+Micro-interactions are restrained and always gated on `motion-safe` / `prefers-reduced-motion`:
+
+- **Hover lift:** cards and menu items translate up 1px with a hairline border tint.
+- **Icon morphs:** the hamburger morphs to an X (two 2px lines rotating 45°, 240ms); the theme toggle crossfades sun ↔ moon (opacity + rotate/scale, 420ms).
+- **Entrance:** the mega panel fades in and rises 6px over 160ms.
+- **Arrow nudges:** `arrow-up-right` shifts 2px on group hover.
+- Transitions specify only the changing properties (transform, opacity, color) — never `transition: all`.
+
 ## Shapes
 
 ### Radius scale
@@ -437,6 +467,7 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 - Always lead a property card with a 16:9 photograph and a 12px cyan-teal eyebrow tag.
 - Always include the literal address on every property detail screen.
 - Use `surface-1-light` cards on a `#FAFAF9` canvas.
+- Reserve glass for chrome surfaces — header, mega menu, mobile panel, theme toggle, footer contact card — with blur ≤14px, gated on `backdrop-filter` support.
 
 ### Don't
 
@@ -445,6 +476,7 @@ Tabler icon set (already in `package.json` as `@iconify-json/tabler`). Use liter
 - Don't introduce a third chromatic accent beyond cyan-teal and the existing navy structural ink.
 - Don't use the navy/cyan-teal action pair for navigation, secondary buttons, links, or eyebrow tags.
 - Don't add atmospheric gradients or spotlight cards.
+- Don't put glass on property evidence — cards, spec sheets, imagery, or any surface carrying a price or term.
 - Don't pill-round CTAs.
 - Don't use stock-couple photography.
 - Don't reuse the orange space theme — `src/components/space/*` is intentionally empty.
