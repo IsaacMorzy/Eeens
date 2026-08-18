@@ -7,6 +7,9 @@ import Icon from '../ui/Icon.astro';
 import type { Action, HeroBlock } from '../../lib/data';
 import { getPageHeroVisual } from '../../lib/contextual-images';
 import { getPexelsSource } from '../../lib/pexels-images';
+import { listProperties } from '../../lib/data';
+import { isPublicProperty } from '../../lib/property-visibility';
+import { parseSqft, zonesInUse } from '../../lib/property-filters';
 
 interface Props { data: HeroBlock; slug?: string }
 
@@ -31,6 +34,10 @@ const heroLabels: Record<string, string> = {
 };
 const heroLabel = heroLabels[slug] ?? 'EENS LIMITED';
 const showProofRail = slug === '' || slug === 'home';
+// Ground the proof rail in the live register rather than static copy.
+const registerListings = showProofRail ? (await listProperties()).filter(isPublicProperty) : [];
+const totalSqft = registerListings.reduce((sum, p) => sum + parseSqft(p.sqft), 0);
+const registerZones = zonesInUse(registerListings);
 ---
 
 <Section class="overflow-hidden section-render-visible">
@@ -68,16 +75,16 @@ const showProofRail = slug === '' || slug === 'home';
 			{showProofRail && (
 				<div class="reveal-on-scroll mt-10 grid max-w-2xl grid-cols-3 border-y border-hairline-steel/60 py-4 text-left">
 					<div class="pr-3">
-						<div class="font-mono text-[13px] text-foreground">Address</div>
-						<div class="mt-1 text-xs text-muted-foreground">published</div>
+						<div class="font-mono text-[13px] tabular-nums text-foreground">{registerListings.length}</div>
+						<div class="mt-1 text-xs text-muted-foreground">published listing{registerListings.length === 1 ? '' : 's'}</div>
 					</div>
 					<div class="border-l border-hairline-steel/60 px-3">
-						<div class="font-mono text-[13px] text-foreground">Area</div>
-						<div class="mt-1 text-xs text-muted-foreground">in sq ft</div>
+						<div class="font-mono text-[13px] tabular-nums text-foreground">{totalSqft.toLocaleString()}</div>
+						<div class="mt-1 text-xs text-muted-foreground">sq ft published</div>
 					</div>
 					<div class="border-l border-hairline-steel/60 pl-3">
-						<div class="font-mono text-[13px] text-foreground">Terms</div>
-						<div class="mt-1 text-xs text-muted-foreground">before contact</div>
+						<div class="font-mono text-[13px] tabular-nums text-foreground">{registerZones.length}</div>
+						<div class="mt-1 text-xs text-muted-foreground">operating zone{registerZones.length === 1 ? '' : 's'}</div>
 					</div>
 				</div>
 			)}

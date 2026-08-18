@@ -1,0 +1,80 @@
+---
+/**
+ * InquiryForm - viewing-inquiry form block.
+ *
+ * Composes a mailto message to the configured office address (same pattern
+ * as CareersForm): fields are serialized into the email body, so the site
+ * needs no backend. Accepts an optional `reference` prop so listing detail
+ * pages can prefill the listing reference; the subject carries it too.
+ */
+import { tinaField } from '@tinacms/astro/tina-field';
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { contactEmail, getConfig } from '../../lib/data';
+
+interface InquiryFormData {
+	title?: string | null;
+	description?: string | null;
+	submitLabel?: string | null;
+	privacyNote?: string | null;
+}
+
+interface Props {
+	data: InquiryFormData;
+	reference?: string | null;
+}
+
+const { data, reference = null } = Astro.props;
+const config = (await getConfig()).data?.config ?? null;
+const subject = encodeURIComponent(
+	reference ? `Viewing request - ${reference}` : 'Viewing request',
+);
+const tinaData = data as unknown as Record<string, unknown>;
+const formId = `inquiry-form-${reference ? 'listing' : 'page'}`;
+---
+
+<Section class="bg-secondary">
+	<div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+		<div class="max-w-xl">
+			{data.title && <h2 data-tina-field={tinaField(tinaData, 'title')} class="text-balance font-display text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1px]">{data.title}</h2>}
+			{data.description && <p data-tina-field={tinaField(tinaData, 'description')} class="mt-4 max-w-lg text-pretty leading-relaxed text-muted-foreground">{data.description}</p>}
+			<div class="mt-8 flex items-start gap-3 border-t border-hairline-steel/60 pt-4 text-sm text-muted-foreground">
+				<Icon name="mail" class="mt-0.5 size-4 shrink-0 text-primary" />
+				<p>Inquiries open in your email client and are sent to the configured Eens office address.</p>
+			</div>
+		</div>
+
+		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+			<div class="grid gap-5 sm:grid-cols-2">
+				<div class="grid gap-2">
+					<label for={`${formId}-name`} class="text-sm font-medium text-foreground">Full name</label>
+					<input id={`${formId}-name`} name="full_name" type="text" autocomplete="name" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for={`${formId}-email`} class="text-sm font-medium text-foreground">Email address</label>
+					<input id={`${formId}-email`} name="email" type="email" autocomplete="email" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for={`${formId}-phone`} class="text-sm font-medium text-foreground">Phone <span class="font-normal text-muted-foreground">(optional)</span></label>
+					<input id={`${formId}-phone`} name="phone" type="tel" autocomplete="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2">
+					<label for={`${formId}-reference`} class="text-sm font-medium text-foreground">Listing reference</label>
+					<input id={`${formId}-reference`} name="listing_reference" type="text" value={reference ?? ''} readonly={Boolean(reference)} placeholder="e.g. EE-MLO-014" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+				</div>
+				<div class="grid gap-2 sm:col-span-2">
+					<label for={`${formId}-message`} class="text-sm font-medium text-foreground">Message</label>
+					<textarea id={`${formId}-message`} name="message" rows="5" required placeholder="Preferred viewing dates, requirements, and questions." class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
+				</div>
+			</div>
+			<div class="mt-6 flex flex-col items-start gap-4 border-t border-hairline-steel/60 pt-5 sm:flex-row sm:items-center sm:justify-between">
+				{data.privacyNote && <p data-tina-field={tinaField(tinaData, 'privacyNote')} class="max-w-md text-xs leading-relaxed text-muted-foreground">{data.privacyNote}</p>}
+				<Button type="submit" size="lg">
+					<Icon name="calendar" class="size-4" />
+					<span>{data.submitLabel || 'Request a viewing'}</span>
+				</Button>
+			</div>
+		</form>
+	</div>
+</Section>

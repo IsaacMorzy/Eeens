@@ -13,6 +13,8 @@ import {
 	linkWith,
 	parseDirectoryFilters,
 	activeFilterCount,
+	parseSortKey,
+	applySort,
 	getIllustrationSrc,
 	type PropertyFilters,
 } from '../src/lib/property-filters';
@@ -173,6 +175,70 @@ describe('zonesInUse', () => {
 	it('drops null zones', () => {
 		const list: PropertyNode[] = [property({ zone: null }), property({ zone: 'Thika' })];
 		expect(zonesInUse(list)).toEqual(['Thika']);
+	});
+});
+describe('parseSortKey + applySort', () => {
+	it('parseSortKey falls back to featured for null / unknown values', () => {
+		expect(parseSortKey(null)).toBe('featured');
+		expect(parseSortKey('bogus')).toBe('featured');
+	});
+
+	it('parseSortKey accepts known keys', () => {
+		expect(parseSortKey('price-desc')).toBe('price-desc');
+		expect(parseSortKey('price-asc')).toBe('price-asc');
+		expect(parseSortKey('area-desc')).toBe('area-desc');
+		expect(parseSortKey('newest')).toBe('newest');
+	});
+
+	it('featured keeps the source register order', () => {
+		const list: PropertyNode[] = [
+			property({ price: { ksh: '9,000 / yr' }, _sys: { filename: 'a' } }),
+			property({ price: { ksh: '90,000,000' }, _sys: { filename: 'b' } }),
+		];
+		expect(applySort(list, 'featured').map((p) => p._sys?.filename)).toEqual(['a', 'b']);
+	});
+
+	it('sorts price-desc by the numeric total, ignoring separators and suffixes', () => {
+		const list: PropertyNode[] = [
+			property({ price: { ksh: '1,260,000 / yr' }, _sys: { filename: 'low' } }),
+			property({ price: { ksh: '87,000,000' }, _sys: { filename: 'high' } }),
+			property({ price: { ksh: '3,150,000 / yr' }, _sys: { filename: 'mid' } }),
+		];
+		expect(applySort(list, 'price-desc').map((p) => p._sys?.filename)).toEqual(['high', 'mid', 'low']);
+	});
+
+	it('sorts price-asc ascending', () => {
+		const list: PropertyNode[] = [
+			property({ price: { ksh: '87,000,000' }, _sys: { filename: 'high' } }),
+			property({ price: { ksh: '1,260,000 / yr' }, _sys: { filename: 'low' } }),
+		];
+		expect(applySort(list, 'price-asc').map((p) => p._sys?.filename)).toEqual(['low', 'high']);
+	});
+
+	it('sorts area-desc by parsed square footage', () => {
+		const list: PropertyNode[] = [
+			property({ sqft: '4,000 sq ft', _sys: { filename: 'small' } }),
+			property({ sqft: '18,000 sq ft', _sys: { filename: 'big' } }),
+			property({ sqft: '9,000 sq ft', _sys: { filename: 'mid' } }),
+		];
+		expect(applySort(list, 'area-desc').map((p) => p._sys?.filename)).toEqual(['big', 'mid', 'small']);
+	});
+
+	it('sorts newest first by publishedDate, missing dates last', () => {
+		const list: PropertyNode[] = [
+			property({ publishedDate: null, _sys: { filename: 'none' } }),
+			property({ publishedDate: '2026-01-01', _sys: { filename: 'old' } }),
+			property({ publishedDate: '2026-08-01', _sys: { filename: 'new' } }),
+		];
+		expect(applySort(list, 'newest').map((p) => p._sys?.filename)).toEqual(['new', 'old', 'none']);
+	});
+
+	it('ties fall back to the stable register order', () => {
+		const list: PropertyNode[] = [
+			property({ price: { ksh: '5,000,000' }, _sys: { filename: 'x' } }),
+			property({ price: { ksh: '5,000,000' }, _sys: { filename: 'y' } }),
+		];
+		expect(applySort(list, 'price-asc').map((p) => p._sys?.filename)).toEqual(['x', 'y']);
 	});
 });
 

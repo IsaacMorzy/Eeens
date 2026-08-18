@@ -115,6 +115,18 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 					class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
 				/>
 			)}
+			{viewHref && (
+				<button
+					type="button"
+					data-save-toggle
+					data-save-href={viewHref}
+					aria-pressed="false"
+					aria-label={`Save ${data.title ?? 'listing'}`}
+					class="absolute left-2 top-2 inline-flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground/60 transition-[color,background-color] hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&.save-active]:text-primary [&.save-active]:[&_svg]:fill-current"
+				>
+					<Icon name="heart" class="size-4" />
+				</button>
+			)}
 			{data.availability && (
 				<div class="absolute right-2 top-2 rounded-full bg-background/90 p-0.5">
 					<AvailabilityBadge availability={data.availability} />
@@ -206,3 +218,29 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 		)}
 	</div>
 </article>
+
+<script>
+	import { loadSavedHrefs, toggleSaved } from '../../lib/saved-listings';
+
+	const render = () => {
+		const saved = loadSavedHrefs();
+		for (const button of document.querySelectorAll<HTMLButtonElement>('[data-save-toggle]')) {
+			const active = saved.has(button.dataset.saveHref ?? '');
+			button.setAttribute('aria-pressed', String(active));
+			button.classList.toggle('save-active', active);
+			button.setAttribute('aria-label', active ? 'Remove from saved listings' : 'Save listing');
+		}
+	};
+
+	document.addEventListener('click', (event) => {
+		const target = event.target as HTMLElement | null;
+		const button = target?.closest<HTMLButtonElement>('[data-save-toggle]');
+		if (!button || !button.dataset.saveHref) return;
+		event.preventDefault();
+		toggleSaved(button.dataset.saveHref);
+		render();
+		document.dispatchEvent(new CustomEvent('eens:saved-change'));
+	});
+
+	render();
+</script>

@@ -6,6 +6,7 @@ import Cta from './Cta.astro';
 import CtaBanner from './CTABanner.astro';
 import Features from './Features.astro';
 import CareersForm from './CareersForm.astro';
+import InquiryForm from './InquiryForm.astro';
 import Gallery from './Gallery.astro';
 import Hero from './Hero.astro';
 import PropertyCard from './PropertyCard.astro';
@@ -15,7 +16,7 @@ import Split from './Split.astro';
 import Stats from './Stats.astro';
 import Testimonial from './Testimonial.astro';
 import Video from './Video.astro';
-import type { CareersFormBlock, CmsPage, GalleryBlock } from '../../lib/data';
+import type { CareersFormBlock, CmsPage, GalleryBlock, InquiryFormBlock } from '../../lib/data';
 
 interface Props {
 	data?: CmsPage | null;
@@ -39,6 +40,9 @@ const firstHeadingIndex = blocks.findIndex((block) => {
 	}
 	if ((block as { __typename?: string }).__typename === 'PageBlocksCareersForm') {
 		return <div data-tina-field={tinaField(block)}><CareersForm data={block as unknown as CareersFormBlock} /></div>;
+	}
+	if ((block as { __typename?: string }).__typename === 'PageBlocksInquiryForm') {
+		return <div data-tina-field={tinaField(block)}><InquiryForm data={block as unknown as InquiryFormBlock} /></div>;
 	}
 	const rendered = (() => {
 		switch (block.__typename) {

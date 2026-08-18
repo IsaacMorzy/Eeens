@@ -12,6 +12,7 @@ import { propertyCardBlockSchema, propertyListBlockSchema, ctaBannerBlockSchema 
 import { galleryBlockSchema } from '../../src/components/blocks/gallery.template';
 import { careersFormBlockSchema } from '../../src/components/blocks/careers-form.template';
 import { listingSearchBlockSchema } from '../../src/components/blocks/listing-search.template';
+import { inquiryFormBlockSchema } from '../../src/components/blocks/inquiry-form.template';
 
 export const PageCollection: Collection = {
 	name: 'page',
@@ -55,6 +56,7 @@ export const PageCollection: Collection = {
 				listingSearchBlockSchema,
 				galleryBlockSchema,
 				careersFormBlockSchema,
+				inquiryFormBlockSchema,
 			],
 		},
 	],

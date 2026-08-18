@@ -98,6 +98,65 @@ export const applyFilters = (
 		return true;
 	});
 
+export const SORT_OPTIONS = [
+	{ value: 'featured', label: 'Featured (register order)' },
+	{ value: 'price-desc', label: 'Price: high to low' },
+	{ value: 'price-asc', label: 'Price: low to high' },
+	{ value: 'area-desc', label: 'Area: largest first' },
+	{ value: 'newest', label: 'Newest first' },
+] as const;
+
+export type SortKey = (typeof SORT_OPTIONS)[number]['value'];
+
+/**
+ * Parse the sort query param. Only the known keys are accepted; anything
+ * else falls back to the register order (featured).
+ */
+export const parseSortKey = (value: string | null): SortKey =>
+	value && (SORT_OPTIONS as readonly { value: string }[]).some((o) => o.value === value)
+		? (value as SortKey)
+		: 'featured';
+
+/** Numeric total from the free-text KSH figure ("3,150,000 / yr" → 3150000). */
+export const parsePriceKsh = (p: PropertyNode | null | undefined): number =>
+	firstInteger(p?.price?.ksh);
+
+/**
+ * Sort a filtered register by a known key. `featured` keeps the source
+ * order; numeric keys fall back to the register order on ties via a
+ * stable comparison (reference code, then title).
+ */
+export const applySort = (
+	properties: readonly PropertyNode[],
+	sort: SortKey,
+): PropertyNode[] => {
+	if (sort === 'featured') return [...properties];
+	const order = [...properties];
+	const tiebreak = (a: PropertyNode, b: PropertyNode): number => {
+		const refA = a.reference ?? a.title ?? '';
+		const refB = b.reference ?? b.title ?? '';
+		return refA.localeCompare(refB);
+	};
+	order.sort((a, b) => {
+		if (sort === 'price-desc' || sort === 'price-asc') {
+			const diff = parsePriceKsh(a) - parsePriceKsh(b);
+			if (diff !== 0) return sort === 'price-desc' ? -diff : diff;
+		}
+		if (sort === 'area-desc') {
+			const diff = parseSqft(a.sqft) - parseSqft(b.sqft);
+			if (diff !== 0) return -diff;
+		}
+		if (sort === 'newest') {
+			const timeA = Date.parse(a.publishedDate ?? '');
+			const timeB = Date.parse(b.publishedDate ?? '');
+			const diff = (Number.isNaN(timeA) ? 0 : timeA) - (Number.isNaN(timeB) ? 0 : timeB);
+			if (diff !== 0) return -diff;
+		}
+		return tiebreak(a, b);
+	});
+	return order;
+};
+
 /**
  * Group by type in stable industrial-first, residential-last order. Drops
  * any type group that ends up empty so the listing rail suppresses unused

@@ -4,6 +4,7 @@ import Section from '../../components/ui/Section.astro';
 import Button from '../../components/ui/Button.astro';
 import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
 import DirectoryMap from '../../components/blocks/DirectoryMap.astro';
+import Icon from '../../components/ui/Icon.astro';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { contactEmail, getConfig, listProperties, type PropertyNode } from '../../lib/data';
 import {
@@ -14,10 +15,14 @@ import {
 import {
 	activeFilterCount,
 	applyFilters,
+	applySort,
 	getIllustrationSrc,
 	parseDirectoryFilters,
 	parseKva,
+	parsePriceKsh,
+	parseSortKey,
 	parseSqft,
+	SORT_OPTIONS,
 } from '../../lib/property-filters';
 import { selectDirectoryContext } from '../../lib/directory-context';
 
@@ -40,7 +45,8 @@ const contextHighlights = (context?.highlights ?? []).filter((highlight) => high
 const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent(`Ask about ${definition.label}`)}`;
 const zoneNames = ['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika'];
 const filters = parseDirectoryFilters(Astro.url.searchParams, zoneNames);
-const filteredListings = applyFilters(allListings, filters);
+const filteredListings = applySort(applyFilters(allListings, filters), parseSortKey(Astro.url.searchParams.get('sort')));
+const sortKey = parseSortKey(Astro.url.searchParams.get('sort'));
 const hasPowerFilter = category === 'warehouses' || category === 'godowns' || category === 'business-parks';
 const filterCount = activeFilterCount(filters);
 const availabilityOptions = [
@@ -109,15 +115,23 @@ const availabilityOptions = [
 		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:items-start">
 			<DirectoryMap pathname={Astro.url.pathname} label={context?.mapLabel ?? 'Operating zones'} />
 			<div id="published-listings">
-				<header class="mb-6 flex flex-wrap items-end justify-between gap-4">
-					<div>
-						<p class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">Register</p>
-						<h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.4px]">Published {definition.label.toLowerCase()}</h2>
-					</div>
-					<span data-result-status class="font-mono tabular-nums text-[13px] text-muted-foreground">{filterCount ? `${filteredListings.length} match${filteredListings.length === 1 ? '' : 'es'}` : `${allListings.length} record${allListings.length === 1 ? '' : 's'}`}</span>
-				</header>
+					<header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+						<div>
+							<p class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">Register</p>
+							<h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.4px]">Published {definition.label.toLowerCase()}</h2>
+						</div>
+						<div class="flex flex-wrap items-center gap-4">
+							<span data-result-status class="font-mono tabular-nums text-[13px] text-muted-foreground">{filterCount ? `${filteredListings.length} match${filteredListings.length === 1 ? '' : 'es'}` : `${allListings.length} record${allListings.length === 1 ? '' : 's'}`}</span>
+						<label class="grid gap-1.5 text-sm font-medium" for={`sort-${category}`}>
+							<span class="sr-only">Sort listings</span>
+							<select id={`sort-${category}`} name="sort" form="directory-filters-form" class="h-10 rounded-md border border-hairline-steel bg-background px-3 text-[13px] text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+									{SORT_OPTIONS.map((option) => <option value={option.value} selected={sortKey === option.value}>{option.label}</option>)}
+								</select>
+							</label>
+						</div>
+					</header>
 
-				<form data-directory-filters class="mb-8 rounded-xl border border-hairline-steel bg-secondary p-4 sm:p-5" method="get">
+				<form id="directory-filters-form" data-directory-filters class="mb-8 rounded-xl border border-hairline-steel bg-secondary p-4 sm:p-5" method="get">
 					<div class="flex flex-wrap items-end gap-4">
 						<label class="grid min-w-40 flex-1 gap-2 text-sm font-medium" for={`zone-${category}`}>
 							<span>Zone</span>
@@ -156,16 +170,19 @@ const availabilityOptions = [
 								</select>
 							</label>
 						)}
+						<label class="flex items-end pb-0.5" title="Show only listings you have saved with the heart button">
+							<input type="checkbox" data-saved-only class="peer sr-only" />
+							<span class="flex h-11 items-center gap-1.5 rounded-md border border-hairline-steel bg-background px-3 text-[13px] font-medium text-muted-foreground transition-[background-color,color,border-color] peer-checked:border-action peer-checked:bg-action peer-checked:text-action-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring/50 hover:text-foreground"><Icon name="heart" class="size-3.5" aria-hidden="true" />Saved <span data-saved-count class="font-mono tabular-nums">0</span></span>
+						</label>
 						<button type="submit" class="inline-flex h-11 items-center justify-center rounded-md bg-action px-5 text-sm font-medium text-action-foreground transition-[background-color,transform] hover:bg-action-hover motion-safe:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Filter listings</button>
 						<a href={Astro.url.pathname} class="inline-flex h-11 items-center px-2 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Reset</a>
 					</div>
 					<p class="mt-3 font-mono text-[12px] text-muted-foreground">Filters use published area, power, zone, and availability facts only.</p>
 				</form>
 
-				{allListings.length > 0 ? (
-					<div data-listing-grid class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{allListings.map((property) => (
-							<div data-directory-card data-zone={property.zone ?? ''} data-sqft={parseSqft(property.sqft)} data-kva={parseKva(property)} data-availability={property.availability ?? ''}>
+				{allListings.length > 0 ? (					<div data-listing-grid class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{filteredListings.map((property) => (
+							<div data-directory-card data-zone={property.zone ?? ''} data-sqft={parseSqft(property.sqft)} data-kva={parseKva(property)} data-availability={property.availability ?? ''} data-price={parsePriceKsh(property)} data-date={property.publishedDate ?? ''} data-href={`/${category}/${property._sys?.filename ?? ''}`}>
 								<PropertyCardFeatured
 									data={{
 										type: property.type ?? null,
@@ -198,7 +215,7 @@ const availabilityOptions = [
 						</div>
 					</div>
 				)}
-				<div data-filter-empty hidden class="mt-6 relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-6 sm:p-8">
+				<div data-filter-empty hidden={!(filterCount > 0 && filteredListings.length === 0)} class="mt-6 relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-secondary p-6 sm:p-8">
 					<p class="font-mono text-[12px] text-primary">Filtered register</p>
 					<h2 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">No published records match these filters.</h2>
 					<p class="mt-3 text-muted-foreground">Clear a filter or ask the office about the next verified listing.</p>
@@ -223,32 +240,42 @@ const availabilityOptions = [
 </Base>
 
 <script>
+	import { loadSavedHrefs } from '../../lib/saved-listings';
+
 	const root = document.querySelector('[data-directory-filters]')?.closest('#published-listings');
 	const form = root?.querySelector('[data-directory-filters]') as HTMLFormElement | null;
+	const grid = root?.querySelector<HTMLElement>('[data-listing-grid]');
 	const cards = root ? [...root.querySelectorAll<HTMLElement>('[data-directory-card]')] : [];
 	const count = document.querySelector('[data-listing-count]');
 	const status = root?.querySelector('[data-result-status]');
 	const empty = root?.querySelector('[data-filter-empty]') as HTMLElement | null;
+	const savedOnlyInput = root?.querySelector<HTMLInputElement>('[data-saved-only]') ?? null;
+	const savedCount = root?.querySelector('[data-saved-count]') ?? null;
 	const params = new URLSearchParams(window.location.search);
 
-	if (root && form && cards.length) {
+	if (root && form && grid && cards.length) {
 		const zones = new Set(['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika']);
 		const sqftTiers = new Set([4000, 9000, 18000]);
 		const kvaTiers = new Set([50, 200]);
 		const availabilityValues = new Set(['ForRent', 'ForSale', 'Upcoming']);
+		const sortValues = new Set(['featured', 'price-desc', 'price-asc', 'area-desc', 'newest']);
 		const validTier = (value: string | null, tiers: Set<number>) => {
 			const parsed = Number(value);
 			return value && tiers.has(parsed) ? parsed : 0;
 		};
 		const rawZone = params.get('zone');
 		const rawAvailability = params.get('availability');
+		const rawSort = params.get('sort');
 		const values = {
 			zone: rawZone && zones.has(rawZone) ? rawZone : '',
 			minSqft: validTier(params.get('minSqft'), sqftTiers),
 			minKva: validTier(params.get('minKva'), kvaTiers),
 			availability: rawAvailability && availabilityValues.has(rawAvailability) ? rawAvailability : '',
+			sort: rawSort && sortValues.has(rawSort) ? rawSort : 'featured',
+			savedOnly: Boolean(savedOnlyInput?.checked),
 		};
-		const select = (name: string): HTMLSelectElement | HTMLInputElement | null => form.querySelector(`[name="${name}"]`);
+		const select = (name: string): HTMLSelectElement | HTMLInputElement | null => root.querySelector(`[name="${name}"]`);
+		const sortField = select('sort');
 		const applyInitialValues = () => {
 			for (const [name, value] of Object.entries(values)) {
 				const field = select(name);
@@ -262,20 +289,44 @@ const availabilityOptions = [
 			}
 		};
 		applyInitialValues();
+		const reorder = (visible: HTMLElement[]) => {
+			if (values.sort === 'featured' || visible.length < 2) return;
+			const price = (card: HTMLElement) => Number(card.dataset.price ?? 0);
+			const area = (card: HTMLElement) => Number(card.dataset.sqft ?? 0);
+			const date = (card: HTMLElement) => {
+				const t = Date.parse(card.dataset.date ?? '');
+				return Number.isNaN(t) ? 0 : t;
+			};
+			const by = (a: HTMLElement, b: HTMLElement): number => {
+				if (values.sort === 'price-desc') return price(b) - price(a);
+				if (values.sort === 'price-asc') return price(a) - price(b);
+				if (values.sort === 'area-desc') return area(b) - area(a);
+				if (values.sort === 'newest') return date(b) - date(a);
+				return 0;
+			};
+			visible.sort(by);
+			for (const card of visible) grid.append(card);
+		};
 		const apply = () => {
-			let matches = 0;
+			const saved = loadSavedHrefs();
+			const savedInRegister = cards.filter((card) => saved.has(card.dataset.href ?? '')).length;
+			if (savedCount) savedCount.textContent = String(savedInRegister);
+			if (savedOnlyInput) values.savedOnly = savedOnlyInput.checked;
+			const visible: HTMLElement[] = [];
 			for (const card of cards) {
 				const match = (!values.zone || card.dataset.zone === values.zone)
 					&& (!values.minSqft || Number(card.dataset.sqft) >= values.minSqft)
 					&& (!values.minKva || Number(card.dataset.kva) >= values.minKva)
-					&& (!values.availability || card.dataset.availability === values.availability);
+					&& (!values.availability || card.dataset.availability === values.availability)
+					&& (!values.savedOnly || saved.has(card.dataset.href ?? ''));
 				card.hidden = !match;
-				if (match) matches += 1;
+				if (match) visible.push(card);
 			}
-			const active = Boolean(values.zone || values.minSqft || values.minKva || values.availability);
-			if (count) count.textContent = `${matches} of ${cards.length} published listing${cards.length === 1 ? '' : 's'}`;
-			if (status) status.textContent = active ? `${matches} match${matches === 1 ? '' : 'es'}` : `${cards.length} record${cards.length === 1 ? '' : 's'}`;
-			if (empty) empty.hidden = !active || matches > 0;
+			reorder(visible);
+			const active = Boolean(values.zone || values.minSqft || values.minKva || values.availability || values.savedOnly);
+			if (count) count.textContent = `${visible.length} of ${cards.length} published listing${cards.length === 1 ? '' : 's'}`;
+			if (status) status.textContent = active ? `${visible.length} match${visible.length === 1 ? '' : 'es'}` : `${cards.length} record${cards.length === 1 ? '' : 's'}`;
+			if (empty) empty.hidden = !active || visible.length > 0;
 		};
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
@@ -283,11 +334,19 @@ const availabilityOptions = [
 			for (const [key, value] of new FormData(form).entries()) {
 				if (typeof value === 'string' && value) next.set(key, value);
 			}
+			if (sortField && sortField.value !== 'featured') next.set('sort', sortField.value);
 			window.history.pushState({}, '', `${window.location.pathname}${next.toString() ? `?${next}` : ''}`);
 			values.zone = next.get('zone') ?? '';
 			values.minSqft = Number(next.get('minSqft') ?? 0);
 			values.minKva = Number(next.get('minKva') ?? 0);
 			values.availability = next.get('availability') ?? '';
+			values.sort = next.get('sort') ?? 'featured';
+			apply();
+		});
+		savedOnlyInput?.addEventListener('change', apply);
+		document.addEventListener('eens:saved-change', apply);
+		sortField?.addEventListener('change', () => {
+			values.sort = (sortField as HTMLSelectElement).value;
 			apply();
 		});
 		window.addEventListener('popstate', () => window.location.reload());
