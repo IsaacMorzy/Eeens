@@ -158,6 +158,7 @@ const menuGroups: MenuGroup[] = [
 		</a>
 
 		<div class="flex items-center gap-2">
+			<a href="/saved" aria-current={isCurrentPath(Astro.url.pathname, '/saved') ? 'page' : undefined} class="hidden min-h-10 items-center gap-1.5 rounded-md px-3 text-sm text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex"><Icon name="heart" class="size-3.5" /><span>Saved</span></a>
 			<a href={loginHref} class="hidden min-h-10 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-[background-color,color] hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex">Login</a>
 			<a href={viewingHref} class="hidden h-10 items-center gap-1.5 rounded-md border border-primary px-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 lg:inline-flex">
 				<Icon name="calendar" class="size-3.5" />
@@ -206,9 +207,9 @@ const menuGroups: MenuGroup[] = [
 						</div>
 					</details>
 				))}
-			</div>
-			<div class="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-4">
+			</div>				<div class="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-4">
 				<div class="flex items-center gap-2">
+					<a href="/saved" class="inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="heart" class="size-4" /><span>Saved</span></a>
 					<a href={loginHref} class="inline-flex h-10 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Login</a>
 					{contactLinks.map((link) => (
 						<IconLink title={link.title} link={link.link} icon={link.icon} data-tina-field={tinaField(link, 'title')} />

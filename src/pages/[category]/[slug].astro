@@ -13,8 +13,9 @@ import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import { tinaField } from '@tinacms/astro/tina-field';
 import { contactEmail, getConfig, getProperty, listProperties, type PropertyNode } from '../../lib/data';
 import { stableStringify } from '../../lib/cache-key';
-import { getIllustrationSrc } from '../../lib/property-filters';
+import { firstInteger, getIllustrationSrc } from '../../lib/property-filters';
 import { isPublicProperty } from '../../lib/property-visibility';
+import { zoneMapBrowseUrl, zoneMapEmbedUrl } from '../../lib/zone-coordinates';
 import { DIRECTORY_DEFINITIONS, type DirectoryKey } from '../../lib/property-directories';
 import { getPexelsSource } from '../../lib/pexels-images';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
@@ -56,12 +57,44 @@ const subject = encodeURIComponent(`Schedule a viewing - ${property.reference ??
 const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 const availability = property.availability as Availability | undefined;
 const isApartment = property.type === 'APARTMENT';
+const mapEmbedUrl = zoneMapEmbedUrl(property.zone);
+const mapBrowseUrl = zoneMapBrowseUrl(property.zone);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const priceValue = firstInteger(property.price?.ksh);
+const listingJson = {
+	'@context': 'https://schema.org',
+	'@type': 'RealEstateListing',
+	name: property.title,
+	description: property.address ?? definition.description,
+	url: canonicalUrl,
+	...(heroSrc ? { image: new URL(heroSrc, Astro.url).toString() } : {}),
+	...(property.publishedDate ? { datePosted: property.publishedDate } : {}),
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: property.address,
+		addressLocality: property.zone,
+	},
+	...(priceValue > 0
+		? {
+				offers: {
+					'@type': 'Offer',
+					price: priceValue,
+					priceCurrency: 'KES',
+					availability: availability === 'Upcoming'
+						? 'https://schema.org/PreOrder'
+						: 'https://schema.org/InStock',
+				},
+			}
+		: {}),
+};
 ---
 
 <Base
 	title={`${property.title ?? definition.label} | Eens Business Park`}
 	description={property.address ?? definition.description}
 >
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(listingJson)}></script>
+
 	<Section class="bg-background pt-8 md:pt-12">
 		<div class="mx-auto max-w-6xl">
 			<nav aria-label="Breadcrumb" class="mb-8 flex flex-wrap items-center gap-2 font-mono text-[12px] text-muted-foreground">
@@ -102,7 +135,17 @@ const isApartment = property.type === 'APARTMENT';
 				</aside>
 			</div>
 
-			{heroSrc && <div class="full-bleed-media relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[21/9] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 rounded-sm bg-background/90 px-1.5 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
+			{heroSrc && <div class="full-bleed-media relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[21/9] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
+
+			{mapEmbedUrl && (
+				<div class="mt-4 overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
+					<iframe src={mapEmbedUrl} title={`Area map - ${property.zone}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block h-64 w-full border-0"></iframe>
+					<div class="flex flex-wrap items-center justify-between gap-3 border-t border-hairline-steel/60 bg-background px-3 py-2">
+						<span class="font-mono text-[11px] text-muted-foreground">Area reference - {property.zone} (not to scale)</span>
+						{mapBrowseUrl && <a href={mapBrowseUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-8 items-center gap-1 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Open in OpenStreetMap <Icon name="external-link" class="size-3.5" /></a>}
+					</div>
+				</div>
+			)}
 
 			{(property.gallery?.filter((item) => item?.src)?.length ?? 0) > 0 && (
 				<div data-tina-field={tinaField(property as Record<string, unknown>, 'gallery')} class="mt-4 grid grid-cols-4 gap-2 sm:gap-3">
