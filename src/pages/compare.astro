@@ -1,0 +1,213 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/ui/Section.astro';
+import Button from '../components/ui/Button.astro';
+import { listProperties, type PropertyNode } from '../lib/data';
+import { isPublicProperty } from '../lib/property-visibility';
+import { getIllustrationSrc } from '../lib/property-filters';
+import { DIRECTORY_DEFINITIONS, directoryKeyForType } from '../lib/property-directories';
+
+const properties: PropertyNode[] = (await listProperties()).filter(isPublicProperty);
+
+const typeLabelFor = (type: string | null | undefined): string | null => {
+	const key = directoryKeyForType(type);
+	return key ? DIRECTORY_DEFINITIONS[key].label : null;
+};
+
+const compareData = properties
+	.map((property) => {
+		const directory = directoryKeyForType(property.type);
+		const href = directory && property._sys?.filename ? `/${directory}/${property._sys.filename}` : null;
+		if (!href) return null;
+		return {
+			href,
+			title: property.title ?? null,
+			address: property.address ?? null,
+			zone: property.zone ?? null,
+			sqft: property.sqft ?? null,
+			price: property.price?.ksh ?? null,
+			perSqft: property.price?.perSqft ?? null,
+			availability: property.availability ?? null,
+			leaseTerm: property.leaseTerm ?? null,
+			bedrooms: property.bedrooms ?? null,
+			bathrooms: property.bathrooms ?? null,
+			reference: property.reference ?? null,
+			typeLabel: typeLabelFor(property.type),
+			image: property.heroImage?.src ?? getIllustrationSrc(property.type),
+			specSheet: {
+				power: property.specSheet?.power ?? null,
+				water: property.specSheet?.water ?? null,
+				parking: property.specSheet?.parking ?? null,
+				floorLoading: property.specSheet?.floorLoading ?? null,
+				clearHeight: property.specSheet?.clearHeight ?? null,
+			},
+		};
+	})
+	.filter((item): item is NonNullable<typeof item> => item !== null);
+
+const compareJson = JSON.stringify(compareData).replace(/</g, '\\u003c');
+---
+
+<Base
+	title="Compare listings | Eens Business Park"
+	description="Compare the published address, area, price, availability, specifications, and terms of up to three listings side by side."
+>
+	<script is:inline type="application/json" id="compare-data" set:html={compareJson}></script>
+
+	<Section class="bg-background">
+		<div class="mx-auto max-w-5xl">
+			<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">Comparison</span>
+			<h1 class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-6xl md:tracking-[-1.8px]">Compare listings.</h1>
+			<p class="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
+				Compare the same published facts that appear on each listing: address, area, price, availability, specifications, and terms. Up to three listings, side by side.
+			</p>
+			<p data-compare-status class="mt-4 font-mono text-[13px] text-muted-foreground">0 selected</p>
+		</div>
+	</Section>
+
+	<Section class="bg-secondary">
+		<div class="mx-auto max-w-7xl">
+			<div data-compare-empty class="relative max-w-2xl overflow-hidden rounded-xl border border-hairline-steel border-l-4 border-l-primary bg-background p-6 sm:p-8">
+				<p class="font-mono text-[12px] text-primary">Comparison register</p>
+				<h2 class="mt-3 font-display text-2xl font-medium tracking-[-0.4px]">Pick two or three listings to compare.</h2>
+				<p class="mt-3 text-muted-foreground">Use the compare button (the branching icon) on any listing card to add it here. Comparison is kept in this browser.</p>
+				<div class="mt-6 flex flex-wrap gap-3">
+					<Button href="/warehouses" size="lg">Browse warehouses</Button>
+					<Button href="/locations" variant="secondary" size="lg">Browse locations</Button>
+				</div>
+			</div>
+
+			<div data-compare-table-wrap hidden>
+				<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+					<p class="font-mono text-[13px] text-muted-foreground">Facts are read from the published listing register. Missing values are omitted, not invented.</p>
+					<Button data-compare-clear variant="secondary" size="sm">Clear comparison</Button>
+				</div>
+				<div class="overflow-x-auto rounded-xl border border-hairline-steel bg-background">
+					<table data-compare-table class="w-full min-w-max border-collapse text-left text-sm"></table>
+				</div>
+			</div>
+		</div>
+	</Section>
+</Base>
+
+<script>
+	import { clearCompare, loadCompareHrefs } from '../lib/compare-listings';
+
+	const raw = document.getElementById('compare-data')?.textContent ?? '[]';
+	const data = JSON.parse(raw) as Array<{
+		href: string;
+		title: string | null;
+		address: string | null;
+		zone: string | null;
+		sqft: string | null;
+		price: string | null;
+		perSqft: string | null;
+		availability: string | null;
+		leaseTerm: string | null;
+		bedrooms: number | null;
+		bathrooms: number | null;
+		reference: string | null;
+		typeLabel: string | null;
+		image: string | null;
+		specSheet: {
+			power: string | null;
+			water: string | null;
+			parking: number | null;
+			floorLoading: string | null;
+			clearHeight: string | null;
+		};
+	}>;
+
+	const statusEl = document.querySelector<HTMLElement>('[data-compare-status]');
+	const emptyEl = document.querySelector<HTMLElement>('[data-compare-empty]');
+	const wrapEl = document.querySelector<HTMLElement>('[data-compare-table-wrap]');
+	const tableEl = document.querySelector<HTMLTableElement>('[data-compare-table]');
+	const clearBtn = document.querySelector<HTMLButtonElement>('[data-compare-clear]');
+
+	const fmt = (value: string | number | null | undefined): string =>
+		value === null || value === undefined || value === '' ? '' : String(value);
+
+	const ROWS: Array<{ label: string; get: (d: (typeof data)[number]) => string }> = [
+		{ label: 'Address', get: (d) => fmt(d.address) },
+		{ label: 'Zone', get: (d) => fmt(d.zone) },
+		{ label: 'Type', get: (d) => fmt(d.typeLabel) },
+		{ label: 'Availability', get: (d) => fmt(d.availability) },
+		{ label: 'Area', get: (d) => fmt(d.sqft) },
+		{ label: 'Price / rate', get: (d) => (d.price ? `KSH ${d.price}` : '') },
+		{ label: 'Per sq ft', get: (d) => (d.perSqft ? `KSH ${d.perSqft}` : '') },
+		{ label: 'Lease term', get: (d) => fmt(d.leaseTerm) },
+		{ label: 'Bedrooms', get: (d) => fmt(d.bedrooms) },
+		{ label: 'Bathrooms', get: (d) => fmt(d.bathrooms) },
+		{ label: 'Power', get: (d) => (d.specSheet.power ? `${d.specSheet.power} kVA` : '') },
+		{ label: 'Water', get: (d) => (d.specSheet.water ? `${d.specSheet.water} m³/day` : '') },
+		{ label: 'Parking bays', get: (d) => fmt(d.specSheet.parking) },
+		{ label: 'Floor loading', get: (d) => (d.specSheet.floorLoading ? `${d.specSheet.floorLoading} kN/m²` : '') },
+		{ label: 'Clear height', get: (d) => (d.specSheet.clearHeight ? `${d.specSheet.clearHeight} m` : '') },
+		{ label: 'Reference', get: (d) => fmt(d.reference) },
+	];
+
+	const render = () => {
+		const hrefs = [...loadCompareHrefs()];
+		const selected = hrefs
+			.map((href) => data.find((item) => item.href === href))
+			.filter((item): item is NonNullable<typeof item> => Boolean(item));
+		const count = selected.length;
+
+		if (statusEl) statusEl.textContent = `${count} selected`;
+		if (emptyEl) emptyEl.hidden = count >= 2;
+		if (wrapEl) wrapEl.hidden = count < 2;
+		if (!tableEl) return;
+		tableEl.innerHTML = '';
+
+		if (count < 2) return;
+
+		const head = document.createElement('thead');
+		const headRow = document.createElement('tr');
+		const labelTh = document.createElement('th');
+		labelTh.className = 'sticky left-0 bg-background px-4 py-3 align-bottom font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground';
+		labelTh.textContent = 'Fact';
+		headRow.append(labelTh);
+		for (const item of selected) {
+			const th = document.createElement('th');
+			th.className = 'min-w-56 px-4 py-3 align-bottom';
+			th.innerHTML = `
+				${item.image ? `<a href="${item.href}" class="block overflow-hidden rounded-lg border border-hairline-steel"><img src="${item.image}" alt="${item.title ?? ''}" loading="lazy" class="aspect-[16/9] w-full object-cover" /></a>` : ''}
+				<a href="${item.href}" class="mt-2 block font-display text-base font-semibold leading-snug tracking-[-0.3px] text-foreground hover:text-primary-hover">${item.title ?? ''}</a>
+				${item.price ? `<div class="mt-1 font-mono text-[13px] tabular-nums text-primary">KSH ${item.price}</div>` : ''}
+			`;
+			headRow.append(th);
+		}
+		head.append(headRow);
+		tableEl.append(head);
+
+		const body = document.createElement('tbody');
+		for (const row of ROWS) {
+			const values = selected.map((item) => row.get(item));
+			if (values.every((value) => !value)) continue;
+			const tr = document.createElement('tr');
+			tr.className = 'border-t border-hairline-steel/50';
+			const th = document.createElement('th');
+			th.className = 'sticky left-0 bg-background px-4 py-3 text-left align-top font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground';
+			th.textContent = row.label;
+			tr.append(th);
+			for (const value of values) {
+				const td = document.createElement('td');
+				td.className = 'px-4 py-3 align-top text-foreground';
+				td.textContent = value;
+				tr.append(td);
+			}
+			body.append(tr);
+		}
+		tableEl.append(body);
+	};
+
+	clearBtn?.addEventListener('click', () => {
+		clearCompare();
+		render();
+		document.dispatchEvent(new CustomEvent('eens:compare-change'));
+	});
+
+	document.addEventListener('eens:compare-change', render);
+	document.addEventListener('DOMContentLoaded', render);
+	render();
+</script>

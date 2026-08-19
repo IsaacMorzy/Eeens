@@ -127,6 +127,19 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 					<Icon name="heart" class="size-4" />
 				</button>
 			)}
+			{viewHref && (
+				<button
+					type="button"
+					data-compare-toggle
+					data-compare-href={viewHref}
+					aria-pressed="false"
+					aria-label={`Add ${data.title ?? 'listing'} to comparison`}
+					title="Add to comparison (up to 3)"
+					class="absolute left-2 top-11 inline-flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground/60 transition-[color,background-color,border-color] hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&.compare-active]:border [&.compare-active]:border-primary [&.compare-active]:text-primary"
+				>
+					<Icon name="git-compare" class="size-4" />
+				</button>
+			)}
 			{data.availability && (
 				<div class="absolute right-2 top-2 rounded-full bg-background/90 p-0.5">
 					<AvailabilityBadge availability={data.availability} />
@@ -221,8 +234,9 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 
 <script>
 	import { loadSavedHrefs, toggleSaved } from '../../lib/saved-listings';
+	import { loadCompareHrefs, toggleCompare } from '../../lib/compare-listings';
 
-	const render = () => {
+	const renderSaved = () => {
 		const saved = loadSavedHrefs();
 		for (const button of document.querySelectorAll<HTMLButtonElement>('[data-save-toggle]')) {
 			const active = saved.has(button.dataset.saveHref ?? '');
@@ -232,15 +246,35 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 		}
 	};
 
+	const renderCompare = () => {
+		const compare = loadCompareHrefs();
+		for (const button of document.querySelectorAll<HTMLButtonElement>('[data-compare-toggle]')) {
+			const active = compare.has(button.dataset.compareHref ?? '');
+			button.setAttribute('aria-pressed', String(active));
+			button.classList.toggle('compare-active', active);
+			button.setAttribute('aria-label', active ? 'Remove from comparison' : 'Add to comparison');
+		}
+	};
+
 	document.addEventListener('click', (event) => {
 		const target = event.target as HTMLElement | null;
-		const button = target?.closest<HTMLButtonElement>('[data-save-toggle]');
-		if (!button || !button.dataset.saveHref) return;
-		event.preventDefault();
-		toggleSaved(button.dataset.saveHref);
-		render();
-		document.dispatchEvent(new CustomEvent('eens:saved-change'));
+		const saveButton = target?.closest<HTMLButtonElement>('[data-save-toggle]');
+		if (saveButton?.dataset.saveHref) {
+			event.preventDefault();
+			toggleSaved(saveButton.dataset.saveHref);
+			renderSaved();
+			document.dispatchEvent(new CustomEvent('eens:saved-change'));
+			return;
+		}
+		const compareButton = target?.closest<HTMLButtonElement>('[data-compare-toggle]');
+		if (compareButton?.dataset.compareHref) {
+			event.preventDefault();
+			toggleCompare(compareButton.dataset.compareHref);
+			renderCompare();
+			document.dispatchEvent(new CustomEvent('eens:compare-change'));
+		}
 	});
 
-	render();
+	renderSaved();
+	renderCompare();
 </script>

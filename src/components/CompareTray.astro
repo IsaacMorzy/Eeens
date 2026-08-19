@@ -1,0 +1,63 @@
+---
+import Icon from './ui/Icon.astro';
+---
+
+<div
+	id="compare-tray"
+	hidden
+	class="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full border border-hairline-steel/60 bg-canvas-dark py-1.5 pl-3 pr-1.5 text-ink-dark shadow-lg shadow-canvas-dark/20"
+>
+	<Icon name="git-compare" class="size-4 text-primary-dark" />
+	<span data-compare-count class="font-mono text-[13px] font-medium tabular-nums text-ink-dark">0</span>
+	<span data-compare-hint class="text-[13px] text-ink-dark/70">selected</span>
+	<a
+		href="/compare"
+		data-compare-link
+		class="inline-flex min-h-8 items-center rounded-full bg-action px-3 text-[13px] font-medium text-action-foreground transition-[background-color] hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+	>
+		Compare listings
+	</a>
+	<button
+		type="button"
+		data-compare-clear
+		aria-label="Clear comparison"
+		class="inline-flex size-8 items-center justify-center rounded-full text-ink-dark/60 transition-[color,background-color] hover:bg-ink-dark/10 hover:text-ink-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+	>
+		<Icon name="x" class="size-4" />
+	</button>
+</div>
+
+<script>
+	import { clearCompare, loadCompareHrefs } from '../lib/compare-listings';
+
+	const tray = document.getElementById('compare-tray');
+	const countEl = tray?.querySelector('[data-compare-count]');
+	const hintEl = tray?.querySelector('[data-compare-hint]');
+	const linkEl = tray?.querySelector<HTMLAnchorElement>('[data-compare-link]');
+	const clearBtn = tray?.querySelector<HTMLButtonElement>('[data-compare-clear]');
+
+	const render = () => {
+		const hrefs = loadCompareHrefs();
+		const count = hrefs.size;
+		if (tray) tray.hidden = count === 0;
+		if (countEl) countEl.textContent = String(count);
+		if (hintEl) hintEl.textContent = count === 1 ? 'selected — pick one more' : 'selected';
+		if (linkEl) {
+			const ready = count >= 2;
+			linkEl.setAttribute('aria-disabled', String(!ready));
+			linkEl.classList.toggle('pointer-events-none', !ready);
+			linkEl.classList.toggle('opacity-50', !ready);
+			linkEl.textContent = ready ? 'Compare listings' : 'Add another';
+		}
+	};
+
+	clearBtn?.addEventListener('click', () => {
+		clearCompare();
+		render();
+		document.dispatchEvent(new CustomEvent('eens:compare-change'));
+	});
+
+	document.addEventListener('eens:compare-change', render);
+	document.addEventListener('DOMContentLoaded', render);
+	render();
+</script>

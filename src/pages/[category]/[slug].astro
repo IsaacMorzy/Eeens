@@ -92,6 +92,7 @@ const listingJson = {
 <Base
 	title={`${property.title ?? definition.label} | Eens Business Park`}
 	description={property.address ?? definition.description}
+	image={heroSrc ?? undefined}
 >
 	<script is:inline type="application/ld+json" set:html={JSON.stringify(listingJson)}></script>
 
