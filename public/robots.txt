@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://vmi3416692.tailc65d30.ts.net:10000/sitemap-index.xml

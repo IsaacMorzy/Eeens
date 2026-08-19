@@ -1,0 +1,15 @@
+# Eens Business Park
+
+> Industrial units and 3-bedroom apartments across Mlolongo, Syokimau, Baba Dogo, and Thika. Every listing publishes its address, total area, KSH price or rate, availability, specifications, and terms before a viewing.
+
+- [Home](https://vmi3416692.tailc65d30.ts.net:10000/): Overview of the property register and its search.
+- [Shop units](https://vmi3416692.tailc65d30.ts.net:10000/shops): Published retail and commercial space inside Eens Business Park, Syokimau.
+- [Warehouses](https://vmi3416692.tailc65d30.ts.net:10000/warehouses): Industrial space with published power, water, floor loading, clear height, and parking.
+- [Godowns](https://vmi3416692.tailc65d30.ts.net:10000/godowns): Storage and distribution space in Mlolongo and Syokimau.
+- [Apartments](https://vmi3416692.tailc65d30.ts.net:10000/apartments): 3-bedroom strata apartments for sale in Flame Tree Park Estate, Thika.
+- [Eens Business Park](https://vmi3416692.tailc65d30.ts.net:10000/business-parks/eens): Named park overview and published shop register in Syokimau.
+- [Locations](https://vmi3416692.tailc65d30.ts.net:10000/locations): Operating context for Mlolongo, Syokimau, Baba Dogo, and Thika.
+- [Lease terms](https://vmi3416692.tailc65d30.ts.net:10000/lease-terms): Published industrial lease terms, residential sale terms, and what is negotiated per tenant.
+- [About](https://vmi3416692.tailc65d30.ts.net:10000/about): How a listing gets published and the operator's footprint.
+- [Contact](https://vmi3416692.tailc65d30.ts.net:10000/contact): Office details and the viewing-request route.
+- [News](https://vmi3416692.tailc65d30.ts.net:10000/blog): Practical notes on reading spec sheets, the corridors, and leasing.
