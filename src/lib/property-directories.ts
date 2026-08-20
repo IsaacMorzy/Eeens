@@ -1,4 +1,5 @@
 import type { PropertyNode } from './data';
+import { isPublicProperty } from './property-visibility';
 
 export type DirectoryKey = 'shops' | 'warehouses' | 'godowns' | 'business-parks' | 'apartments';
 
@@ -97,3 +98,14 @@ export const filterZoneProperties = (
 	properties: readonly PropertyNode[],
 	zone: string,
 ): PropertyNode[] => properties.filter((property) => property.zone === zone);
+
+export const getPublishedSubunits = (
+	property: PropertyNode,
+	properties: readonly PropertyNode[],
+): PropertyNode[] =>
+	(property.subunits ?? []).flatMap((slug) => {
+		const subunit = properties.find(
+			(item) => item._sys?.filename === slug && item.type === property.type && isPublicProperty(item),
+		);
+		return subunit ? [subunit] : [];
+	});

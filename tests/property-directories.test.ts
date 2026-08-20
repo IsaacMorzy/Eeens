@@ -6,6 +6,7 @@ import {
 	filterDirectoryProperties,
 	filterParkProperties,
 	filterZoneProperties,
+	getPublishedSubunits,
 } from '../src/lib/property-directories';
 import type { PropertyNode } from '../src/lib/data';
 
@@ -76,5 +77,16 @@ describe('property directories', () => {
 		];
 
 		expect(properties.filter((item) => item.type === 'WAREHOUSE' && item.development !== 'Eens Business Park').map((item) => item.title)).toEqual(['Other warehouse']);
+	});
+
+	it('resolves declared published subunits in their configured order', () => {
+		const parent = { ...property('WAREHOUSE', 'Mlolongo warehouse'), subunits: ['unit-02', 'unit-01', 'unpublished'] };
+		const properties = [
+			{ ...property('WAREHOUSE', 'Unit 01'), _sys: { filename: 'unit-01' } },
+			{ ...property('WAREHOUSE', 'Unit 02'), _sys: { filename: 'unit-02' } },
+			{ ...property('WAREHOUSE', 'Unpublished'), occupancyState: 'unpublished', _sys: { filename: 'unpublished' } },
+		];
+
+		expect(getPublishedSubunits(parent, properties).map((item) => item.title)).toEqual(['Unit 02', 'Unit 01']);
 	});
 });

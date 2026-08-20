@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
@@ -19,6 +20,7 @@ export default defineConfig({
 	// sitemap and canonical tags must match the origin the browser actually hits.
 	site: process.env.SITE_URL || 'https://vmi3416692.tailc65d30.ts.net:10000',
 	output: 'static',
+	adapter: vercel(),
 	// Astro 7.2: this site has no session state, so keep the session runtime
 	// out of adapter output and reuse unchanged prerendered pages.
 	session: false,

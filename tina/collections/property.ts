@@ -80,6 +80,13 @@ export const PropertyCollection: Collection = {
 			description: 'Select only when an operator-approved record identifies the named development or park. Leave blank when compound membership is unknown.',
 		},
 		{
+			name: 'subunits',
+			label: 'Published subunits (optional)',
+			type: 'string',
+			list: true,
+			description: 'Add the checked-in filename slug for each published subunit. Each slug must point to an existing property record of the same type.',
+		},
+		{
 			name: 'buildingFeatures',
 			label: 'Approved amenities / features',
 			type: 'string',

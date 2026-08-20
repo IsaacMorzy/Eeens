@@ -1,10 +1,6 @@
-import type { APIRoute } from 'astro';
+import { experimental_createIslandRoute } from '@tinacms/astro/experimental';
+import { islands } from '../../lib/islands';
 
-export const prerender = true;
+export const prerender = false;
 
-export function getStaticPaths() {
-	return [];
-}
-
-export const ALL: APIRoute = () =>
-	new Response('Not Found', { status: 404 });
+export const ALL = experimental_createIslandRoute(islands);

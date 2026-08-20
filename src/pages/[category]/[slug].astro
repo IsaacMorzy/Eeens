@@ -15,8 +15,8 @@ import { contactEmail, getConfig, getProperty, listProperties, type PropertyNode
 import { stableStringify } from '../../lib/cache-key';
 import { firstInteger, getIllustrationSrc } from '../../lib/property-filters';
 import { isPublicProperty } from '../../lib/property-visibility';
-import { zoneMapBrowseUrl, zoneMapEmbedUrl } from '../../lib/zone-coordinates';
-import { DIRECTORY_DEFINITIONS, type DirectoryKey } from '../../lib/property-directories';
+import { googleMapsDirectionsUrl } from '../../lib/google-maps';
+import { DIRECTORY_DEFINITIONS, getPublishedSubunits, directoryHrefForType, type DirectoryKey } from '../../lib/property-directories';
 import { getPexelsSource } from '../../lib/pexels-images';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 
@@ -46,19 +46,18 @@ if (!property || !isPublicProperty(property) || property.type !== definition.typ
 
 const config = (await getConfig()).data?.config ?? null;
 const properties = await listProperties();
+const subunits = getPublishedSubunits(property, properties);
 const related = properties
 	.filter((item) => item.type === property.type && item._sys?.filename !== slug)
 	.slice(0, 3);
 const heroSrc = property.heroImage?.src ?? getIllustrationSrc(property.type);
 const heroAlt = property.heroImage?.alt ?? property.title ?? '';
 const heroSource = getPexelsSource(heroSrc);
-const mapHref = `https://www.google.com/maps/search/${encodeURIComponent(property.address ?? property.zone ?? '')}`;
+const mapHref = googleMapsDirectionsUrl(property.address ?? property.zone);
 const subject = encodeURIComponent(`Schedule a viewing - ${property.reference ?? property.title ?? 'listing'}`);
 const viewingHref = `mailto:${contactEmail(config)}?subject=${subject}`;
 const availability = property.availability as Availability | undefined;
 const isApartment = property.type === 'APARTMENT';
-const mapEmbedUrl = zoneMapEmbedUrl(property.zone);
-const mapBrowseUrl = zoneMapBrowseUrl(property.zone);
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const whatsappMessage = [
 	`Eens Business Park — ${property.title ?? definition.label}`,
@@ -117,12 +116,12 @@ const listingJson = {
 					<h1 data-tina-field={tinaField(property as Record<string, unknown>, 'title')} class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-5xl md:tracking-[-1.4px]">{property.title}</h1>
 					<div class="mt-5 flex flex-wrap items-center gap-3">
 						{property.sqft && <span data-tina-field={tinaField(property as Record<string, unknown>, 'sqft')} class="font-mono text-[13px] text-foreground/80">{property.sqft}</span>}
-						{property.zone && <LocationPin zone={property.zone} mapHref={mapHref} />}
+						{property.zone && <LocationPin zone={property.zone} mapHref={mapHref ?? undefined} />}
 						{availability && <AvailabilityBadge availability={availability} />}
 						{property.reference && <span class="font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">{property.reference}</span>}
 					</div>
 					{property.address && <p data-tina-field={tinaField(property as Record<string, unknown>, 'address')} class="mt-5 max-w-2xl text-pretty text-base text-muted-foreground">{property.address}</p>}
-					{property.address && <a href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(property.address)}`} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="map" class="size-4" /><span>View area map</span><Icon name="external-link" class="size-3.5 opacity-70" /></a>}
+					{mapHref && <a href={mapHref} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="map" class="size-4" /><span>Get directions in Google Maps</span><Icon name="external-link" class="size-3.5 opacity-70" /></a>}
 					{(property.bedrooms || property.bathrooms) && <div class="mt-5 flex flex-wrap gap-2 font-mono text-[13px] text-foreground/80">{property.bedrooms && <span>{property.bedrooms} bedrooms</span>}{property.bedrooms && property.bathrooms && <span aria-hidden="true">·</span>}{property.bathrooms && <span>{property.bathrooms} bathrooms</span>}</div>}
 				</div>
 
@@ -146,16 +145,6 @@ const listingJson = {
 
 			{heroSrc && <div class="full-bleed-media relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[21/9] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
 
-			{mapEmbedUrl && (
-				<div class="mt-4 overflow-hidden rounded-xl border border-hairline-steel bg-secondary">
-					<iframe src={mapEmbedUrl} title={`Area map - ${property.zone}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="block h-64 w-full border-0"></iframe>
-					<div class="flex flex-wrap items-center justify-between gap-3 border-t border-hairline-steel/60 bg-background px-3 py-2">
-						<span class="font-mono text-[11px] text-muted-foreground">Area reference - {property.zone} (not to scale)</span>
-						{mapBrowseUrl && <a href={mapBrowseUrl} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-8 items-center gap-1 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Open in OpenStreetMap <Icon name="external-link" class="size-3.5" /></a>}
-					</div>
-				</div>
-			)}
-
 			{(property.gallery?.filter((item) => item?.src)?.length ?? 0) > 0 && (
 				<div data-tina-field={tinaField(property as Record<string, unknown>, 'gallery')} class="mt-4 grid grid-cols-4 gap-2 sm:gap-3">
 					{property.gallery?.filter((item): item is { src: string; alt?: string | null } => Boolean(item?.src)).map((item) => (
@@ -167,6 +156,8 @@ const listingJson = {
 			)}
 		</div>
 	</Section>
+
+	{subunits.length > 0 && <Section class="bg-secondary"><div class="mx-auto max-w-7xl"><div><span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">Units at this location</span><h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.4px]">Published subunits</h2><p class="mt-3 max-w-2xl text-muted-foreground">Open a unit record for its area, price, availability, and viewing details.</p></div><div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{subunits.map((item) => <PropertyCardFeatured data={{ type: item.type ?? null, title: item.title ?? null, availability: (item.availability as Availability | undefined) ?? null, address: item.address ?? null, development: item.development ?? null, sqft: item.sqft ?? null, price: item.price ?? null, zone: item.zone ?? null, leaseTerm: item.leaseTerm ?? null, image: item.heroImage ?? null, ref: item._sys?.filename ?? null, reference: item.reference ?? null, href: directoryHrefForType(item.type, item._sys?.filename), viewLabel: 'View unit' }} fallbackImageSrc={getIllustrationSrc(item.type)} />)}</div></div></Section>}
 
 	{property.specSheet && !isApartment && <Section class="bg-background"><div class="mx-auto max-w-6xl"><h2 class="font-display text-2xl font-semibold tracking-[-0.4px]">Published specifications</h2><dl class="mt-6 grid gap-px overflow-hidden rounded-xl border border-hairline-steel bg-hairline-steel sm:grid-cols-2 lg:grid-cols-3">{property.specSheet.power && <div class="flex flex-col justify-between gap-2 bg-background p-5"><dt class="font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Power</dt><dd class="font-display text-2xl font-medium tabular-nums tracking-[-0.4px]">{property.specSheet.power} kVA</dd></div>}{property.specSheet.water && <div class="flex flex-col justify-between gap-2 bg-background p-5"><dt class="font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Water</dt><dd class="font-display text-2xl font-medium tabular-nums tracking-[-0.4px]">{property.specSheet.water} m³/day</dd></div>}{property.specSheet.parking !== null && property.specSheet.parking !== undefined && <div class="flex flex-col justify-between gap-2 bg-background p-5"><dt class="font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Parking bays</dt><dd class="font-display text-2xl font-medium tabular-nums tracking-[-0.4px]">{property.specSheet.parking}</dd></div>}{property.specSheet.floorLoading && <div class="flex flex-col justify-between gap-2 bg-background p-5"><dt class="font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Floor loading</dt><dd class="font-display text-2xl font-medium tabular-nums tracking-[-0.4px]">{property.specSheet.floorLoading} kN/m²</dd></div>}{property.specSheet.clearHeight && <div class="flex flex-col justify-between gap-2 bg-background p-5"><dt class="font-mono text-[11px] uppercase tracking-[0.4px] text-muted-foreground">Clear height</dt><dd class="font-display text-2xl font-medium tabular-nums tracking-[-0.4px]">{property.specSheet.clearHeight} m</dd></div>}</dl></div></Section>}
 
