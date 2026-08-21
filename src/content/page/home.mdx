@@ -22,13 +22,17 @@ blocks:
     searchLabel: Search listings
     hint: 'Filters use published type, zone, and availability facts only.'
     _template: ListingSearch
-  - title: Eens Business Park in Syokimau.
-    description: "The named park on Mombasa Road, KM 11. Shop units inside the building are published progressively from verified operator records; warehouses and godowns at other locations are listed separately by type."
-    body: |
-      Eens Business Park sits at Quiver Mombasa Road, Syokimau-Mlolongo ward, Mavoko, Machakos County. The park page is the single overview for the building and its shop units.
-
-      [Open the park overview](/business-parks/eens). Then compare warehouse and godown space by location through their own directories.
-    _template: content
+  - title: Featured listings
+    description: 'Published spaces across the Eens register. Search above to narrow the results by type, zone, or availability.'
+    limit: 0
+    filterType: ALL
+    layout: grid
+    display: featured
+    actions:
+      - label: View all listings
+        type: button
+        link: /locations
+    _template: PropertyList
   - title: A property register built for decisions.
     description: 'Eens Business Park covers industrial leasing along the Mombasa Road corridor and 3-bedroom apartments in Thika.'
     body: |
@@ -47,17 +51,13 @@ blocks:
         type: link
         link: /apartments
     _template: split
-  - title: Current listings
-    description: 'Units and apartments currently published across the four operating zones.'
-    limit: 3
-    filterType: ALL
-    layout: grid
-    display: standard
-    actions:
-      - label: View all listings
-        type: button
-        link: /locations
-    _template: PropertyList
+  - title: Eens Business Park in Syokimau.
+    description: "The named park on Mombasa Road, KM 11. Shop units inside the building are published progressively from verified operator records; warehouses and godowns at other locations are listed separately by type."
+    body: |
+      Eens Business Park sits at Quiver Mombasa Road, Syokimau-Mlolongo ward, Mavoko, Machakos County. The park page is the single overview for the building and its shop units.
+
+      [Open the park overview](/business-parks/eens). Then compare warehouse and godown space by location through their own directories.
+    _template: content
   - title: Four zones. One clear standard.
     description: 'The same facts appear on every listing: where it is, what it measures, what it costs, and what happens next.'
     stats:

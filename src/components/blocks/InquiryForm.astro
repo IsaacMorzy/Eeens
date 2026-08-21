@@ -45,31 +45,36 @@ const formId = `inquiry-form-${reference ? 'listing' : 'page'}`;
 			</div>
 		</div>
 
-		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" data-inquiry-form data-mailto-recipient={contactEmail(config)} data-mailto-subject={reference ? `Viewing request - ${reference}` : 'Viewing request'} class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+			<div class="sr-only" aria-hidden="true">
+				<label for={`${formId}-website`}>Website</label>
+				<input id={`${formId}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
+			</div>
 			<div class="grid gap-5 sm:grid-cols-2">
 				<div class="grid gap-2">
 					<label for={`${formId}-name`} class="text-sm font-medium text-foreground">Full name</label>
-					<input id={`${formId}-name`} name="full_name" type="text" autocomplete="name" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id={`${formId}-name`} name="full_name" type="text" autocomplete="name" required minlength="2" maxlength="100" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for={`${formId}-email`} class="text-sm font-medium text-foreground">Email address</label>
-					<input id={`${formId}-email`} name="email" type="email" autocomplete="email" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id={`${formId}-email`} name="email" type="email" autocomplete="email" required maxlength="254" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for={`${formId}-phone`} class="text-sm font-medium text-foreground">Phone <span class="font-normal text-muted-foreground">(optional)</span></label>
-					<input id={`${formId}-phone`} name="phone" type="tel" autocomplete="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id={`${formId}-phone`} name="phone" type="tel" autocomplete="tel" maxlength="32" pattern="[0-9+()\s-]{7,32}" inputmode="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for={`${formId}-reference`} class="text-sm font-medium text-foreground">Listing reference</label>
-					<input id={`${formId}-reference`} name="listing_reference" type="text" value={reference ?? ''} readonly={Boolean(reference)} placeholder="e.g. EE-MLO-014" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id={`${formId}-reference`} name="listing_reference" type="text" value={reference ?? ''} readonly={Boolean(reference)} maxlength="80" placeholder="e.g. EE-MLO-014" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2 sm:col-span-2">
 					<label for={`${formId}-message`} class="text-sm font-medium text-foreground">Message</label>
-					<textarea id={`${formId}-message`} name="message" rows="5" required placeholder="Preferred viewing dates, requirements, and questions." class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
+					<textarea id={`${formId}-message`} name="message" rows="5" required minlength="10" maxlength="2000" placeholder="Preferred viewing dates, requirements, and questions." class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
 				</div>
 			</div>
 			<div class="mt-6 flex flex-col items-start gap-4 border-t border-hairline-steel/60 pt-5 sm:flex-row sm:items-center sm:justify-between">
 				{data.privacyNote && <p data-tina-field={tinaField(tinaData, 'privacyNote')} class="max-w-md text-xs leading-relaxed text-muted-foreground">{data.privacyNote}</p>}
+				<p data-form-status role="status" aria-live="polite" class="text-xs text-destructive"></p>
 				<Button type="submit" size="lg">
 					<Icon name="calendar" class="size-4" />
 					<span>{data.submitLabel || 'Request a viewing'}</span>
@@ -78,3 +83,33 @@ const formId = `inquiry-form-${reference ? 'listing' : 'page'}`;
 		</form>
 	</div>
 </Section>
+
+<script>
+	import { createMailtoHref } from '../../lib/mailto';
+
+	const form = document.querySelector<HTMLFormElement>('[data-inquiry-form]');
+	const honeypot = form?.querySelector<HTMLInputElement>('[name="website"]');
+	const status = form?.querySelector<HTMLElement>('[data-form-status]');
+
+	form?.addEventListener('submit', (event) => {
+		if (honeypot?.value.trim()) {
+			event.preventDefault();
+			if (status) status.textContent = 'This form could not be sent.';
+			return;
+		}
+		event.preventDefault();
+		const values = new FormData(form);
+		const fields = [
+			['Full name', String(values.get('full_name') ?? '')],
+			['Email address', String(values.get('email') ?? '')],
+			['Phone', String(values.get('phone') ?? '')],
+			['Listing reference', String(values.get('listing_reference') ?? '')],
+			['Message', String(values.get('message') ?? '')],
+		] as const;
+		window.location.assign(createMailtoHref(
+			form.dataset.mailtoRecipient ?? '',
+			form.dataset.mailtoSubject ?? 'Viewing request',
+			fields,
+		));
+	});
+</script>

@@ -110,29 +110,33 @@ const listingJson = {
 				<span aria-current="page" class="text-foreground">{property.reference ?? property.title}</span>
 			</nav>
 
-			<div class="grid gap-8 lg:grid-cols-[2fr_1fr]">
-				<div>
-					<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{definition.label}</span>
-					<h1 data-tina-field={tinaField(property as Record<string, unknown>, 'title')} class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-5xl md:tracking-[-1.4px]">{property.title}</h1>
-					<div class="mt-5 flex flex-wrap items-center gap-3">
-						{property.sqft && <span data-tina-field={tinaField(property as Record<string, unknown>, 'sqft')} class="font-mono text-[13px] text-foreground/80">{property.sqft}</span>}
-						{property.zone && <LocationPin zone={property.zone} mapHref={mapHref ?? undefined} />}
-						{availability && <AvailabilityBadge availability={availability} />}
-						{property.reference && <span class="font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">{property.reference}</span>}
-					</div>
-					{property.address && <p data-tina-field={tinaField(property as Record<string, unknown>, 'address')} class="mt-5 max-w-2xl text-pretty text-base text-muted-foreground">{property.address}</p>}
-					{mapHref && <a href={mapHref} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="map" class="size-4" /><span>Get directions in Google Maps</span><Icon name="external-link" class="size-3.5 opacity-70" /></a>}
-					{(property.bedrooms || property.bathrooms) && <div class="mt-5 flex flex-wrap gap-2 font-mono text-[13px] text-foreground/80">{property.bedrooms && <span>{property.bedrooms} bedrooms</span>}{property.bedrooms && property.bathrooms && <span aria-hidden="true">·</span>}{property.bathrooms && <span>{property.bathrooms} bathrooms</span>}</div>}
-				</div>
+			<div class="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)] lg:items-start">
+				{heroSrc && <div class="relative overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="(min-width: 1024px) 65vw, 100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[16/10] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
 
-				<aside class="flex flex-col gap-3 self-start rounded-xl border border-hairline-steel bg-background p-5">
-					<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">{isApartment ? 'Sale price' : 'Lease'}</div>
-					{property.price?.ksh && <div class="font-display text-2xl font-semibold leading-tight tracking-[-0.4px]">KSH {property.price.ksh}</div>}
-					{property.price?.perSqft && <div class="font-mono text-[13px] text-muted-foreground">KSH {property.price.perSqft} / sq ft</div>}
-					{property.leaseTerm && <div class="mt-1 text-sm">{property.leaseTerm}</div>}
-					<Button href={viewingHref} variant="action" size="lg" class="mt-3 w-full"><Icon name="calendar" class="size-4" /><span>Schedule a viewing</span></Button>
-					<a href={whatsappHref} target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-hairline-steel px-4 text-sm font-medium text-foreground transition-[border-color,color] hover:border-primary-hover hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="brand-whatsapp" class="size-4" /><span>Share on WhatsApp</span></a>
-				</aside>
+				<div class="flex flex-col gap-6">
+					<div>
+						<span class="text-[13px] font-medium uppercase tracking-[0.4px] text-primary">{definition.label}</span>
+						<h1 data-tina-field={tinaField(property as Record<string, unknown>, 'title')} class="mt-3 max-w-4xl text-balance font-display text-4xl font-semibold tracking-[-1px] md:text-5xl md:tracking-[-1.4px]">{property.title}</h1>
+						<div class="mt-5 flex flex-wrap items-center gap-3">
+							{property.sqft && <span data-tina-field={tinaField(property as Record<string, unknown>, 'sqft')} class="font-mono text-[13px] text-foreground/80">{property.sqft}</span>}
+							{property.zone && <LocationPin zone={property.zone} mapHref={mapHref ?? undefined} />}
+							{availability && <AvailabilityBadge availability={availability} />}
+							{property.reference && <span class="font-mono text-xs uppercase tracking-[0.4px] text-muted-foreground">{property.reference}</span>}
+						</div>
+						{property.address && <p data-tina-field={tinaField(property as Record<string, unknown>, 'address')} class="mt-5 max-w-2xl text-pretty text-base text-muted-foreground">{property.address}</p>}
+						{mapHref && <a href={mapHref} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="map" class="size-4" /><span>Get directions in Google Maps</span><Icon name="external-link" class="size-3.5 opacity-70" /></a>}
+						{(property.bedrooms || property.bathrooms) && <div class="mt-5 flex flex-wrap gap-2 font-mono text-[13px] text-foreground/80">{property.bedrooms && <span>{property.bedrooms} bedrooms</span>}{property.bedrooms && property.bathrooms && <span aria-hidden="true">·</span>}{property.bathrooms && <span>{property.bathrooms} bathrooms</span>}</div>}
+					</div>
+
+					<aside class="flex flex-col gap-3 rounded-xl border border-hairline-steel bg-background p-5">
+						<div class="font-mono text-[13px] uppercase tracking-[0.4px] text-muted-foreground">{isApartment ? 'Sale price' : 'Lease'}</div>
+						{property.price?.ksh && <div class="font-display text-2xl font-semibold leading-tight tracking-[-0.4px]">KSH {property.price.ksh}</div>}
+						{property.price?.perSqft && <div class="font-mono text-[13px] text-muted-foreground">KSH {property.price.perSqft} / sq ft</div>}
+						{property.leaseTerm && <div class="mt-1 text-sm">{property.leaseTerm}</div>}
+						<Button href={viewingHref} variant="action" size="lg" class="mt-3 w-full"><Icon name="calendar" class="size-4" /><span>Schedule a viewing</span></Button>
+						<a href={whatsappHref} target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-hairline-steel px-4 text-sm font-medium text-foreground transition-[border-color,color] hover:border-primary-hover hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"><Icon name="brand-whatsapp" class="size-4" /><span>Share on WhatsApp</span></a>
+					</aside>
+				</div>
 
 				<aside class="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-hairline-steel bg-background/95 px-4 py-3 backdrop-blur-sm md:hidden">
 					<div class="min-w-0">
@@ -142,8 +146,6 @@ const listingJson = {
 					<Button href={viewingHref} variant="action" size="sm" class="shrink-0"><Icon name="calendar" class="size-4" /><span>Schedule a viewing</span></Button>
 				</aside>
 			</div>
-
-			{heroSrc && <div class="full-bleed-media relative mt-10 overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[21/9] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
 
 			{(property.gallery?.filter((item) => item?.src)?.length ?? 0) > 0 && (
 				<div data-tina-field={tinaField(property as Record<string, unknown>, 'gallery')} class="mt-4 grid grid-cols-4 gap-2 sm:gap-3">

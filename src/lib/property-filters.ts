@@ -47,6 +47,41 @@ export const parseKva = (p: PropertyNode | null | undefined): number =>
 export const AVAILABILITY_OPTIONS = ['ForRent', 'ForSale', 'Upcoming'] as const;
 export type AvailabilityKey = (typeof AVAILABILITY_OPTIONS)[number];
 
+export const PROPERTY_TYPE_OPTIONS = ['SHOP', 'WAREHOUSE', 'GODOWN', 'BUSINESS_PARK', 'APARTMENT'] as const;
+export type PropertyTypeKey = (typeof PROPERTY_TYPE_OPTIONS)[number];
+
+export interface ListingSearchFilters {
+	type: PropertyTypeKey | null;
+	zone: string | null;
+	availability: AvailabilityKey | null;
+}
+
+export const parseListingSearchFilters = (
+	searchParams: URLSearchParams,
+	supportedZones: readonly string[],
+): ListingSearchFilters => {
+	const type = searchParams.get('type');
+	const zone = searchParams.get('zone');
+	const availability = searchParams.get('availability');
+	return {
+		type: type && (PROPERTY_TYPE_OPTIONS as readonly string[]).includes(type)
+			? (type as PropertyTypeKey)
+			: null,
+		zone: zone && supportedZones.includes(zone) ? zone : null,
+		availability: availability && (AVAILABILITY_OPTIONS as readonly string[]).includes(availability)
+			? (availability as AvailabilityKey)
+			: null,
+	};
+};
+
+export const matchesListingSearch = (
+	property: PropertyNode,
+	filters: ListingSearchFilters,
+): boolean =>
+	(!filters.type || property.type === filters.type)
+	&& (!filters.zone || property.zone === filters.zone)
+	&& (!filters.availability || property.availability === filters.availability);
+
 export interface PropertyFilters {
 	minSqft: number | null;
 	minKva: number | null;
