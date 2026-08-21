@@ -3,10 +3,9 @@
  * ListingSearch - modern real-estate listing search bar.
  *
  * A single search surface with three controls (property type, zone,
- * availability) and one clear action. On submit it resolves the target
- * directory from the chosen type (falling back to the configured
- * all-types link) and carries the zone + availability params through, so
- * the visitor lands on the published register already filtered.
+ * availability) and one clear action. On the homepage it filters the inline
+ * register; on other pages it resolves the target directory from the chosen
+ * type and carries zone + availability through.
  *
  * All visible copy is Tina-editable; the option vocabulary (types, zones,
  * availability) is kept in sync with the property collection so the
@@ -103,12 +102,22 @@ const searchLabel = data.searchLabel ?? 'Search listings';
 </Section>
 
 <script>
+	import { parseListingSearchFilters } from '../../lib/property-filters';
+
 	const form = document.querySelector('[data-listing-search]');
 	if (form instanceof HTMLFormElement) {
 		const typeSelect = form.querySelector<HTMLSelectElement>('[name="type"]');
 		const zoneSelect = form.querySelector<HTMLSelectElement>('[name="zone"]');
 		const availabilitySelect = form.querySelector<HTMLSelectElement>('[name="availability"]');
 		const allTypesLink = form.getAttribute('action') ?? '/locations';
+		const inlineResults = document.querySelector<HTMLElement>('[data-listing-results]');
+		const inlineCards = inlineResults
+			? [...inlineResults.querySelectorAll<HTMLElement>('[data-listing-card]')]
+			: [];
+		const inlineStatus = inlineResults?.querySelector<HTMLElement>('[data-listing-result-status]');
+		const inlineEmpty = inlineResults?.querySelector<HTMLElement>('[data-listing-empty]');
+		const clearButton = inlineResults?.querySelector<HTMLButtonElement>('[data-listing-clear]');
+		const zones = ['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika'];
 		const directoryForType: Record<string, string> = {
 			SHOP: 'shops',
 			WAREHOUSE: 'warehouses',
@@ -116,7 +125,52 @@ const searchLabel = data.searchLabel ?? 'Search listings';
 			BUSINESS_PARK: 'business-parks',
 			APARTMENT: 'apartments',
 		};
+
+		const getFilters = () => parseListingSearchFilters(new URLSearchParams(window.location.search), zones);
+		const setSelectValues = () => {
+			const filters = getFilters();
+			if (typeSelect) typeSelect.value = filters.type ?? '';
+			if (zoneSelect) zoneSelect.value = filters.zone ?? '';
+			if (availabilitySelect) availabilitySelect.value = filters.availability ?? '';
+		};
+		const applyInlineResults = () => {
+			if (!inlineResults) return;
+			const filters = getFilters();
+			let visible = 0;
+			for (const card of inlineCards) {
+				const match = (!filters.type || card.dataset.listingType === filters.type)
+					&& (!filters.zone || card.dataset.listingZone === filters.zone)
+					&& (!filters.availability || card.dataset.listingAvailability === filters.availability);
+				card.hidden = !match;
+				if (match) visible += 1;
+			}
+			const active = Boolean(filters.type || filters.zone || filters.availability);
+			if (inlineStatus) inlineStatus.textContent = active
+				? `${visible} matching listing${visible === 1 ? '' : 's'}`
+				: `${inlineCards.length} published listing${inlineCards.length === 1 ? '' : 's'}`;
+			if (inlineEmpty) inlineEmpty.hidden = !active || visible > 0;
+		};
+
+		setSelectValues();
+		applyInlineResults();
 		form.addEventListener('submit', (event) => {
+			if (inlineResults) {
+				event.preventDefault();
+				const submitted = new URLSearchParams();
+				for (const [key, value] of new FormData(form).entries()) {
+					if (typeof value === 'string' && value) submitted.set(key, value);
+				}
+				const filters = parseListingSearchFilters(submitted, zones);
+				const next = new URLSearchParams();
+				if (filters.type) next.set('type', filters.type);
+				if (filters.zone) next.set('zone', filters.zone);
+				if (filters.availability) next.set('availability', filters.availability);
+				window.history.pushState({}, '', `${window.location.pathname}${next.toString() ? `?${next}` : ''}`);
+				setSelectValues();
+				applyInlineResults();
+				inlineResults.scrollIntoView({ block: 'start' });
+				return;
+			}
 			event.preventDefault();
 			const type = typeSelect?.value ?? '';
 			const base = type && directoryForType[type] ? `/${directoryForType[type]}` : allTypesLink;
@@ -125,6 +179,15 @@ const searchLabel = data.searchLabel ?? 'Search listings';
 			if (availabilitySelect?.value) params.set('availability', availabilitySelect.value);
 			const qs = params.toString();
 			window.location.assign(qs ? `${base}?${qs}` : base);
+		});
+		clearButton?.addEventListener('click', () => {
+			window.history.pushState({}, '', window.location.pathname);
+			setSelectValues();
+			applyInlineResults();
+		});
+		window.addEventListener('popstate', () => {
+			setSelectValues();
+			applyInlineResults();
 		});
 	}
 </script>

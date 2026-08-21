@@ -3,7 +3,6 @@ import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
 import Button from '../../components/ui/Button.astro';
 import PropertyCardFeatured from '../../components/blocks/PropertyCardFeatured.astro';
-import DirectoryMap from '../../components/blocks/DirectoryMap.astro';
 import Icon from '../../components/ui/Icon.astro';
 import type { Availability } from '../../components/ui/AvailabilityBadge.astro';
 import { contactEmail, getConfig, listProperties, type PropertyNode } from '../../lib/data';
@@ -24,7 +23,6 @@ import {
 	parseSqft,
 	SORT_OPTIONS,
 } from '../../lib/property-filters';
-import { selectDirectoryContext } from '../../lib/directory-context';
 
 export function getStaticPaths() {
 	return (Object.keys(DIRECTORY_DEFINITIONS) as DirectoryKey[]).map((category) => ({
@@ -38,10 +36,6 @@ const definition = DIRECTORY_DEFINITIONS[category];
 const properties: PropertyNode[] = await listProperties();
 const allListings = filterDirectoryProperties(properties, category);
 const config = (await getConfig()).data?.config ?? null;
-const context = selectDirectoryContext(config?.directoryContexts, category);
-const contextTitle = context?.title ?? definition.title;
-const contextDescription = context?.description ?? definition.description;
-const contextHighlights = (context?.highlights ?? []).filter((highlight) => highlight?.label || highlight?.value);
 const viewingHref = `mailto:${contactEmail(config)}?subject=${encodeURIComponent(`Ask about ${definition.label}`)}`;
 const zoneNames = ['Mlolongo', 'Syokimau', 'Baba Dogo', 'Thika'];
 const filters = parseDirectoryFilters(Astro.url.searchParams, zoneNames);
@@ -86,34 +80,8 @@ const availabilityOptions = [
 		</div>
 	</nav>
 
-	<Section class="bg-secondary">
-		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
-			<div>
-				<p class="font-mono text-[12px] uppercase tracking-[0.4px] text-primary">Directory context</p>
-				<h2 class="mt-3 max-w-xl font-display text-3xl font-semibold tracking-[-0.6px]">{contextTitle}</h2>
-				<p class="mt-4 max-w-2xl text-muted-foreground">{contextDescription}</p>
-				{context?.zoneLabel && <p class="mt-4 font-mono text-[12px] text-primary">{context.zoneLabel}</p>}
-				<div class="mt-5 flex flex-wrap gap-3">
-					<Button href={context?.primaryActionLink ?? '/locations'} size="lg">{context?.primaryActionLabel ?? 'Browse locations'}</Button>
-					<Button href={viewingHref} variant="secondary" size="lg">Arrange a viewing</Button>
-				</div>
-			</div>
-			{contextHighlights.length > 0 && (
-				<dl class="grid gap-px overflow-hidden rounded-xl border border-hairline-steel bg-hairline-steel sm:grid-cols-2">
-					{contextHighlights.map((highlight) => (
-						<div class="bg-background p-5">
-							<dt class="font-mono text-[12px] uppercase tracking-[0.4px] text-muted-foreground">{highlight?.label}</dt>
-							<dd class="mt-2 font-display text-lg font-medium text-foreground">{highlight?.value}</dd>
-						</div>
-					))}
-				</dl>
-			)}
-		</div>
-	</Section>
-
 	<Section class="bg-background">
-		<div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:items-start">
-			<DirectoryMap pathname={Astro.url.pathname} label={context?.mapLabel ?? 'Operating zones'} />
+		<div class="mx-auto max-w-7xl">
 			<div id="published-listings">
 					<header class="mb-6 flex flex-wrap items-end justify-between gap-4">
 						<div>

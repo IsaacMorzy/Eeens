@@ -16,6 +16,8 @@ import {
 	parseSortKey,
 	applySort,
 	getIllustrationSrc,
+	parseListingSearchFilters,
+	matchesListingSearch,
 	type PropertyFilters,
 } from '../src/lib/property-filters';
 import type { PropertyNode } from '../src/lib/data';
@@ -340,6 +342,33 @@ describe('firstInteger', () => {
 	it('returns the first integer run when mixed with units', () => {
 		expect(firstInteger('450 kVA')).toBe(450);
 		expect(firstInteger('1234.56 sqm')).toBe(1234);
+	});
+});
+
+describe('homepage listing search', () => {
+	const zones = ['Mlolongo', 'Syokimau', 'Thika'];
+
+	it('parses known type, zone, and availability values', () => {
+		expect(parseListingSearchFilters(new URLSearchParams('type=WAREHOUSE&zone=Syokimau&availability=ForRent'), zones)).toEqual({
+			type: 'WAREHOUSE',
+			zone: 'Syokimau',
+			availability: 'ForRent',
+		});
+	});
+
+	it('clears unknown values instead of carrying arbitrary query input', () => {
+		expect(parseListingSearchFilters(new URLSearchParams('type=OFFICE&zone=Unknown&availability=ForLease'), zones)).toEqual({
+			type: null,
+			zone: null,
+			availability: null,
+		});
+	});
+
+	it('matches a published property against every active filter', () => {
+		const listing = property({ type: 'APARTMENT', zone: 'Thika', availability: 'ForSale' });
+		expect(matchesListingSearch(listing, { type: 'APARTMENT', zone: 'Thika', availability: 'ForSale' })).toBe(true);
+		expect(matchesListingSearch(listing, { type: 'WAREHOUSE', zone: 'Thika', availability: 'ForSale' })).toBe(false);
+		expect(matchesListingSearch(listing, { type: null, zone: null, availability: null })).toBe(true);
 	});
 });
 

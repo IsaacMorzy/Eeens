@@ -32,35 +32,40 @@ const tinaData = data as unknown as Record<string, unknown>;
 			</div>
 		</div>
 
-		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+		<form action={`mailto:${contactEmail(config)}?subject=${subject}`} method="post" enctype="text/plain" data-careers-form data-mailto-recipient={contactEmail(config)} data-mailto-subject={data.subjectPrefix || 'Job application'} class="rounded-xl border border-hairline-steel bg-background p-6 sm:p-8">
+			<div class="sr-only" aria-hidden="true">
+				<label for="career-website">Website</label>
+				<input id="career-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+			</div>
 			<div class="grid gap-5 sm:grid-cols-2">
 				<div class="grid gap-2">
 					<label for="career-full-name" class="text-sm font-medium text-foreground">Full name</label>
-					<input id="career-full-name" name="full_name" type="text" autocomplete="name" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id="career-full-name" name="full_name" type="text" autocomplete="name" required minlength="2" maxlength="100" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for="career-email" class="text-sm font-medium text-foreground">Email address</label>
-					<input id="career-email" name="email" type="email" autocomplete="email" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id="career-email" name="email" type="email" autocomplete="email" required maxlength="254" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for="career-role" class="text-sm font-medium text-foreground">Role or area</label>
-					<input id="career-role" name="role_or_area" type="text" required class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id="career-role" name="role_or_area" type="text" required minlength="2" maxlength="120" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2">
 					<label for="career-phone" class="text-sm font-medium text-foreground">Phone <span class="font-normal text-muted-foreground">(optional)</span></label>
-					<input id="career-phone" name="phone" type="tel" autocomplete="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id="career-phone" name="phone" type="tel" autocomplete="tel" maxlength="32" pattern="[0-9+()\s-]{7,32}" inputmode="tel" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2 sm:col-span-2">
 					<label for="career-cv" class="text-sm font-medium text-foreground">CV or portfolio link</label>
-					<input id="career-cv" name="cv_or_portfolio_link" type="url" required placeholder="https://" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
+					<input id="career-cv" name="cv_or_portfolio_link" type="url" required maxlength="2048" placeholder="https://" class="min-h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50" />
 				</div>
 				<div class="grid gap-2 sm:col-span-2">
 					<label for="career-message" class="text-sm font-medium text-foreground">Message</label>
-					<textarea id="career-message" name="message" rows="5" required class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
+					<textarea id="career-message" name="message" rows="5" required minlength="10" maxlength="2000" class="rounded-md border border-input bg-background px-3 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"></textarea>
 				</div>
 			</div>
 			<div class="mt-6 flex flex-col items-start gap-4 border-t border-hairline-steel/60 pt-5 sm:flex-row sm:items-center sm:justify-between">
 				{data.privacyNote && <p data-tina-field={tinaField(tinaData, 'privacyNote')} class="max-w-md text-xs leading-relaxed text-muted-foreground">{data.privacyNote}</p>}
+				<p data-form-status role="status" aria-live="polite" class="text-xs text-destructive"></p>
 				<Button type="submit" size="lg">
 					<Icon name="mail-forward" class="size-4" />
 					<span>{data.submitLabel || 'Open email application'}</span>
@@ -69,3 +74,34 @@ const tinaData = data as unknown as Record<string, unknown>;
 		</form>
 	</div>
 </Section>
+
+<script>
+	import { createMailtoHref } from '../../lib/mailto';
+
+	const form = document.querySelector<HTMLFormElement>('[data-careers-form]');
+	const honeypot = form?.querySelector<HTMLInputElement>('[name="website"]');
+	const status = form?.querySelector<HTMLElement>('[data-form-status]');
+
+	form?.addEventListener('submit', (event) => {
+		if (honeypot?.value.trim()) {
+			event.preventDefault();
+			if (status) status.textContent = 'This form could not be sent.';
+			return;
+		}
+		event.preventDefault();
+		const values = new FormData(form);
+		const fields = [
+			['Full name', String(values.get('full_name') ?? '')],
+			['Email address', String(values.get('email') ?? '')],
+			['Role or area', String(values.get('role_or_area') ?? '')],
+			['Phone', String(values.get('phone') ?? '')],
+			['CV or portfolio link', String(values.get('cv_or_portfolio_link') ?? '')],
+			['Message', String(values.get('message') ?? '')],
+		] as const;
+		window.location.assign(createMailtoHref(
+			form.dataset.mailtoRecipient ?? '',
+			form.dataset.mailtoSubject ?? 'Job application',
+			fields,
+		));
+	});
+</script>

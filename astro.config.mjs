@@ -7,18 +7,24 @@ import icon from 'astro-icon';
 import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import tailwindcss from '@tailwindcss/vite';
+import { resolveSiteUrl } from './scripts/site-url.mjs';
 
 const isVercelBuild = process.env.VERCEL === '1' || Boolean(process.env.VERCEL_ENV);
+const isAstroBuild = process.argv.includes('build');
+// Only a real production deploy requires SITE_URL. Vercel previews (and local
+// dev servers) fall back to the localhost origin instead of failing the build.
+const isProductionBuild =
+	process.env.VERCEL_ENV === 'production' || (!isVercelBuild && isAstroBuild);
 const outputDirectory = isVercelBuild
 	? './dist/'
 	: '../eens_app/public/astro_pages';
 
 // https://astro.build/config
 export default defineConfig({
-	// Public origin served by Tailscale Funnel (funnel :10000 -> nginx :8081 ->
-	// this static build out of sites/eensbpark.ke/public). Absolute URLs in the
-	// sitemap and canonical tags must match the origin the browser actually hits.
-	site: process.env.SITE_URL || 'https://vmi3416692.tailc65d30.ts.net:10000',
+	// Every product supplies its own public origin. Eens production sets
+	// SITE_URL=https://vmi3416692.tailc65d30.ts.net:10000; other products use
+	// their own Funnel port/origin so metadata never points at Eens by default.
+	site: resolveSiteUrl(process.env.SITE_URL, isProductionBuild),
 	output: 'static',
 	adapter: vercel(),
 	// Astro 7.2: this site has no session state, so keep the session runtime

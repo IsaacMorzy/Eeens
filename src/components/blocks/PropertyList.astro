@@ -37,24 +37,25 @@ const blockActions: Action[] = (data.actions ?? []).filter(
 );
 
 const all: PropertyNode[] = await listProperties();
-const limit = Math.max(1, Math.min(data.limit ?? 6, 24));
-const filtered: PropertyNode[] = all
-	.filter((p: PropertyNode): boolean => {
-		if (data.filterType && data.filterType !== 'ALL' && p.type !== data.filterType) return false;
-		if (data.filterZone && p.zone !== data.filterZone) return false;
-		if (data.filterAvailability && data.filterAvailability !== 'ALL' && p.availability !== data.filterAvailability) return false;
-		return true;
-	})
-	.slice(0, limit);
+const limit = data.limit === null || data.limit === undefined
+	? 6
+	: Math.max(0, Math.min(data.limit, 24));
+const filtered: PropertyNode[] = all.filter((p: PropertyNode): boolean => {
+	if (data.filterType && data.filterType !== 'ALL' && p.type !== data.filterType) return false;
+	if (data.filterZone && p.zone !== data.filterZone) return false;
+	if (data.filterAvailability && data.filterAvailability !== 'ALL' && p.availability !== data.filterAvailability) return false;
+	return true;
+});
+const listings = limit === 0 ? filtered : filtered.slice(0, limit);
 ---
 
-<Section>
+<Section data-listing-results>
 	<div class="mx-auto w-full">
 		{(data.title || data.description || blockActions.length > 0) && (
 			<header class="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
 				<div class="max-w-2xl">
 					{data.title && (
-						<h2 data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">
+						<h2 data-listing-results-title data-tina-field={tinaField(data as { title?: unknown }, 'title')} class="font-display text-balance text-3xl font-semibold tracking-[-0.6px] md:text-4xl md:tracking-[-1.0px]">
 							{data.title}
 						</h2>
 					)}
@@ -76,9 +77,10 @@ const filtered: PropertyNode[] = all
 				)}
 			</header>
 		)}
-		<div class:list={[data.layout === 'strip' ? 'flex flex-col gap-6' : data.display === 'featured' ? 'grid gap-8 sm:grid-cols-2 lg:grid-cols-4' : 'grid gap-8 sm:grid-cols-2 lg:grid-cols-3']}>
-			{filtered.map((p: PropertyNode, index: number) => (
-				<div class:list={[data.display === 'featured' && index === 0 && 'lg:col-span-2']}>
+		<p data-listing-result-status role="status" aria-live="polite" class="mb-5 font-mono text-[12px] text-muted-foreground">{listings.length} published listing{listings.length === 1 ? '' : 's'}</p>
+		<div data-listing-grid class:list={[data.layout === 'strip' ? 'flex flex-col gap-6' : data.display === 'featured' ? 'grid gap-8 sm:grid-cols-2 lg:grid-cols-4' : 'grid gap-8 sm:grid-cols-2 lg:grid-cols-3']}>
+			{listings.map((p: PropertyNode, index: number) => (
+				<div data-listing-card data-listing-type={p.type ?? ''} data-listing-zone={p.zone ?? ''} data-listing-availability={p.availability ?? ''} class:list={[data.display === 'featured' && index === 0 && 'lg:col-span-2']}>
 				<PropertyCardFeatured
 					data={{
 						type: p.type ?? null,
@@ -99,6 +101,11 @@ const filtered: PropertyNode[] = all
 				/>
 				</div>
 			))}
+		</div>
+		<div data-listing-empty hidden class="max-w-2xl rounded-xl border border-hairline-steel bg-secondary p-6 sm:p-8">
+			<h3 class="font-display text-2xl font-medium tracking-[-0.4px]">No published listings match this search.</h3>
+			<p class="mt-3 text-muted-foreground">Clear a filter to see the full published register.</p>
+			<button type="button" data-listing-clear class="mt-5 inline-flex min-h-11 items-center rounded-md border border-hairline-steel bg-background px-4 text-sm font-medium text-foreground hover:border-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Clear search</button>
 		</div>
 	</div>
 </Section>
