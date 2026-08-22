@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/ui/Section.astro';
 import Button from '../../components/ui/Button.astro';
@@ -73,7 +73,7 @@ const listingJson = {
 	name: property.title,
 	description: property.address ?? definition.description,
 	url: canonicalUrl,
-	...(heroSrc ? { image: new URL(heroSrc, Astro.url).toString() } : {}),
+	...(heroSrc ? { image: new URL(cloudinaryUrl(heroSrc) ?? heroSrc, Astro.url).toString() } : {}),
 	...(property.publishedDate ? { datePosted: property.publishedDate } : {}),
 	address: {
 		'@type': 'PostalAddress',
@@ -111,7 +111,7 @@ const listingJson = {
 			</nav>
 
 			<div class="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)] lg:items-start">
-				{heroSrc && <div class="relative overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><Image src={heroSrc} alt={heroAlt} width={1920} height={1080} sizes="(min-width: 1024px) 65vw, 100vw" format="webp" quality={80} loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[16/10] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
+				{heroSrc && <div class="relative overflow-hidden rounded-2xl border border-hairline-steel bg-secondary"><img src={cloudinaryUrl(heroSrc) ?? ''} alt={heroAlt} width="1920" height="1080" srcset={cloudinarySrcSet(heroSrc, [640, 960, 1280, 1920]) ?? undefined} sizes="(min-width: 1024px) 65vw, 100vw" loading="eager" fetchpriority="high" decoding="async" class="image-outline aspect-[16/10] w-full object-cover" />{heroSource && <a href={heroSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}</div>}
 
 				<div class="flex flex-col gap-6">
 					<div>
@@ -151,7 +151,7 @@ const listingJson = {
 				<div data-tina-field={tinaField(property as Record<string, unknown>, 'gallery')} class="mt-4 grid grid-cols-4 gap-2 sm:gap-3">
 					{property.gallery?.filter((item): item is { src: string; alt?: string | null } => Boolean(item?.src)).map((item) => (
 						<figure class="overflow-hidden rounded-lg border border-hairline-steel bg-secondary">
-							<Image src={item.src} alt={item.alt ?? property.title ?? ''} width={960} height={540} sizes="25vw" format="webp" quality={75} loading="lazy" decoding="async" class="image-outline aspect-[16/10] w-full object-cover" />
+							<img src={cloudinaryUrl(item.src) ?? ''} alt={item.alt ?? property.title ?? ''} width="960" height="540" srcset={cloudinarySrcSet(item.src, [320, 640, 960]) ?? undefined} sizes="25vw" loading="lazy" decoding="async" class="image-outline aspect-[16/10] w-full object-cover" />
 						</figure>
 					))}
 				</div>

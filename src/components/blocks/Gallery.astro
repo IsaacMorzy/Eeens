@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 import { tinaField } from '@tinacms/astro/tina-field';
 import Section from '../ui/Section.astro';
 
@@ -37,14 +37,13 @@ const safeSourceUrl = (url?: string | null): string | null => url?.startsWith('h
 					'group overflow-hidden rounded-xl border border-hairline-steel bg-card',
 					index === 0 ? 'sm:col-span-2 lg:col-span-7' : 'lg:col-span-5',
 				]}>
-					<Image
-						src={item.image?.src ?? ''}
+					<img
+						src={cloudinaryUrl(item.image?.src) ?? ''}
 						alt={item.image?.alt ?? ''}
-						width={1600}
-						height={1000}
+						width="1600"
+						height="1000"
+						srcset={cloudinarySrcSet(item.image?.src, [640, 960, 1280, 1600]) ?? undefined}
 						sizes={index === 0 ? '(min-width: 1024px) 58vw, 100vw' : '(min-width: 1024px) 42vw, 100vw'}
-						format="webp"
-						quality={80}
 						loading={index === 0 ? 'eager' : 'lazy'}
 						decoding="async"
 						class="image-outline aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"

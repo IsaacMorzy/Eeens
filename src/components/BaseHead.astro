@@ -2,6 +2,7 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
+import { cloudinaryUrl } from '../lib/cloudinary';
 
 // Preload the two latin display/body font subsets so first paint is not
 // blocked on font discovery. Stable URLs from public/fonts/ (the latin
@@ -20,7 +21,7 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image = '/photography/pexels-photo-9716363.jpeg', logo = null } = Astro.props;
-const imageURL = new URL(image, Astro.url).toString();
+const imageURL = new URL(cloudinaryUrl(image) ?? image, Astro.url).toString();
 const descriptionText = description || 'Published property listings, locations, and leasing information from Eens Limited.';
 const breadcrumbLabels: Record<string, string> = {
 	'about': 'About Eens',
@@ -56,6 +57,9 @@ const breadcrumbJson = {
 };
 const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c');
 ---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 
 <script is:inline>
 	(function () {
@@ -116,16 +120,26 @@ const breadcrumbJsonText = JSON.stringify(breadcrumbJson).replace(/</g, '\\u003c
 {logo && <link rel="preload" as="image" href={logo} fetchpriority="high" />}
 
 <!-- Global Metadata -->
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="apple-touch-icon" href="/pwa-192.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/manifest.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Eens" />
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="/splash-1290x2796.png" />
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/splash-1170x2532.png" />
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/splash-750x1334.png" />
+<link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="/splash-2048x2732.png" />
 <meta name="generator" content={Astro.generator} />
 
 <!-- Tina Cloud rewrites media URLs to assets.tina.io in production; warm the connection. -->
 <link rel="preconnect" href="https://assets.tina.io" crossorigin />
 <link rel="dns-prefetch" href="https://assets.tina.io" />
+<!-- All content images (hero, cards, galleries) serve from Cloudinary; warm the
+     connection so the first (LCP) image doesn't pay a DNS+TCP+TLS round-trip. -->
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+<link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

@@ -14,7 +14,7 @@
  * PageBlocks inline card and category directory listings can render the
  * same component with the same data interface.
  */
-import { Image } from 'astro:assets';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 import { tinaField } from '@tinacms/astro/tina-field';
 import AvailabilityBadge from '../ui/AvailabilityBadge.astro';
 import Button from '../ui/Button.astro';
@@ -88,28 +88,26 @@ const hasSpecRail = Boolean(data.sqft || data.zone || data.leaseTerm);
 		<div data-tina-field={tinaField(data as { image?: unknown }, 'image')} class="relative aspect-[16/9] w-full overflow-hidden bg-secondary">
 			{viewHref ? (
 				<a href={viewHref} aria-label={`View ${data.title ?? 'property'}`} class="block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50">
-					<Image
-						src={resolvedImageSrc}
+					<img
+						src={cloudinaryUrl(resolvedImageSrc) ?? ''}
 						alt={resolvedImageAlt}
-						width={1280}
-						height={720}
+						width="1280"
+						height="720"
+						srcset={cloudinarySrcSet(resolvedImageSrc, [400, 800, 1200, 1600]) ?? undefined}
 						sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-						format="webp"
-						quality={75}
 						loading="lazy"
 						decoding="async"
 						class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
 					/>
 				</a>
 			) : (
-				<Image
-					src={resolvedImageSrc}
+				<img
+					src={cloudinaryUrl(resolvedImageSrc) ?? ''}
 					alt={resolvedImageAlt}
-					width={1280}
-					height={720}
+					width="1280"
+					height="720"
+					srcset={cloudinarySrcSet(resolvedImageSrc, [400, 800, 1200, 1600]) ?? undefined}
 					sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-					format="webp"
-					quality={75}
 					loading="lazy"
 					decoding="async"
 					class="image-outline size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"

@@ -10,6 +10,16 @@ This repository builds and optimizes the public Eens Business Park website. It i
 
 The core product is not a generic real-estate brochure. It is a clear property register: address, area, price, availability, specifications, lease or sale terms, and a practical way to arrange a viewing.
 
+## Tooling credentials, MCP servers, and skills
+
+Agent/tooling credentials live in the gitignored `.env` (never commit values):
+
+- `CONTEXT7_API_KEY` — Context7 docs lookup. Use the `context7` MCP (`npx -y @upstash/context7-mcp`) or the `c7` CLI to fetch up-to-date library/framework docs when writing or debugging code. Prefer Context7 over memory for Astro, TinaCMS, Tailwind, and Vite API specifics.
+- `JINA_API_KEY` — Jina.ai search and reader. Use it for web search operations instead of a generic crawl: search `https://s.jina.ai/?q=<query>` and read `https://r.jina.ai/<url>`, both with the `Authorization: Bearer $JINA_API_KEY` header.
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — Cloudinary media. Use the `cloudinary` MCP (`npx -y cloudinary-mcp-server`), the `cloudinary` CLI, and the official `cloudinary-devs/cloudinary-plugin` skills (`cloudinary-docs`, `cloudinary-transformations`, `claimable-cloud`, installed under `.agents/skills/`) for uploads, delivery URLs, and transformations.
+
+MCP servers are declared in `.mcp.json` (context7, cloudinary) with `${VAR}` placeholders resolved from the environment; never put literal secrets in committed files. The community `astro-mcp` integration (dev-only, experimental) exposes an Astro MCP server at `http://localhost:<port>/__mcp/sse` while `astro dev` runs and registers itself automatically; it is not an official Astro core integration.
+
 ## Stack and workflow
 
 - Astro 7.2 with MDX pages and static `.astro` routes deployed through Vercel.
@@ -363,7 +373,7 @@ Enabled features:
 - `cacheKey` on every dynamic `getStaticPaths()` route. Tina's generated client does not expose `entry.digest`, so keys use deterministic serialization of the route's Tina node plus the shared collection/config data rendered by that route. Preserve `node_modules/.astro/` between CI builds if incremental reuse is expected.
 - `preview:background`, `preview:status`, `preview:logs`, and `preview:stop` scripts expose Astro 7.2's documented background preview lifecycle. Use `pnpm preview:background` for local verification; do not schedule or daemonize production processes.
 
-Astro's relative `logger.entrypoint` support is available but unused: this repo has no custom logger, so adding one would be speculative. Astro MCP is not an official Astro core integration; use the available Freebuff tools and documented Astro CLI instead.
+Astro's relative `logger.entrypoint` support is available but unused: this repo has no custom logger, so adding one would be speculative. `astro-mcp` is a community, experimental dev-only integration (installed as a devDependency and gated to `astro dev`); it is not an official Astro core integration. For stable workflows prefer the documented Astro CLI and Freebuff tools.
 
 ### Global skill installation boundary
 

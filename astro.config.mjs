@@ -8,6 +8,7 @@ import tina from '@tinacms/astro/integration';
 import { tinaAdminDevRedirect } from '@tinacms/astro/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { resolveSiteUrl } from './scripts/site-url.mjs';
+import mcp from 'astro-mcp';
 
 const isVercelBuild = process.env.VERCEL === '1' || Boolean(process.env.VERCEL_ENV);
 const isAstroBuild = process.argv.includes('build');
@@ -15,9 +16,17 @@ const isAstroBuild = process.argv.includes('build');
 // dev servers) fall back to the localhost origin instead of failing the build.
 const isProductionBuild =
 	process.env.VERCEL_ENV === 'production' || (!isVercelBuild && isAstroBuild);
+// astro-mcp (community, experimental) is a dev-only tool: it exposes an MCP
+// server at http://localhost:<port>/__mcp/sse while `astro dev` runs and
+// no-ops during build/preview, so production output is unchanged.
+const isDevServer = process.argv.includes('dev');
+// Vercel keeps its output inside the checkout. Local (Tailscale) builds also
+// stay inside the checkout: the Vercel adapter emits server entrypoints that
+// resolve node_modules at build time, which breaks when outDir sits outside
+// this directory. deploy copies the static output to sites/eensbpark.ke/public.
 const outputDirectory = isVercelBuild
 	? './dist/'
-	: '../eens_app/public/astro_pages';
+	: './dist-local/';
 
 // https://astro.build/config
 export default defineConfig({
@@ -35,7 +44,7 @@ export default defineConfig({
 	// writing to the canonical path consumed by deploy.sh.
 	outDir: outputDirectory,
 	redirects: { '/home': '/' },
-	integrations: [mdx(), sitemap(), icon(), tina()],
+	integrations: [mdx(), sitemap(), icon(), tina(), ...(isDevServer ? [mcp()] : [])],
 	build: {
 		// Inline the (~10 KiB) bundled CSS into a <style> in <head> instead of a
 		// separate render-blocking <link>. Astro's default ('auto') only inlines

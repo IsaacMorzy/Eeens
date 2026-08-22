@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 import { tinaField } from '@tinacms/astro/tina-field';
 import TinaMarkdown from '@tinacms/astro/TinaMarkdown.astro';
 import Section from '../ui/Section.astro';
@@ -43,14 +43,13 @@ const cmsImageSource = getPexelsSource(data.image?.src);
 	</div>
 	{data.image?.src ? (
 		<div data-tina-field={tinaField(data, 'image')} class="full-bleed-media relative mt-10 overflow-hidden rounded-xl border border-hairline-steel">
-			<Image
-				src={data.image.src}
+			<img
+				src={cloudinaryUrl(data.image.src) ?? ''}
 				alt={data.image.alt ?? ''}
-				width={1920}
-				height={1080}
+				width="1920"
+				height="1080"
+				srcset={cloudinarySrcSet(data.image.src, [640, 960, 1280, 1920]) ?? undefined}
 				sizes="100vw"
-				format="webp"
-				quality={80}
 				loading="lazy"
 				decoding="async"
 				class="image-outline aspect-[21/9] size-full object-cover"

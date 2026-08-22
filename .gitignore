@@ -65,6 +65,7 @@ node_modules/
 # builds
 .vercel
 dist
+dist-local
 
 # Egonex-AI Understand-Anything
 .understand-anything/intermediate/

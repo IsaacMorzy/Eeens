@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eens-pwa-v3';
+const CACHE_NAME = 'eens-pwa-v4';
 const STATIC_ASSETS = [
 	'/',
 	'/shops',
@@ -9,6 +9,7 @@ const STATIC_ASSETS = [
 	'/pwa-192.png',
 	'/pwa-512.png',
 ];
+const NAV_TIMEOUT_MS = 4000;
 const OFFLINE_HTML = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fafaf9"><title>Eens Business Park | Offline</title><body style="font-family:system-ui,sans-serif;max-width:40rem;margin:15vh auto;padding:1.5rem;color:#0f172a;background:#fafaf9"><p style="color:#0e7490;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Eens Business Park</p><h1>Connection unavailable.</h1><p>Previously visited listings remain available when cached. Reconnect to load the latest address, area, price, availability, and terms.</p><a href="/" style="color:#0e7490">Return to the register</a></body></html>';
 
 const isExcluded = (url, request) =>
@@ -25,6 +26,12 @@ const cacheResponse = (request, response) => {
 		cache.put(request, response.clone()).catch(() => undefined);
 		return response;
 	});
+};
+
+const fetchWithTimeout = (request, timeoutMs) => {
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), timeoutMs);
+	return fetch(request, { signal: controller.signal }).finally(() => clearTimeout(timeout));
 };
 
 self.addEventListener('install', (event) => {
@@ -48,9 +55,12 @@ self.addEventListener('fetch', (event) => {
 	const url = new URL(request.url);
 	if (isExcluded(url, request)) return;
 
+	// Navigation is network-first with a short timeout so a slow or dead
+	// connection falls back to the cached copy (or the offline page) instead
+	// of leaving the tab hanging on the fetch.
 	if (request.mode === 'navigate') {
 		event.respondWith(
-			fetch(request)
+			fetchWithTimeout(request, NAV_TIMEOUT_MS)
 				.then((response) => cacheResponse(request, response))
 				.catch(() => caches.match(request).then((cached) => cached ?? new Response(OFFLINE_HTML, {
 					status: 503,
@@ -64,12 +74,15 @@ self.addEventListener('fetch', (event) => {
 	const staticRequest = ['style', 'script', 'image', 'font'].includes(request.destination);
 	if (!staticRequest) return;
 
+	// Static assets are hashed on deploy, so serve from cache immediately and
+	// revalidate in the background: the current visit is instant and the next
+	// visit picks up fresh builds without waiting on the network.
 	event.respondWith(
 		caches.match(request).then((cached) => {
-			if (cached) return cached;
-			return fetch(request)
+			const network = fetch(request)
 				.then((response) => cacheResponse(request, response))
-				.catch(() => new Response('', { status: 503, statusText: 'Offline' }));
+				.catch(() => cached);
+			return cached ?? network;
 		}),
 	);
 });

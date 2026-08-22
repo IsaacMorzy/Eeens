@@ -5,6 +5,7 @@ import Button from '../components/ui/Button.astro';
 import { listProperties, type PropertyNode } from '../lib/data';
 import { isPublicProperty } from '../lib/property-visibility';
 import { getIllustrationSrc } from '../lib/property-filters';
+import { cloudinaryUrl } from '../lib/cloudinary';
 import { DIRECTORY_DEFINITIONS, directoryKeyForType } from '../lib/property-directories';
 
 const properties: PropertyNode[] = (await listProperties()).filter(isPublicProperty);
@@ -33,7 +34,7 @@ const compareData = properties
 			bathrooms: property.bathrooms ?? null,
 			reference: property.reference ?? null,
 			typeLabel: typeLabelFor(property.type),
-			image: property.heroImage?.src ?? getIllustrationSrc(property.type),
+			image: cloudinaryUrl(property.heroImage?.src ?? getIllustrationSrc(property.type)),
 			specSheet: {
 				power: property.specSheet?.power ?? null,
 				water: property.specSheet?.water ?? null,

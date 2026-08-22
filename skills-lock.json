@@ -7,11 +7,29 @@
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
       "computedHash": "b2e8ef5ffc2f142022c1e1e1bba68073f0821356a8e1cf1b23670f61d13fe50b"
     },
+    "claimable-cloud": {
+      "source": "cloudinary-devs/cloudinary-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/claimable-cloud/SKILL.md",
+      "computedHash": "15af9431ee68f4c4d51b93d112dd38bfdb7d9055451b7548d0c4e4f67bcfb961"
+    },
     "claude-handoff": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/in-progress/claude-handoff/SKILL.md",
       "computedHash": "e329481fa7f9d19c91dae3db1bf1799aeaf41d2c5298c8fc737ee4500b0e50c6"
+    },
+    "cloudinary-docs": {
+      "source": "cloudinary-devs/cloudinary-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/cloudinary-docs/SKILL.md",
+      "computedHash": "0a19ff55ee749b8a8d5f6252ee46a886d6f9e44c67bd927185e35e5d1cf1a71d"
+    },
+    "cloudinary-transformations": {
+      "source": "cloudinary-devs/cloudinary-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/cloudinary-transformations/SKILL.md",
+      "computedHash": "b219aa64c5560a6d4e5d0fbe2daceda20341f83f67f621b6f33c286c4b526b61"
     },
     "code-review": {
       "source": "mattpocock/skills",

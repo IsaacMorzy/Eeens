@@ -6,6 +6,7 @@ import FormattedDate from '../FormattedDate.astro';
 import YouTubeEmbed from '../mdx/YouTubeEmbed.astro';
 import { countWords, readingMinutes as minutesForWordCount } from '../../lib/blog-walker';
 import { getPexelsSource } from '../../lib/pexels-images';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 
 interface Props {
 	data?: CmsBlog | null;
@@ -25,7 +26,9 @@ const heroSource = getPexelsSource(data?.heroImage);
 			<img
 				width={1920}
 				height={820}
-				src={data.heroImage}
+				src={cloudinaryUrl(data.heroImage) ?? ''}
+				srcset={cloudinarySrcSet(data.heroImage, [640, 960, 1280, 1920]) ?? undefined}
+				sizes="100vw"
 				alt={data.title ?? 'Eens journal article'}
 				loading="eager"
 				fetchpriority="high"

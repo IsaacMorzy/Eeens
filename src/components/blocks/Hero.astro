@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { cloudinaryUrl, cloudinarySrcSet } from '../../lib/cloudinary';
 import { tinaField } from '@tinacms/astro/tina-field';
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
@@ -92,33 +92,34 @@ const registerZones = zonesInUse(registerListings);
 
 		{data.image?.src ? (
 			<figure data-tina-field={tinaField(data, 'image')} class="group relative order-first overflow-hidden rounded-xl border border-hairline-steel bg-secondary lg:order-none">
-				<Image
-					src={data.image.src}
-					alt={data.image.alt ?? ''}
-					width={1600}
-					height={1200}
-					sizes="(min-width: 1024px) 58vw, 100vw"
-					format="webp"
-					quality={80}
-					fetchpriority="high"
-					loading="eager"
-					decoding="sync"
-					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
-				/>
+			<img
+				src={cloudinaryUrl(data.image.src) ?? ''}
+				alt={data.image.alt ?? ''}
+				width="1600"
+				height="1200"
+				srcset={cloudinarySrcSet(data.image.src, [640, 960, 1280, 1600]) ?? undefined}
+				sizes="(min-width: 1024px) 58vw, 100vw"
+				fetchpriority="high"
+				loading="eager"
+				decoding="sync"
+				class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+			/>
 				{cmsImageSource && <a href={cmsImageSource} target="_blank" rel="noopener noreferrer" class="absolute bottom-2 right-2 inline-flex min-h-8 min-w-8 items-center justify-center rounded-sm bg-background/90 px-2 py-1 font-mono text-[10px] text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>}
 			</figure>
 		) : contextualVisual ? (
 			<figure class="group relative order-first overflow-hidden rounded-xl border border-hairline-steel bg-secondary lg:order-none">
-				<img
-					src={contextualVisual.src}
-					alt={contextualVisual.alt}
-					width="1600"
-					height="1200"
-					loading="eager"
-					fetchpriority="high"
-					decoding="sync"
-					class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
-				/>
+			<img
+				src={cloudinaryUrl(contextualVisual.src) ?? ''}
+				alt={contextualVisual.alt}
+				width="1600"
+				height="1200"
+				srcset={cloudinarySrcSet(contextualVisual.src, [640, 960, 1280, 1600]) ?? undefined}
+				sizes="(min-width: 1024px) 58vw, 100vw"
+				loading="eager"
+				fetchpriority="high"
+				decoding="sync"
+				class="image-outline aspect-[4/3] size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.02]"
+			/>
 				<figcaption class="flex items-center justify-between gap-4 border-t border-hairline-steel/40 bg-background px-3 py-2 font-mono text-[11px] text-muted-foreground">
 					<span>{contextualVisual.label}</span>
 					<a href={contextualVisual.sourceUrl} target="_blank" rel="noopener noreferrer" class="shrink-0 underline-offset-2 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">Photo source</a>
