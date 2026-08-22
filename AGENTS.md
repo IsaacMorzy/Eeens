@@ -17,6 +17,7 @@ Agent/tooling credentials live in the gitignored `.env` (never commit values):
 - `CONTEXT7_API_KEY` — Context7 docs lookup. Use the `context7` MCP (`npx -y @upstash/context7-mcp`) or the `c7` CLI to fetch up-to-date library/framework docs when writing or debugging code. Prefer Context7 over memory for Astro, TinaCMS, Tailwind, and Vite API specifics.
 - `JINA_API_KEY` — Jina.ai search and reader. Use it for web search operations instead of a generic crawl: search `https://s.jina.ai/?q=<query>` and read `https://r.jina.ai/<url>`, both with the `Authorization: Bearer $JINA_API_KEY` header.
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — Cloudinary media. Use the `cloudinary` MCP (`npx -y cloudinary-mcp-server`), the `cloudinary` CLI, and the official `cloudinary-devs/cloudinary-plugin` skills (`cloudinary-docs`, `cloudinary-transformations`, `claimable-cloud`, installed under `.agents/skills/`) for uploads, delivery URLs, and transformations.
+- `BROWSER_USE_API_KEY` — Browser-use cloud / remote browser automation service. Installed via `uv tool install browser-use --python python3.12` with 6030 MB memory (`NODE_OPTIONS=--max-old-space-size=6030`). The `browser-use skill install` command registered the skill across all agent runtimes (`.agents/skills/`, `.claude/skills/`, `.codex/skills/`). The companion `browser-harness` CLI is also installed (`uv tool install --python 3.12 --upgrade --force browser-harness`) with its skill at `~/.codex/skills/browser-harness/SKILL.md`. Use browser-use for **web search, CORS diagnostics, admin smoke testing, and site editing verification**: it can navigate the TinaCMS admin, capture console errors, inspect network requests, and verify CORS behavior that curl cannot reproduce. The remote browser cloud returned HTTP 402 (payment required), so use the local Playwright Chromium fallback (`playwright-cli`) for headless browser work on this server. See https://docs.browser-use.com/open-source/customize/browser/remote for remote browser setup and https://github.com/browser-use/browser-harness/blob/main/install.md for troubleshooting. When diagnosing CORS or admin editing issues, prefer `playwright-cli` (already installed) with named sessions like `playwright-cli -s=eens-cors open <url>`.
 
 MCP servers are declared in `.mcp.json` (context7, cloudinary) with `${VAR}` placeholders resolved from the environment; never put literal secrets in committed files. The community `astro-mcp` integration (dev-only, experimental) exposes an Astro MCP server at `http://localhost:<port>/__mcp/sse` while `astro dev` runs and registers itself automatically; it is not an official Astro core integration.
 
@@ -68,6 +69,27 @@ Current source-of-truth order:
 - **Historical rationale:** `plan.md`, useful for context but not authoritative when it conflicts with current code or config.
 
 The default improvement loop is: orient -> classify one smallest change -> trace the source path -> apply Ponytail -> implement one slice -> run the smallest check -> run project verification -> independent review -> report evidence -> wait for human Git/production approval. The detailed version is in `docs/agents/project-map.md`.
+
+## TinaCMS admin CORS fix
+
+The TinaCMS admin at `/admin/` connects to Tina Cloud's `identity.tinajs.io` for authentication. The identity service returns `401` (unauthenticated) responses **without** `Access-Control-Allow-Origin` headers, which browsers treat as CORS failures — blocking the admin from checking auth state and showing 9 CORS errors on load.
+
+**Fix applied (2026-08-22):**
+
+1. **nginx identity proxy** (`/tina-identity/` in `/etc/nginx/conf.d/eensbpark.conf`) — proxies requests to `https://identity.tinajs.io/` through the same origin, eliminating the cross-origin fetch entirely.
+2. **Fetch interceptor** in `public/admin/index.html` — a small inline script before the admin bundle rewrites `https://identity.tinajs.io` URLs to the same-origin `/tina-identity/` proxy.
+3. **CSP loosened** — `connect-src` now explicitly allows `identity.tinajs.io`, `content.tinajs.io`, and `assets.tinajs.io`; `form-action` allows `https://app.tina.io` for the OAuth redirect.
+
+**Before fix:** 9 CORS errors, all `identity.tinajs.io` requests `net::ERR_FAILED`.
+**After fix:** 0 CORS errors, identity requests return proper `401` through same-origin proxy (expected pre-auth state).
+
+The admin loads, shows the "Log in" button, and the OAuth flow opens `app.tina.io/signin` with the correct origin. Once a user logs in through Tina Cloud, the identity calls return `200` and the editor becomes fully functional.
+
+**Rebuilding the admin after Tina schema changes:** The `tinacms build` command hangs on "Indexing local files" on this dev box (documented as `[ENV-BLOCKED]` in `plan.md`). The workaround is:
+1. Push changes to GitHub — Tina Cloud re-indexes automatically (~60s).
+2. Run `SITE_URL=https://vmi3416692.tailc65d30.ts.net:10000 npx astro build` directly (uses Tina Cloud GraphQL, not the local datalayer).
+3. Copy `dist-local/client/` to `sites/eensbpark.ke/public/`.
+4. Regenerate admin assets with `tinacms build --skip-indexing` if the schema changed.
 
 ## Site map
 
@@ -203,7 +225,33 @@ Use a maker/checker split for non-trivial changes. A result without runnable evi
    - `pnpm build` when content/schema or production assembly changed
 6. Report exact commands and whether each passed, failed, or was blocked by the environment. Never claim a check passed when the terminal or browser was unavailable.
 
-### 7. Browser verification with Microsoft Playwright CLI
+### 7. Browser verification with Playwright CLI and browser-use
+
+Two browser tools are available for site diagnostics, CORS testing, and admin smoke testing:
+
+#### Playwright CLI (primary, recommended)
+
+Use `playwright-cli` for all browser-facing website work. It uses local Playwright Chromium (headless) and is the fastest path for CORS diagnosis, snapshot inspection, and network analysis:
+
+```bash
+playwright-cli -s=eens-smoke open https://vmi3416692.tailc65d30.ts.net:10000/admin/
+playwright-cli -s=eens-smoke console    # capture CORS/console errors
+playwright-cli -s=eens-smoke requests --static  # network status codes
+playwright-cli -s=eens-smoke snapshot   # DOM accessibility tree
+playwright-cli -s=eens-smoke close
+```
+
+#### browser-use (Python, for AI-driven browser tasks)
+
+Installed via `uv tool install browser-use --python python3.12` with 6030 MB memory. The `browser-use skill install` command registered skills across all agent runtimes. The companion `browser-harness` CLI is also installed. Use for complex multi-step browser workflows that need LLM reasoning (e.g., "log in, navigate to a page, edit content, verify it saved").
+
+```bash
+# Local Playwright Chromium (fallback — cloud returned 402)
+BROWSER_USE_API_KEY=$BROWSER_USE_API_KEY browser-use
+```
+
+Remote browser cloud setup: https://docs.browser-use.com/open-source/customize/browser/remote
+Troubleshooting: https://github.com/browser-use/browser-harness/blob/main/install.md
 
 For browser-facing work, use the isolated Playwright workflow below and record the actual server URL, route status, snapshot structure, console, network, viewport, and screenshots. Do not convert a blocked browser run into a pass.
 
